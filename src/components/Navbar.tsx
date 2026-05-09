@@ -28,9 +28,9 @@ export function Navbar() {
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            <button className="hidden sm:inline-flex h-9 px-4 text-sm rounded-lg text-foreground/90 hover:text-foreground transition-colors">
+            <Link to="/auth/login" className="hidden sm:inline-flex h-9 px-4 text-sm rounded-lg text-foreground/90 hover:text-foreground transition-colors items-center">
               Sign in
-            </button>
+            </Link>
             <Link to="/book" className="h-9 px-4 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition shadow-[0_0_20px_-4px_var(--safety-glow)] inline-flex items-center">
               Book a truck
             </Link>
