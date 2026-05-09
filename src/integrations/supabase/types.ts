@@ -14,16 +14,194 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      documents: {
+        Row: {
+          doc_type: Database["public"]["Enums"]["doc_type"]
+          file_path: string
+          id: string
+          notes: string | null
+          status: Database["public"]["Enums"]["doc_status"]
+          uploaded_at: string
+          user_id: string
+        }
+        Insert: {
+          doc_type: Database["public"]["Enums"]["doc_type"]
+          file_path: string
+          id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          uploaded_at?: string
+          user_id: string
+        }
+        Update: {
+          doc_type?: Database["public"]["Enums"]["doc_type"]
+          file_path?: string
+          id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          uploaded_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      driver_profiles: {
+        Row: {
+          capacity_tons: number | null
+          created_at: string
+          is_online: boolean
+          license_no: string | null
+          national_id_no: string | null
+          plate: string | null
+          updated_at: string
+          user_id: string
+          vehicle_make: string | null
+          vehicle_model: string | null
+          verified: boolean
+          years_experience: number | null
+        }
+        Insert: {
+          capacity_tons?: number | null
+          created_at?: string
+          is_online?: boolean
+          license_no?: string | null
+          national_id_no?: string | null
+          plate?: string | null
+          updated_at?: string
+          user_id: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          verified?: boolean
+          years_experience?: number | null
+        }
+        Update: {
+          capacity_tons?: number | null
+          created_at?: string
+          is_online?: boolean
+          license_no?: string | null
+          national_id_no?: string | null
+          plate?: string | null
+          updated_at?: string
+          user_id?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          verified?: boolean
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
+      fleet_companies: {
+        Row: {
+          company_name: string
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          fleet_size: number | null
+          kra_pin: string | null
+          registration_no: string | null
+          updated_at: string
+          user_id: string
+          verified: boolean
+        }
+        Insert: {
+          company_name: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          fleet_size?: number | null
+          kra_pin?: string | null
+          registration_no?: string | null
+          updated_at?: string
+          user_id: string
+          verified?: boolean
+        }
+        Update: {
+          company_name?: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          fleet_size?: number | null
+          kra_pin?: string | null
+          registration_no?: string | null
+          updated_at?: string
+          user_id?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          onboarded: boolean
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          onboarded?: boolean
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          onboarded?: boolean
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "client" | "driver" | "fleet" | "admin"
+      doc_status: "pending" | "approved" | "rejected"
+      doc_type:
+        | "national_id"
+        | "driving_license"
+        | "truck_logbook"
+        | "insurance"
+        | "ntsa_inspection"
+        | "company_registration"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +328,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["client", "driver", "fleet", "admin"],
+      doc_status: ["pending", "approved", "rejected"],
+      doc_type: [
+        "national_id",
+        "driving_license",
+        "truck_logbook",
+        "insurance",
+        "ntsa_inspection",
+        "company_registration",
+      ],
+    },
   },
 } as const
