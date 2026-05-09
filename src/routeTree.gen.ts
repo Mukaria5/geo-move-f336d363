@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as BookRouteImport } from './routes/book'
+import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthVerifyRouteImport } from './routes/auth/verify'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
@@ -17,10 +18,21 @@ import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-passw
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthForgotRouteImport } from './routes/auth/forgot'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
+import { Route as ProtectedOnboardingRoleRouteImport } from './routes/_protected/onboarding/role'
+import { Route as ProtectedOnboardingProfileRouteImport } from './routes/_protected/onboarding/profile'
+import { Route as ProtectedOnboardingDocumentsRouteImport } from './routes/_protected/onboarding/documents'
+import { Route as ProtectedDashboardFleetRouteImport } from './routes/_protected/dashboard/fleet'
+import { Route as ProtectedDashboardDriverRouteImport } from './routes/_protected/dashboard/driver'
+import { Route as ProtectedDashboardClientRouteImport } from './routes/_protected/dashboard/client'
+import { Route as ProtectedDashboardAdminRouteImport } from './routes/_protected/dashboard/admin'
 
 const BookRoute = BookRouteImport.update({
   id: '/book',
   path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedRoute = ProtectedRouteImport.update({
+  id: '/_protected',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -58,6 +70,45 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProtectedOnboardingRoleRoute = ProtectedOnboardingRoleRouteImport.update({
+  id: '/onboarding/role',
+  path: '/onboarding/role',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedOnboardingProfileRoute =
+  ProtectedOnboardingProfileRouteImport.update({
+    id: '/onboarding/profile',
+    path: '/onboarding/profile',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
+const ProtectedOnboardingDocumentsRoute =
+  ProtectedOnboardingDocumentsRouteImport.update({
+    id: '/onboarding/documents',
+    path: '/onboarding/documents',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
+const ProtectedDashboardFleetRoute = ProtectedDashboardFleetRouteImport.update({
+  id: '/dashboard/fleet',
+  path: '/dashboard/fleet',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedDashboardDriverRoute =
+  ProtectedDashboardDriverRouteImport.update({
+    id: '/dashboard/driver',
+    path: '/dashboard/driver',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
+const ProtectedDashboardClientRoute =
+  ProtectedDashboardClientRouteImport.update({
+    id: '/dashboard/client',
+    path: '/dashboard/client',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
+const ProtectedDashboardAdminRoute = ProtectedDashboardAdminRouteImport.update({
+  id: '/dashboard/admin',
+  path: '/dashboard/admin',
+  getParentRoute: () => ProtectedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +119,13 @@ export interface FileRoutesByFullPath {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify': typeof AuthVerifyRoute
+  '/dashboard/admin': typeof ProtectedDashboardAdminRoute
+  '/dashboard/client': typeof ProtectedDashboardClientRoute
+  '/dashboard/driver': typeof ProtectedDashboardDriverRoute
+  '/dashboard/fleet': typeof ProtectedDashboardFleetRoute
+  '/onboarding/documents': typeof ProtectedOnboardingDocumentsRoute
+  '/onboarding/profile': typeof ProtectedOnboardingProfileRoute
+  '/onboarding/role': typeof ProtectedOnboardingRoleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,10 +136,18 @@ export interface FileRoutesByTo {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify': typeof AuthVerifyRoute
+  '/dashboard/admin': typeof ProtectedDashboardAdminRoute
+  '/dashboard/client': typeof ProtectedDashboardClientRoute
+  '/dashboard/driver': typeof ProtectedDashboardDriverRoute
+  '/dashboard/fleet': typeof ProtectedDashboardFleetRoute
+  '/onboarding/documents': typeof ProtectedOnboardingDocumentsRoute
+  '/onboarding/profile': typeof ProtectedOnboardingProfileRoute
+  '/onboarding/role': typeof ProtectedOnboardingRoleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_protected': typeof ProtectedRouteWithChildren
   '/book': typeof BookRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/forgot': typeof AuthForgotRoute
@@ -89,6 +155,13 @@ export interface FileRoutesById {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify': typeof AuthVerifyRoute
+  '/_protected/dashboard/admin': typeof ProtectedDashboardAdminRoute
+  '/_protected/dashboard/client': typeof ProtectedDashboardClientRoute
+  '/_protected/dashboard/driver': typeof ProtectedDashboardDriverRoute
+  '/_protected/dashboard/fleet': typeof ProtectedDashboardFleetRoute
+  '/_protected/onboarding/documents': typeof ProtectedOnboardingDocumentsRoute
+  '/_protected/onboarding/profile': typeof ProtectedOnboardingProfileRoute
+  '/_protected/onboarding/role': typeof ProtectedOnboardingRoleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +174,13 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify'
+    | '/dashboard/admin'
+    | '/dashboard/client'
+    | '/dashboard/driver'
+    | '/dashboard/fleet'
+    | '/onboarding/documents'
+    | '/onboarding/profile'
+    | '/onboarding/role'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,9 +191,17 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify'
+    | '/dashboard/admin'
+    | '/dashboard/client'
+    | '/dashboard/driver'
+    | '/dashboard/fleet'
+    | '/onboarding/documents'
+    | '/onboarding/profile'
+    | '/onboarding/role'
   id:
     | '__root__'
     | '/'
+    | '/_protected'
     | '/book'
     | '/auth/callback'
     | '/auth/forgot'
@@ -121,10 +209,18 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/auth/verify'
+    | '/_protected/dashboard/admin'
+    | '/_protected/dashboard/client'
+    | '/_protected/dashboard/driver'
+    | '/_protected/dashboard/fleet'
+    | '/_protected/onboarding/documents'
+    | '/_protected/onboarding/profile'
+    | '/_protected/onboarding/role'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ProtectedRoute: typeof ProtectedRouteWithChildren
   BookRoute: typeof BookRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   AuthForgotRoute: typeof AuthForgotRoute
@@ -141,6 +237,13 @@ declare module '@tanstack/react-router' {
       path: '/book'
       fullPath: '/book'
       preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected': {
+      id: '/_protected'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -192,11 +295,85 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/onboarding/role': {
+      id: '/_protected/onboarding/role'
+      path: '/onboarding/role'
+      fullPath: '/onboarding/role'
+      preLoaderRoute: typeof ProtectedOnboardingRoleRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/onboarding/profile': {
+      id: '/_protected/onboarding/profile'
+      path: '/onboarding/profile'
+      fullPath: '/onboarding/profile'
+      preLoaderRoute: typeof ProtectedOnboardingProfileRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/onboarding/documents': {
+      id: '/_protected/onboarding/documents'
+      path: '/onboarding/documents'
+      fullPath: '/onboarding/documents'
+      preLoaderRoute: typeof ProtectedOnboardingDocumentsRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/dashboard/fleet': {
+      id: '/_protected/dashboard/fleet'
+      path: '/dashboard/fleet'
+      fullPath: '/dashboard/fleet'
+      preLoaderRoute: typeof ProtectedDashboardFleetRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/dashboard/driver': {
+      id: '/_protected/dashboard/driver'
+      path: '/dashboard/driver'
+      fullPath: '/dashboard/driver'
+      preLoaderRoute: typeof ProtectedDashboardDriverRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/dashboard/client': {
+      id: '/_protected/dashboard/client'
+      path: '/dashboard/client'
+      fullPath: '/dashboard/client'
+      preLoaderRoute: typeof ProtectedDashboardClientRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/dashboard/admin': {
+      id: '/_protected/dashboard/admin'
+      path: '/dashboard/admin'
+      fullPath: '/dashboard/admin'
+      preLoaderRoute: typeof ProtectedDashboardAdminRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
   }
 }
 
+interface ProtectedRouteChildren {
+  ProtectedDashboardAdminRoute: typeof ProtectedDashboardAdminRoute
+  ProtectedDashboardClientRoute: typeof ProtectedDashboardClientRoute
+  ProtectedDashboardDriverRoute: typeof ProtectedDashboardDriverRoute
+  ProtectedDashboardFleetRoute: typeof ProtectedDashboardFleetRoute
+  ProtectedOnboardingDocumentsRoute: typeof ProtectedOnboardingDocumentsRoute
+  ProtectedOnboardingProfileRoute: typeof ProtectedOnboardingProfileRoute
+  ProtectedOnboardingRoleRoute: typeof ProtectedOnboardingRoleRoute
+}
+
+const ProtectedRouteChildren: ProtectedRouteChildren = {
+  ProtectedDashboardAdminRoute: ProtectedDashboardAdminRoute,
+  ProtectedDashboardClientRoute: ProtectedDashboardClientRoute,
+  ProtectedDashboardDriverRoute: ProtectedDashboardDriverRoute,
+  ProtectedDashboardFleetRoute: ProtectedDashboardFleetRoute,
+  ProtectedOnboardingDocumentsRoute: ProtectedOnboardingDocumentsRoute,
+  ProtectedOnboardingProfileRoute: ProtectedOnboardingProfileRoute,
+  ProtectedOnboardingRoleRoute: ProtectedOnboardingRoleRoute,
+}
+
+const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
+  ProtectedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ProtectedRoute: ProtectedRouteWithChildren,
   BookRoute: BookRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   AuthForgotRoute: AuthForgotRoute,
