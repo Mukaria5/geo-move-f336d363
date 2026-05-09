@@ -31,9 +31,9 @@ export function Navbar() {
             <button className="hidden sm:inline-flex h-9 px-4 text-sm rounded-lg text-foreground/90 hover:text-foreground transition-colors">
               Sign in
             </button>
-            <button className="h-9 px-4 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition shadow-[0_0_20px_-4px_var(--safety-glow)]">
-              Get the app
-            </button>
+            <Link to="/book" className="h-9 px-4 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition shadow-[0_0_20px_-4px_var(--safety-glow)] inline-flex items-center">
+              Book a truck
+            </Link>
             <button onClick={() => setOpen(!open)} className="md:hidden h-9 w-9 grid place-items-center rounded-lg glass">
               <Menu className="h-4 w-4" />
             </button>
