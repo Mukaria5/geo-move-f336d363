@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, MapPin, Shield, Zap } from "lucide-react";
 import heroImg from "@/assets/hero-truck.jpg";
 
@@ -33,10 +34,10 @@ export function Hero() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <button className="group h-12 px-6 rounded-xl bg-primary text-primary-foreground font-semibold inline-flex items-center gap-2 glow-safety hover:translate-y-[-1px] transition">
+              <Link to="/book" className="group h-12 px-6 rounded-xl bg-primary text-primary-foreground font-semibold inline-flex items-center gap-2 glow-safety hover:translate-y-[-1px] transition">
                 Request a low loader
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition" />
-              </button>
+              </Link>
               <button className="h-12 px-6 rounded-xl glass-strong font-medium hover:bg-white/5 transition">
                 Become a transporter
               </button>
