@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, MapPin, Shield, Zap } from "lucide-react";
+import { ArrowRight, MapPin, Shield, Zap, BadgeCheck, Smartphone, Radio } from "lucide-react";
 import heroImg from "@/assets/hero-truck.jpg";
 
 export function Hero() {
