@@ -88,6 +88,7 @@ function BookPage() {
             </div>
           </div>
         </div>
+        <StepBar step={step} />
       </div>
 
       {/* BOTTOM PANEL */}
