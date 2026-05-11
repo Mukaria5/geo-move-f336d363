@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Plus, Minus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const faqs = [
   { q: "Where is LoadLink available?", a: "We've launched in Nairobi, Mombasa and Kisumu, with active expansion across Kenya, Uganda, Tanzania and Rwanda." },
@@ -19,20 +20,41 @@ export function FAQ() {
           Questions, answered.
         </h2>
         <div className="space-y-3">
-          {faqs.map((f, i) => (
-            <div key={i} className="glass rounded-2xl overflow-hidden">
-              <button
-                onClick={() => setOpen(open === i ? null : i)}
-                className="w-full flex items-center justify-between p-5 text-left"
-              >
-                <span className="font-medium">{f.q}</span>
-                {open === i ? <Minus className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4 text-primary" />}
-              </button>
-              {open === i && (
-                <div className="px-5 pb-5 text-sm text-muted-foreground -mt-1">{f.a}</div>
-              )}
-            </div>
-          ))}
+          {faqs.map((f, i) => {
+            const isOpen = open === i;
+            return (
+              <div key={i} className="glass rounded-2xl overflow-hidden">
+                <button
+                  onClick={() => setOpen(isOpen ? null : i)}
+                  className="w-full flex items-center justify-between p-5 text-left"
+                  aria-expanded={isOpen}
+                >
+                  <span className="font-medium">{f.q}</span>
+                  <motion.span
+                    animate={{ rotate: isOpen ? 45 : 0 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    className="text-primary"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </motion.span>
+                </button>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="content"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-5 pb-5 text-sm text-muted-foreground -mt-1">{f.a}</div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

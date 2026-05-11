@@ -88,6 +88,7 @@ function BookPage() {
             </div>
           </div>
         </div>
+        <StepBar step={step} />
       </div>
 
       {/* BOTTOM PANEL */}
@@ -335,11 +336,64 @@ function StageProgress({ stage }: { stage: BookingStage }) {
   );
 }
 
+const STEP_LABELS: { id: Step; label: string }[] = [
+  { id: "locations", label: "Location" },
+  { id: "machine", label: "Machine" },
+  { id: "trucks", label: "Trucks" },
+  { id: "tracking", label: "Tracking" },
+];
+
+function StepBar({ step }: { step: Step }) {
+  const idx = STEP_LABELS.findIndex((s) => s.id === step);
+  return (
+    <div className="glass rounded-2xl mt-2 p-3">
+      <div className="flex items-center gap-2">
+        {STEP_LABELS.map((s, i) => {
+          const done = i < idx;
+          const active = i === idx;
+          return (
+            <div key={s.id} className="flex items-center gap-2 flex-1 min-w-0">
+              <div
+                className={`h-6 w-6 shrink-0 rounded-full grid place-items-center text-[10px] font-bold transition ${
+                  active
+                    ? "bg-primary text-primary-foreground glow-safety"
+                    : done
+                    ? "bg-primary/30 text-primary"
+                    : "bg-white/5 text-muted-foreground"
+                }`}
+              >
+                {done ? <Check className="h-3 w-3" /> : i + 1}
+              </div>
+              <div
+                className={`text-[10px] font-mono uppercase tracking-wider truncate ${
+                  active ? "text-foreground" : "text-muted-foreground"
+                }`}
+              >
+                {s.label}
+              </div>
+              {i < STEP_LABELS.length - 1 && (
+                <div className={`flex-1 h-px ${i < idx ? "bg-primary/40" : "bg-white/10"}`} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ActionBtn({ icon, label, danger }: { icon: React.ReactNode; label: string; danger?: boolean }) {
   return (
-    <button className={`h-12 rounded-xl glass flex flex-col items-center justify-center gap-0.5 hover:bg-white/5 transition ${
-      danger ? "text-destructive" : ""
-    }`}>
+    <button
+      onClick={() => {
+        import("sonner").then(({ toast }) =>
+          danger ? toast.error("SOS dispatched — support contacting you now.") : toast.success(`${label} — opening…`)
+        );
+      }}
+      className={`h-12 rounded-xl glass flex flex-col items-center justify-center gap-0.5 hover:bg-white/5 transition ${
+        danger ? "text-destructive" : ""
+      }`}
+    >
       {icon}
       <span className="text-[10px] font-mono">{label}</span>
     </button>

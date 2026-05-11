@@ -1,11 +1,42 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { Truck, LogOut, Bell } from "lucide-react";
+import { Link, useNavigate, useLocation } from "@tanstack/react-router";
+import { Truck, LogOut, Bell, Home, Briefcase, DollarSign, Users, FileText, Settings, MapPin, Building2, ShieldAlert } from "lucide-react";
 import type { ReactNode } from "react";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth, type AppRole } from "@/lib/auth-context";
+
+type NavItem = { to: string; label: string; icon: any };
+
+const NAV: Record<AppRole, NavItem[]> = {
+  client: [
+    { to: "/dashboard/client", label: "Home", icon: Home },
+    { to: "/book", label: "Book", icon: MapPin },
+    { to: "/dashboard/client", label: "Trips", icon: Briefcase },
+    { to: "/dashboard/client", label: "Profile", icon: Settings },
+  ],
+  driver: [
+    { to: "/dashboard/driver", label: "Jobs", icon: Briefcase },
+    { to: "/dashboard/driver", label: "Map", icon: MapPin },
+    { to: "/dashboard/driver", label: "Earnings", icon: DollarSign },
+    { to: "/dashboard/driver", label: "Profile", icon: Settings },
+  ],
+  fleet: [
+    { to: "/dashboard/fleet", label: "Overview", icon: Home },
+    { to: "/dashboard/fleet", label: "Fleet", icon: Building2 },
+    { to: "/dashboard/fleet", label: "Drivers", icon: Users },
+    { to: "/dashboard/fleet", label: "Earnings", icon: DollarSign },
+  ],
+  admin: [
+    { to: "/dashboard/admin", label: "Overview", icon: Home },
+    { to: "/dashboard/admin", label: "Users", icon: Users },
+    { to: "/dashboard/admin", label: "Docs", icon: FileText },
+    { to: "/dashboard/admin", label: "Disputes", icon: ShieldAlert },
+  ],
+};
 
 export function DashboardShell({ title, role, children }: { title: string; role: string; children: ReactNode }) {
-  const { signOut, user } = useAuth();
+  const { signOut, user, role: appRole } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const items = NAV[(appRole ?? "client") as AppRole];
 
   async function handleSignOut() {
     await signOut();
@@ -13,7 +44,7 @@ export function DashboardShell({ title, role, children }: { title: string; role:
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pb-24 sm:pb-8">
       <header className="sticky top-0 z-40 px-3 sm:px-4 pt-3">
         <div className="glass-strong rounded-2xl flex items-center gap-3 p-3">
           <Link to="/" className="flex items-center gap-2">
@@ -24,11 +55,28 @@ export function DashboardShell({ title, role, children }: { title: string; role:
               Load<span className="text-gradient-safety">Link</span>
             </span>
           </Link>
-          <div className="flex-1 min-w-0">
+          <nav className="hidden md:flex items-center gap-1 ml-4">
+            {items.map((it, i) => {
+              const active = location.pathname === it.to && i === 0;
+              return (
+                <Link
+                  key={`${it.label}-${i}`}
+                  to={it.to}
+                  className={`px-3 h-9 inline-flex items-center gap-1.5 rounded-lg text-sm transition ${
+                    active ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                  }`}
+                >
+                  <it.icon className="h-4 w-4" />
+                  {it.label}
+                </Link>
+              );
+            })}
+          </nav>
+          <div className="flex-1 min-w-0 text-right md:text-left md:ml-2">
             <div className="text-[10px] font-mono text-primary tracking-widest uppercase">{role}</div>
             <div className="text-sm font-semibold truncate">{title}</div>
           </div>
-          <button className="h-9 w-9 grid place-items-center rounded-lg hover:bg-white/5">
+          <button className="h-9 w-9 grid place-items-center rounded-lg hover:bg-white/5" title="Notifications">
             <Bell className="h-4 w-4" />
           </button>
           <button onClick={handleSignOut} className="h-9 w-9 grid place-items-center rounded-lg hover:bg-white/5" title="Sign out">
@@ -36,8 +84,30 @@ export function DashboardShell({ title, role, children }: { title: string; role:
           </button>
         </div>
       </header>
+
       <div className="p-3 sm:p-4 max-w-6xl mx-auto">{children}</div>
       {user && <div className="text-[10px] text-muted-foreground text-center pb-6 font-mono">{user.email}</div>}
+
+      {/* Mobile bottom nav */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 px-2 pb-2">
+        <div className="glass-strong rounded-2xl grid grid-cols-4 p-1">
+          {items.slice(0, 4).map((it, i) => {
+            const active = location.pathname === it.to && i === 0;
+            return (
+              <Link
+                key={`${it.label}-${i}`}
+                to={it.to}
+                className={`flex flex-col items-center justify-center gap-0.5 h-14 rounded-xl text-[10px] font-medium transition ${
+                  active ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <it.icon className="h-4 w-4" />
+                {it.label}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </main>
   );
 }

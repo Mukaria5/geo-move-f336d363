@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, MapPin, Shield, Zap } from "lucide-react";
+import { ArrowRight, MapPin, Shield, Zap, BadgeCheck, Smartphone, Radio } from "lucide-react";
 import heroImg from "@/assets/hero-truck.jpg";
 
 export function Hero() {
@@ -38,9 +38,27 @@ export function Hero() {
                 Request a low loader
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition" />
               </Link>
-              <button className="h-12 px-6 rounded-xl glass-strong font-medium hover:bg-white/5 transition">
+              <Link
+                to="/auth/signup"
+                search={{ role: "driver" }}
+                className="h-12 px-6 rounded-xl glass-strong font-medium hover:bg-white/5 transition inline-flex items-center"
+              >
                 Become a transporter
-              </button>
+              </Link>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-2 text-xs">
+              {[
+                { icon: BadgeCheck, label: "Verified Trucks" },
+                { icon: Smartphone, label: "M-Pesa Support" },
+                { icon: Radio, label: "Live GPS" },
+                { icon: Shield, label: "Insured Operators" },
+              ].map((b) => (
+                <div key={b.label} className="glass rounded-full px-3 py-1.5 inline-flex items-center gap-1.5">
+                  <b.icon className="h-3.5 w-3.5 text-primary" />
+                  <span className="font-medium">{b.label}</span>
+                </div>
+              ))}
             </div>
 
             <div className="mt-10 grid grid-cols-3 gap-4 max-w-lg">

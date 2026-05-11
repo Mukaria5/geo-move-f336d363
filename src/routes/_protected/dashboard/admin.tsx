@@ -37,7 +37,10 @@ function AdminDashboard() {
 
 function PanelCard({ icon, title, desc }: { icon: any; title: string; desc: string }) {
   return (
-    <button className="glass rounded-2xl p-4 text-left hover:border-primary/40 transition">
+    <button
+      onClick={() => import("sonner").then(({ toast }) => toast(`${title} — coming soon`))}
+      className="glass rounded-2xl p-4 text-left hover:border-primary/40 transition"
+    >
       <div className="h-9 w-9 rounded-lg bg-primary/15 grid place-items-center mb-3 text-primary">{icon}</div>
       <div className="font-semibold">{title}</div>
       <div className="text-xs text-muted-foreground mt-1">{desc}</div>
