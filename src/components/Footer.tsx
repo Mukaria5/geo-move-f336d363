@@ -1,4 +1,32 @@
 import { Truck } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+
+type FooterLink = { label: string; to?: string; href?: string };
+type FooterCol = { t: string; l: FooterLink[] };
+
+const COLUMNS: FooterCol[] = [
+  {
+    t: "Platform",
+    l: [
+      { label: "Book a truck", to: "/book" },
+      { label: "For Drivers", to: "/auth/signup", href: "/auth/signup?role=driver" },
+      { label: "For Fleets", to: "/auth/signup", href: "/auth/signup?role=fleet" },
+    ],
+  },
+  {
+    t: "Account",
+    l: [
+      { label: "Sign in", to: "/auth/login" },
+      { label: "Create account", to: "/auth/signup" },
+    ],
+  },
+  {
+    t: "Company",
+    l: [
+      { label: "Contact", href: "mailto:hello@loadlink.co.ke" },
+    ],
+  },
+];
 
 export function Footer() {
   return (
@@ -15,15 +43,21 @@ export function Footer() {
             On-demand low-loader transport for heavy machinery across East Africa.
           </p>
         </div>
-        {[
-          { t: "Platform", l: ["For Clients", "For Drivers", "For Fleets", "Pricing"] },
-          { t: "Company", l: ["About", "Careers", "Press", "Contact"] },
-          { t: "Legal", l: ["Terms", "Privacy", "Insurance", "Safety"] },
-        ].map((c) => (
+        {COLUMNS.map((c) => (
           <div key={c.t}>
             <div className="font-display font-semibold mb-4">{c.t}</div>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              {c.l.map((x) => <li key={x}><a href="#" className="hover:text-foreground transition-colors">{x}</a></li>)}
+              {c.l.map((x) =>
+                x.href ? (
+                  <li key={x.label}>
+                    <a href={x.href} className="hover:text-foreground transition-colors">{x.label}</a>
+                  </li>
+                ) : (
+                  <li key={x.label}>
+                    <Link to={x.to!} className="hover:text-foreground transition-colors">{x.label}</Link>
+                  </li>
+                )
+              )}
             </ul>
           </div>
         ))}
