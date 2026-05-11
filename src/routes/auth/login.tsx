@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearch, createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Loader2, Mail, Lock } from "lucide-react";
+import { Loader2, Mail, Lock, Phone, KeyRound } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -18,12 +18,18 @@ export const Route = createFileRoute("/auth/login")({
   component: Login,
 });
 
+type Mode = "email" | "phone";
+
 function Login() {
   const navigate = useNavigate();
   const search = useSearch({ from: "/auth/login" });
   const { refresh } = useAuth();
+  const [mode, setMode] = useState<Mode>("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const [busy, setBusy] = useState(false);
 
   async function go(uid: string) {
@@ -47,6 +53,27 @@ function Login() {
     if (data.user) await go(data.user.id);
   }
 
+  async function sendOtp(e: React.FormEvent) {
+    e.preventDefault();
+    if (phone.trim().length < 7) { toast.error("Enter a valid phone number"); return; }
+    setBusy(true);
+    const { error } = await supabase.auth.signInWithOtp({ phone: phone.trim() });
+    setBusy(false);
+    if (error) { toast.error(error.message); return; }
+    setOtpSent(true);
+    toast.success("Code sent via SMS");
+  }
+
+  async function verifyOtp(e: React.FormEvent) {
+    e.preventDefault();
+    if (otp.length < 4) { toast.error("Enter the SMS code"); return; }
+    setBusy(true);
+    const { data, error } = await supabase.auth.verifyOtp({ phone: phone.trim(), token: otp.trim(), type: "sms" });
+    setBusy(false);
+    if (error) { toast.error(error.message); return; }
+    if (data.user) await go(data.user.id);
+  }
+
   async function google() {
     setBusy(true);
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth/callback" });
@@ -63,32 +90,79 @@ function Login() {
       subtitle="Sign in to manage your transport jobs."
       footer={<>Don't have an account? <Link to="/auth/signup" className="text-primary font-medium">Create one</Link></>}
     >
-      <form onSubmit={onSubmit} className="space-y-4">
-        <Field label="Email">
-          <div className="relative">
-            <Mail className="h-4 w-4 absolute left-3 top-3.5 text-muted-foreground" />
-            <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.co.ke" className="pl-9" />
+      <div className="grid grid-cols-2 gap-1 p-1 rounded-lg bg-white/5 mb-5 text-xs font-mono uppercase tracking-wider">
+        {(["email", "phone"] as Mode[]).map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => { setMode(m); setOtpSent(false); }}
+            className={`h-8 rounded-md transition ${mode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            {m === "email" ? "Email" : "Phone OTP"}
+          </button>
+        ))}
+      </div>
+
+      {mode === "email" && (
+        <form onSubmit={onSubmit} className="space-y-4">
+          <Field label="Email">
+            <div className="relative">
+              <Mail className="h-4 w-4 absolute left-3 top-3.5 text-muted-foreground" />
+              <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.co.ke" className="pl-9" />
+            </div>
+          </Field>
+          <Field label="Password">
+            <div className="relative">
+              <Lock className="h-4 w-4 absolute left-3 top-3.5 text-muted-foreground" />
+              <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="pl-9" />
+            </div>
+          </Field>
+          <div className="flex justify-end -mt-2">
+            <Link to="/auth/forgot" className="text-xs text-muted-foreground hover:text-foreground">Forgot password?</Link>
           </div>
-        </Field>
-        <Field label="Password">
-          <div className="relative">
-            <Lock className="h-4 w-4 absolute left-3 top-3.5 text-muted-foreground" />
-            <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="pl-9" />
-          </div>
-        </Field>
-        <div className="flex justify-end -mt-2">
-          <Link to="/auth/forgot" className="text-xs text-muted-foreground hover:text-foreground">Forgot password?</Link>
-        </div>
-        <PrimaryButton type="submit" disabled={busy}>
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign in"}
-        </PrimaryButton>
-        <div className="flex items-center gap-3 text-[10px] font-mono text-muted-foreground">
-          <div className="flex-1 h-px bg-border" /> OR <div className="flex-1 h-px bg-border" />
-        </div>
-        <GhostButton type="button" onClick={google} disabled={busy}>
-          <GoogleIcon /> Continue with Google
-        </GhostButton>
-      </form>
+          <PrimaryButton type="submit" disabled={busy}>
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign in"}
+          </PrimaryButton>
+        </form>
+      )}
+
+      {mode === "phone" && !otpSent && (
+        <form onSubmit={sendOtp} className="space-y-4">
+          <Field label="Phone number" hint="We'll text you a one-time code.">
+            <div className="relative">
+              <Phone className="h-4 w-4 absolute left-3 top-3.5 text-muted-foreground" />
+              <Input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+254 712 345 678" className="pl-9" />
+            </div>
+          </Field>
+          <PrimaryButton type="submit" disabled={busy}>
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send SMS code"}
+          </PrimaryButton>
+        </form>
+      )}
+
+      {mode === "phone" && otpSent && (
+        <form onSubmit={verifyOtp} className="space-y-4">
+          <Field label="6-digit code" hint={`Sent to ${phone}`}>
+            <div className="relative">
+              <KeyRound className="h-4 w-4 absolute left-3 top-3.5 text-muted-foreground" />
+              <Input inputMode="numeric" required value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="123456" className="pl-9 tracking-widest" />
+            </div>
+          </Field>
+          <PrimaryButton type="submit" disabled={busy}>
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify & sign in"}
+          </PrimaryButton>
+          <button type="button" onClick={() => setOtpSent(false)} className="w-full text-xs text-muted-foreground hover:text-foreground">
+            Use a different number
+          </button>
+        </form>
+      )}
+
+      <div className="flex items-center gap-3 text-[10px] font-mono text-muted-foreground my-4">
+        <div className="flex-1 h-px bg-border" /> OR <div className="flex-1 h-px bg-border" />
+      </div>
+      <GhostButton type="button" onClick={google} disabled={busy}>
+        <GoogleIcon /> Continue with Google
+      </GhostButton>
     </AuthShell>
   );
 }
