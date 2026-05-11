@@ -384,9 +384,16 @@ function StepBar({ step }: { step: Step }) {
 
 function ActionBtn({ icon, label, danger }: { icon: React.ReactNode; label: string; danger?: boolean }) {
   return (
-    <button className={`h-12 rounded-xl glass flex flex-col items-center justify-center gap-0.5 hover:bg-white/5 transition ${
-      danger ? "text-destructive" : ""
-    }`}>
+    <button
+      onClick={() => {
+        import("sonner").then(({ toast }) =>
+          danger ? toast.error("SOS dispatched — support contacting you now.") : toast.success(`${label} — opening…`)
+        );
+      }}
+      className={`h-12 rounded-xl glass flex flex-col items-center justify-center gap-0.5 hover:bg-white/5 transition ${
+        danger ? "text-destructive" : ""
+      }`}
+    >
       {icon}
       <span className="text-[10px] font-mono">{label}</span>
     </button>
