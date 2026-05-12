@@ -14,6 +14,80 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          client_id: string
+          created_at: string
+          distance_km: number | null
+          driver_id: string | null
+          dropoff_address: string
+          dropoff_lat: number | null
+          dropoff_lng: number | null
+          estimated_price: number | null
+          final_price: number | null
+          id: string
+          machinery_type: string | null
+          notes: string | null
+          pickup_address: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          status: string
+          truck_id: string | null
+          updated_at: string
+          weight_tons: number | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          distance_km?: number | null
+          driver_id?: string | null
+          dropoff_address: string
+          dropoff_lat?: number | null
+          dropoff_lng?: number | null
+          estimated_price?: number | null
+          final_price?: number | null
+          id?: string
+          machinery_type?: string | null
+          notes?: string | null
+          pickup_address: string
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          status?: string
+          truck_id?: string | null
+          updated_at?: string
+          weight_tons?: number | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          distance_km?: number | null
+          driver_id?: string | null
+          dropoff_address?: string
+          dropoff_lat?: number | null
+          dropoff_lng?: number | null
+          estimated_price?: number | null
+          final_price?: number | null
+          id?: string
+          machinery_type?: string | null
+          notes?: string | null
+          pickup_address?: string
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          status?: string
+          truck_id?: string | null
+          updated_at?: string
+          weight_tons?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_truck_id_fkey"
+            columns: ["truck_id"]
+            isOneToOne: false
+            referencedRelation: "trucks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           doc_type: Database["public"]["Enums"]["doc_type"]
@@ -157,6 +231,77 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      trucks: {
+        Row: {
+          base_price: number
+          capacity_tons: number
+          created_at: string
+          current_lat: number | null
+          current_lng: number | null
+          driver_id: string | null
+          fleet_owner_user_id: string | null
+          id: string
+          is_available: boolean
+          is_online: boolean
+          location_updated_at: string | null
+          notes: string | null
+          owner_id: string
+          plate: string
+          price_per_km: number
+          truck_model: string
+          updated_at: string
+          verified: boolean
+        }
+        Insert: {
+          base_price?: number
+          capacity_tons?: number
+          created_at?: string
+          current_lat?: number | null
+          current_lng?: number | null
+          driver_id?: string | null
+          fleet_owner_user_id?: string | null
+          id?: string
+          is_available?: boolean
+          is_online?: boolean
+          location_updated_at?: string | null
+          notes?: string | null
+          owner_id: string
+          plate: string
+          price_per_km?: number
+          truck_model: string
+          updated_at?: string
+          verified?: boolean
+        }
+        Update: {
+          base_price?: number
+          capacity_tons?: number
+          created_at?: string
+          current_lat?: number | null
+          current_lng?: number | null
+          driver_id?: string | null
+          fleet_owner_user_id?: string | null
+          id?: string
+          is_available?: boolean
+          is_online?: boolean
+          location_updated_at?: string | null
+          notes?: string | null
+          owner_id?: string
+          plate?: string
+          price_per_km?: number
+          truck_model?: string
+          updated_at?: string
+          verified?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trucks_fleet_owner_user_id_fkey"
+            columns: ["fleet_owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_companies"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
