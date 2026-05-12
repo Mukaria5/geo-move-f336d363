@@ -35,11 +35,9 @@ function Signup() {
 
   function set<K extends keyof typeof form>(k: K, v: string) { setForm((f) => ({ ...f, [k]: v })); }
 
-  async function persistRole(uid: string, r: AppRole) {
-    const { error } = await supabase.from("user_roles").insert({ user_id: uid, role: r });
-    if (error && !error.message.includes("duplicate")) console.warn(error.message);
-  }
-
+  // Role is stored in user_metadata at signup. The user_roles row is created
+  // exactly once at /onboarding/role (RLS only allows one self-insert), to
+  // avoid a duplicate-row collision after sign-in.
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!role) { toast.error("Pick your role first"); return; }
@@ -56,10 +54,9 @@ function Signup() {
     });
     setBusy(false);
     if (error) { toast.error(error.message); return; }
-    if (data.user) await persistRole(data.user.id, role);
     if (data.session) {
       toast.success("Account created");
-      navigate({ to: "/onboarding/profile" });
+      navigate({ to: "/onboarding/role", search: { preselect: role } });
     } else {
       navigate({ to: "/auth/verify", search: { email: form.email } });
     }
@@ -68,13 +65,13 @@ function Signup() {
   async function google() {
     if (!role) { toast.error("Pick your role first"); return; }
     setBusy(true);
+    // Persist intent so onboarding can preselect after redirect.
+    if (typeof window !== "undefined") localStorage.setItem("ll_intent_role", role);
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth/callback" });
     if (result.error) { toast.error("Google sign-up failed"); setBusy(false); return; }
     if (result.redirected) return;
-    const { data } = await supabase.auth.getSession();
-    if (data.session?.user) await persistRole(data.session.user.id, role);
     setBusy(false);
-    navigate({ to: "/onboarding/profile" });
+    navigate({ to: "/onboarding/role" });
   }
 
   if (!role) {

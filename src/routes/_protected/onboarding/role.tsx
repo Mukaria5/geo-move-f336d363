@@ -1,13 +1,16 @@
-import { useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Truck, User as UserIcon, Building2, Shield, ChevronRight, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth, type AppRole, dashboardPath } from "@/lib/auth-context";
+import { useAuth, type AppRole } from "@/lib/auth-context";
 import { AuthShell } from "@/components/auth/AuthShell";
 
-export const Route = createFileRoute("/_protected/onboarding/role")({ component: RolePicker });
+export const Route = createFileRoute("/_protected/onboarding/role")({
+  validateSearch: (s) => ({ preselect: (s.preselect as AppRole) || undefined }),
+  component: RolePicker,
+});
 
 const ROLES: { id: AppRole; title: string; desc: string; icon: any; tag: string }[] = [
   { id: "client",  title: "Client",   desc: "I need to move heavy equipment.",          icon: UserIcon,  tag: "Book trucks" },
@@ -17,19 +20,43 @@ const ROLES: { id: AppRole; title: string; desc: string; icon: any; tag: string 
 
 function RolePicker() {
   const navigate = useNavigate();
-  const { user, refresh } = useAuth();
+  const { preselect } = useSearch({ from: "/_protected/onboarding/role" });
+  const { user, role: existingRole, refresh } = useAuth();
   const [selected, setSelected] = useState<AppRole | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // If user already has a role, skip ahead.
+  useEffect(() => {
+    if (existingRole) {
+      navigate({ to: "/onboarding/profile" });
+    }
+  }, [existingRole, navigate]);
+
+  // Preselect from query (?preselect=client) or from localStorage (Google flow).
+  useEffect(() => {
+    if (selected) return;
+    if (preselect) { setSelected(preselect); return; }
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("ll_intent_role") as AppRole | null;
+      if (stored && ["client", "driver", "fleet"].includes(stored)) setSelected(stored);
+    }
+  }, [preselect, selected]);
 
   async function confirm() {
     if (!selected || !user) return;
     setBusy(true);
-    const { error } = await supabase.from("user_roles").insert({ user_id: user.id, role: selected });
-    if (error && !error.message.includes("duplicate")) {
-      setBusy(false);
-      toast.error(error.message);
-      return;
+    // Defensive: if a row somehow exists already, just continue.
+    const { data: existing } = await supabase
+      .from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
+    if (!existing) {
+      const { error } = await supabase.from("user_roles").insert({ user_id: user.id, role: selected });
+      if (error) {
+        setBusy(false);
+        toast.error(error.message);
+        return;
+      }
     }
+    if (typeof window !== "undefined") localStorage.removeItem("ll_intent_role");
     await refresh();
     setBusy(false);
     navigate({ to: "/onboarding/profile" });

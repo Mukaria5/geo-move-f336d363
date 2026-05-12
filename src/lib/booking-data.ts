@@ -1,3 +1,5 @@
+// Static option lists. ALL trucks/bookings come from Supabase, not from here.
+
 export type MachineryType = {
   id: string;
   name: string;
@@ -18,30 +20,6 @@ export const MACHINERY: MachineryType[] = [
   { id: "custom", name: "Custom", weight: "Specify", icon: "➕" },
 ];
 
-export type Truck = {
-  id: string;
-  driver: string;
-  rating: number;
-  trips: number;
-  truckModel: string;
-  capacity: string;
-  plate: string;
-  etaMin: number;
-  distanceKm: number;
-  pricePerKm: number;
-  basePrice: number;
-  // map position percentages
-  x: number;
-  y: number;
-};
-
-export const TRUCKS: Truck[] = [
-  { id: "t1", driver: "Samuel Kariuki", rating: 4.9, trips: 312, truckModel: "Scania R580 Low-Bed", capacity: "40T", plate: "KDH 421X", etaMin: 12, distanceKm: 6.4, pricePerKm: 320, basePrice: 8000, x: 32, y: 38 },
-  { id: "t2", driver: "Joseph Otieno", rating: 4.8, trips: 198, truckModel: "MAN TGS 33.480", capacity: "30T", plate: "KCB 882P", etaMin: 18, distanceKm: 9.1, pricePerKm: 280, basePrice: 6500, x: 64, y: 28 },
-  { id: "t3", driver: "Brian Mwangi", rating: 5.0, trips: 540, truckModel: "Volvo FH16 Heavy", capacity: "60T", plate: "KDA 119Q", etaMin: 23, distanceKm: 12.7, pricePerKm: 410, basePrice: 12000, x: 52, y: 70 },
-  { id: "t4", driver: "Daniel Kiprop", rating: 4.7, trips: 142, truckModel: "Mercedes Actros 4148", capacity: "45T", plate: "KDG 305T", etaMin: 27, distanceKm: 14.3, pricePerKm: 350, basePrice: 9000, x: 78, y: 58 },
-];
-
 export type BookingStage =
   | "requested"
   | "accepted"
@@ -49,7 +27,8 @@ export type BookingStage =
   | "loading"
   | "in_transit"
   | "delivered"
-  | "completed";
+  | "completed"
+  | "cancelled";
 
 export const STAGES: { id: BookingStage; label: string; desc: string }[] = [
   { id: "requested", label: "Request sent", desc: "Searching for nearby low loaders…" },
@@ -59,4 +38,78 @@ export const STAGES: { id: BookingStage; label: string; desc: string }[] = [
   { id: "in_transit", label: "In transit", desc: "On the road to your delivery point." },
   { id: "delivered", label: "Delivered", desc: "Equipment offloaded successfully." },
   { id: "completed", label: "Trip completed", desc: "Receipt generated. Thanks for using LoadLink." },
+  { id: "cancelled", label: "Cancelled", desc: "This booking was cancelled." },
 ];
+
+export type Truck = {
+  id: string;
+  owner_id: string;
+  driver_id: string | null;
+  truck_model: string;
+  plate: string;
+  capacity_tons: number;
+  base_price: number;
+  price_per_km: number;
+  is_online: boolean;
+  is_available: boolean;
+  current_lat: number | null;
+  current_lng: number | null;
+  verified: boolean;
+};
+
+export type Booking = {
+  id: string;
+  client_id: string;
+  truck_id: string | null;
+  driver_id: string | null;
+  pickup_address: string;
+  pickup_lat: number | null;
+  pickup_lng: number | null;
+  dropoff_address: string;
+  dropoff_lat: number | null;
+  dropoff_lng: number | null;
+  machinery_type: string | null;
+  weight_tons: number | null;
+  distance_km: number | null;
+  estimated_price: number | null;
+  final_price: number | null;
+  status: BookingStage;
+  notes: string | null;
+  created_at: string;
+};
+
+// haversine in km
+export function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
+  const R = 6371;
+  const toRad = (x: number) => (x * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+  const h = Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+export function estimatePrice(truck: Pick<Truck, "base_price" | "price_per_km">, km: number): number {
+  return Math.round(truck.base_price + truck.price_per_km * km);
+}
+
+export function etaMinutes(km: number, avgKmh = 40): number {
+  return Math.max(5, Math.round((km / avgKmh) * 60));
+}
+
+// OSM Nominatim search (no API key, free, browser-friendly).
+export type GeoResult = { display_name: string; lat: number; lng: number };
+
+export async function geocode(q: string): Promise<GeoResult[]> {
+  if (!q.trim()) return [];
+  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=ke,ug,tz,rw&q=${encodeURIComponent(q)}`;
+  try {
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!res.ok) return [];
+    const data: Array<{ display_name: string; lat: string; lon: string }> = await res.json();
+    return data.map((d) => ({ display_name: d.display_name, lat: parseFloat(d.lat), lng: parseFloat(d.lon) }));
+  } catch {
+    return [];
+  }
+}
