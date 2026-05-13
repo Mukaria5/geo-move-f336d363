@@ -95,6 +95,8 @@ function FleetDashboard() {
         )}
       </div>
 
+      <DocsPanel />
+
       <AnimatePresence>
         {showAdd && user && (
           <AddTruckModal
