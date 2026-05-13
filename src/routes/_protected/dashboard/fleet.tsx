@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Building2, Truck, Plus, Loader2, CheckCircle2, Clock, X } from "lucide-react";
+import { Building2, Truck, Plus, Loader2, CheckCircle2, Clock, X, FileText, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { DashboardShell, StatCard } from "@/components/dashboard/DashboardShell";
