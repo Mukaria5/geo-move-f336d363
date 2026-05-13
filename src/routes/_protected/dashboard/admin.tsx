@@ -105,15 +105,7 @@ function AdminDashboard() {
           />
         ))}
         {tab === "docs" && docs.map((doc) => (
-          <div key={doc.id} className="flex items-center justify-between rounded-lg border border-border bg-white/5 p-3">
-            <div className="min-w-0">
-              <div className="font-semibold text-sm truncate">{doc.doc_type}</div>
-              <div className="text-xs text-muted-foreground truncate">{doc.file_path}</div>
-            </div>
-            <span className={`text-[11px] px-2 py-1 rounded ${doc.status === "approved" ? "bg-emerald-500/15 text-emerald-300" : doc.status === "rejected" ? "bg-red-500/15 text-red-300" : "bg-amber-500/15 text-amber-300"}`}>
-              {doc.status}
-            </span>
-          </div>
+          <DocRow key={doc.id} doc={doc} onChange={refresh} />
         ))}
         {((tab === "trucks" && trucks.length === 0) ||
           (tab === "companies" && companies.length === 0) ||
