@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Users, Truck, Building2, FileText, ShieldAlert } from "lucide-react";
+import { Truck, Building2, FileText, CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
 import { DashboardShell, StatCard } from "@/components/dashboard/DashboardShell";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/_protected/dashboard/admin")({ component: AdminDashboard });
@@ -9,41 +11,137 @@ export const Route = createFileRoute("/_protected/dashboard/admin")({ component:
 function AdminDashboard() {
   const { role, loading } = useAuth();
   const navigate = useNavigate();
+  const [trucks, setTrucks] = useState<any[]>([]);
+  const [companies, setCompanies] = useState<any[]>([]);
+  const [drivers, setDrivers] = useState<any[]>([]);
+  const [docs, setDocs] = useState<any[]>([]);
+  const [tab, setTab] = useState<"trucks" | "companies" | "drivers" | "docs">("trucks");
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!loading && role !== "admin") navigate({ to: "/" });
   }, [role, loading, navigate]);
 
+  const refresh = async () => {
+    const [t, c, d, dc] = await Promise.all([
+      supabase.from("trucks").select("*").order("created_at", { ascending: false }),
+      supabase.from("fleet_companies").select("*").order("created_at", { ascending: false }),
+      supabase.from("driver_profiles").select("*").order("created_at", { ascending: false }),
+      supabase.from("documents").select("*").order("uploaded_at", { ascending: false }),
+    ]);
+    setTrucks(t.data ?? []);
+    setCompanies(c.data ?? []);
+    setDrivers(d.data ?? []);
+    setDocs(dc.data ?? []);
+  };
+
+  useEffect(() => { if (role === "admin") refresh(); }, [role]);
+
   if (role !== "admin") return null;
+
+  const setVerified = async (table: "trucks" | "fleet_companies" | "driver_profiles", id: string, val: boolean, idCol = "id") => {
+    setBusy(true);
+    const { error } = await supabase.from(table).update({ verified: val }).eq(idCol, id);
+    setBusy(false);
+    if (error) toast.error(error.message);
+    else { toast.success(val ? "Verified" : "Unverified"); refresh(); }
+  };
 
   return (
     <DashboardShell title="Admin console" role="Admin">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-        <StatCard label="Users" value="0" />
-        <StatCard label="Trucks" value="0" />
-        <StatCard label="Active jobs" value="0" />
-        <StatCard label="Disputes" value="0" />
+        <StatCard label="Trucks" value={String(trucks.length)} sub={`${trucks.filter(t=>t.verified).length} verified`} />
+        <StatCard label="Companies" value={String(companies.length)} sub={`${companies.filter(c=>c.verified).length} verified`} />
+        <StatCard label="Drivers" value={String(drivers.length)} sub={`${drivers.filter(d=>d.verified).length} verified`} />
+        <StatCard label="Documents" value={String(docs.length)} sub={`${docs.filter(d=>d.status==='pending').length} pending`} />
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-3">
-        <PanelCard icon={<Users className="h-4 w-4" />} title="Verify users" desc="Approve new clients, drivers and companies." />
-        <PanelCard icon={<Truck className="h-4 w-4" />} title="Verify trucks" desc="Inspect logbooks, insurance, NTSA records." />
-        <PanelCard icon={<FileText className="h-4 w-4" />} title="Review documents" desc="KYC and compliance uploads." />
-        <PanelCard icon={<ShieldAlert className="h-4 w-4" />} title="Resolve disputes" desc="Open trip disputes and SOS alerts." />
+      <div className="flex gap-1 mb-3 p-1 glass rounded-lg w-fit">
+        {[
+          { k: "trucks", label: "Trucks", icon: Truck },
+          { k: "companies", label: "Companies", icon: Building2 },
+          { k: "drivers", label: "Drivers", icon: ShieldCheck },
+          { k: "docs", label: "Documents", icon: FileText },
+        ].map(({ k, label, icon: Icon }) => (
+          <button
+            key={k}
+            onClick={() => setTab(k as any)}
+            className={`text-xs px-3 py-1.5 rounded-md inline-flex items-center gap-1.5 ${tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            <Icon className="h-3 w-3" /> {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="glass rounded-2xl p-3 space-y-2">
+        {tab === "trucks" && trucks.map((t) => (
+          <Row
+            key={t.id}
+            title={`${t.truck_model} · ${t.plate}`}
+            sub={`${t.capacity_tons}t · KSh ${Number(t.base_price).toLocaleString()} + KSh ${Number(t.price_per_km).toLocaleString()}/km`}
+            verified={t.verified}
+            onToggle={() => setVerified("trucks", t.id, !t.verified)}
+            busy={busy}
+          />
+        ))}
+        {tab === "companies" && companies.map((c) => (
+          <Row
+            key={c.user_id}
+            title={c.company_name}
+            sub={`Reg ${c.registration_no ?? "—"} · KRA ${c.kra_pin ?? "—"} · ${c.fleet_size ?? 0} trucks`}
+            verified={c.verified}
+            onToggle={() => setVerified("fleet_companies", c.user_id, !c.verified, "user_id")}
+            busy={busy}
+          />
+        ))}
+        {tab === "drivers" && drivers.map((d) => (
+          <Row
+            key={d.user_id}
+            title={`${d.vehicle_make ?? "Driver"} ${d.vehicle_model ?? ""}`.trim()}
+            sub={`Plate ${d.plate ?? "—"} · Licence ${d.license_no ?? "—"}`}
+            verified={d.verified}
+            onToggle={() => setVerified("driver_profiles", d.user_id, !d.verified, "user_id")}
+            busy={busy}
+          />
+        ))}
+        {tab === "docs" && docs.map((doc) => (
+          <div key={doc.id} className="flex items-center justify-between rounded-lg border border-border bg-white/5 p-3">
+            <div className="min-w-0">
+              <div className="font-semibold text-sm truncate">{doc.doc_type}</div>
+              <div className="text-xs text-muted-foreground truncate">{doc.file_path}</div>
+            </div>
+            <span className={`text-[11px] px-2 py-1 rounded ${doc.status === "approved" ? "bg-emerald-500/15 text-emerald-300" : doc.status === "rejected" ? "bg-red-500/15 text-red-300" : "bg-amber-500/15 text-amber-300"}`}>
+              {doc.status}
+            </span>
+          </div>
+        ))}
+        {((tab === "trucks" && trucks.length === 0) ||
+          (tab === "companies" && companies.length === 0) ||
+          (tab === "drivers" && drivers.length === 0) ||
+          (tab === "docs" && docs.length === 0)) && (
+          <div className="text-center py-10 text-sm text-muted-foreground">Nothing here yet.</div>
+        )}
       </div>
     </DashboardShell>
   );
 }
 
-function PanelCard({ icon, title, desc }: { icon: any; title: string; desc: string }) {
+function Row({ title, sub, verified, onToggle, busy }: { title: string; sub: string; verified: boolean; onToggle: () => void; busy: boolean }) {
   return (
-    <button
-      onClick={() => import("sonner").then(({ toast }) => toast(`${title} — coming soon`))}
-      className="glass rounded-2xl p-4 text-left hover:border-primary/40 transition"
-    >
-      <div className="h-9 w-9 rounded-lg bg-primary/15 grid place-items-center mb-3 text-primary">{icon}</div>
-      <div className="font-semibold">{title}</div>
-      <div className="text-xs text-muted-foreground mt-1">{desc}</div>
-    </button>
+    <div className="flex items-center justify-between rounded-lg border border-border bg-white/5 p-3">
+      <div className="min-w-0">
+        <div className="font-semibold text-sm truncate">{title}</div>
+        <div className="text-xs text-muted-foreground truncate font-mono">{sub}</div>
+      </div>
+      <button
+        onClick={onToggle}
+        disabled={busy}
+        className={`text-[11px] px-3 py-1.5 rounded-md inline-flex items-center gap-1 font-medium ${
+          verified ? "bg-emerald-500/15 text-emerald-300" : "bg-primary text-primary-foreground"
+        }`}
+      >
+        {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : verified ? <><CheckCircle2 className="h-3 w-3" /> Verified</> : "Verify"}
+      </button>
+    </div>
   );
 }
