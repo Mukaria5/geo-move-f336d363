@@ -137,3 +137,40 @@ function Row({ title, sub, verified, onToggle, busy }: { title: string; sub: str
     </div>
   );
 }
+
+function DocRow({ doc, onChange }: { doc: any; onChange: () => void }) {
+  const [busy, setBusy] = useState(false);
+
+  const view = async () => {
+    const { data, error } = await supabase.storage.from("documents").createSignedUrl(doc.file_path, 60 * 10);
+    if (error || !data) { toast.error(error?.message ?? "Could not open file"); return; }
+    window.open(data.signedUrl, "_blank");
+  };
+
+  const setStatus = async (status: "approved" | "rejected" | "pending") => {
+    setBusy(true);
+    const { error } = await supabase.from("documents").update({ status }).eq("id", doc.id);
+    setBusy(false);
+    if (error) toast.error(error.message);
+    else { toast.success(`Marked ${status}`); onChange(); }
+  };
+
+  return (
+    <div className="rounded-lg border border-border bg-white/5 p-3">
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="min-w-0">
+          <div className="font-semibold text-sm truncate capitalize">{String(doc.doc_type).replace(/_/g, " ")}</div>
+          <div className="text-xs text-muted-foreground truncate font-mono">{doc.file_path}</div>
+        </div>
+        <span className={`text-[11px] px-2 py-1 rounded ${doc.status === "approved" ? "bg-emerald-500/15 text-emerald-300" : doc.status === "rejected" ? "bg-red-500/15 text-red-300" : "bg-amber-500/15 text-amber-300"}`}>
+          {doc.status}
+        </span>
+      </div>
+      <div className="flex gap-2">
+        <button onClick={view} className="flex-1 text-xs h-8 rounded-md glass hover:bg-white/10">View file</button>
+        <button onClick={() => setStatus("approved")} disabled={busy || doc.status === "approved"} className="flex-1 text-xs h-8 rounded-md bg-emerald-500/20 text-emerald-300 disabled:opacity-40">Approve</button>
+        <button onClick={() => setStatus("rejected")} disabled={busy || doc.status === "rejected"} className="flex-1 text-xs h-8 rounded-md bg-red-500/20 text-red-300 disabled:opacity-40">Reject</button>
+      </div>
+    </div>
+  );
+}
