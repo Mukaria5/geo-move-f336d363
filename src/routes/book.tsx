@@ -70,7 +70,7 @@ function BookPage() {
             const old = payload.old as Truck;
             return next.filter((t) => t.id !== old.id);
           }
-          const visible = row.is_online && row.is_available && row.verified && row.current_lat != null;
+          const visible = row.is_online && row.is_available && row.verified;
           const idx = next.findIndex((t) => t.id === row.id);
           if (!visible) return idx >= 0 ? next.filter((_, i) => i !== idx) : next;
           if (idx >= 0) next[idx] = row;
