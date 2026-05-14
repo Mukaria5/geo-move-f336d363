@@ -173,8 +173,10 @@ function TruckCard({ truck, onChange }: { truck: TruckRow; onChange: () => void 
   const toggleAvailable = async () => {
     setBusy(true);
     const next = !truck.is_online;
-    const patch: Record<string, unknown> = { is_online: next, is_available: next };
-    // Seed a default location so clients can see it on the map.
+    const patch: { is_online: boolean; is_available: boolean; current_lat?: number; current_lng?: number } = {
+      is_online: next,
+      is_available: next,
+    };
     if (next && (truck.current_lat == null || truck.current_lng == null)) {
       patch.current_lat = -1.2921;
       patch.current_lng = 36.8219;
