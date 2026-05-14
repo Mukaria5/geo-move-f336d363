@@ -20,6 +20,8 @@ type TruckRow = {
   is_available: boolean;
   verified: boolean;
   driver_id: string | null;
+  current_lat: number | null;
+  current_lng: number | null;
 };
 
 function DocsPanel() {
@@ -170,9 +172,16 @@ function TruckCard({ truck, onChange }: { truck: TruckRow; onChange: () => void 
 
   const toggleAvailable = async () => {
     setBusy(true);
-    const { error } = await supabase.from("trucks")
-      .update({ is_available: !truck.is_available })
-      .eq("id", truck.id);
+    const next = !truck.is_online;
+    const patch: { is_online: boolean; is_available: boolean; current_lat?: number; current_lng?: number } = {
+      is_online: next,
+      is_available: next,
+    };
+    if (next && (truck.current_lat == null || truck.current_lng == null)) {
+      patch.current_lat = -1.2921;
+      patch.current_lng = 36.8219;
+    }
+    const { error } = await supabase.from("trucks").update(patch).eq("id", truck.id);
     setBusy(false);
     if (error) toast.error(error.message); else onChange();
   };
@@ -202,12 +211,13 @@ function TruckCard({ truck, onChange }: { truck: TruckRow; onChange: () => void 
         </div>
         <button
           onClick={toggleAvailable}
-          disabled={busy}
+          disabled={busy || !truck.verified}
+          title={!truck.verified ? "Awaiting admin verification" : ""}
           className={`text-[11px] px-2 py-1 rounded-md font-medium ${
-            truck.is_available ? "bg-emerald-500/15 text-emerald-300" : "bg-white/5 text-muted-foreground"
+            truck.is_online ? "bg-emerald-500/15 text-emerald-700" : "bg-muted text-muted-foreground"
           }`}
         >
-          {truck.is_available ? "Available" : "Off duty"}
+          {truck.is_online ? "Online" : "Go online"}
         </button>
       </div>
     </div>

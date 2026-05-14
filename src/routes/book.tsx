@@ -54,7 +54,6 @@ function BookPage() {
       .eq("is_online", true)
       .eq("is_available", true)
       .eq("verified", true)
-      .not("current_lat", "is", null)
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) toast.error("Could not load trucks: " + error.message);
@@ -71,7 +70,7 @@ function BookPage() {
             const old = payload.old as Truck;
             return next.filter((t) => t.id !== old.id);
           }
-          const visible = row.is_online && row.is_available && row.verified && row.current_lat != null;
+          const visible = row.is_online && row.is_available && row.verified;
           const idx = next.findIndex((t) => t.id === row.id);
           if (!visible) return idx >= 0 ? next.filter((_, i) => i !== idx) : next;
           if (idx >= 0) next[idx] = row;
@@ -174,9 +173,13 @@ function BookPage() {
 
   const trucksWithMeta = useMemo(() => {
     if (!pickup.coords) return [];
+    const NAIROBI = { lat: -1.2921, lng: 36.8219 };
     return trucks
       .map((t) => {
-        const km = distanceKm({ lat: t.current_lat!, lng: t.current_lng! }, pickup.coords!);
+        const pos = (t.current_lat != null && t.current_lng != null)
+          ? { lat: t.current_lat, lng: t.current_lng }
+          : NAIROBI;
+        const km = distanceKm(pos, pickup.coords!);
         return {
           truck: t,
           km,
