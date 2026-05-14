@@ -173,9 +173,13 @@ function BookPage() {
 
   const trucksWithMeta = useMemo(() => {
     if (!pickup.coords) return [];
+    const NAIROBI = { lat: -1.2921, lng: 36.8219 };
     return trucks
       .map((t) => {
-        const km = distanceKm({ lat: t.current_lat!, lng: t.current_lng! }, pickup.coords!);
+        const pos = (t.current_lat != null && t.current_lng != null)
+          ? { lat: t.current_lat, lng: t.current_lng }
+          : NAIROBI;
+        const km = distanceKm(pos, pickup.coords!);
         return {
           truck: t,
           km,
