@@ -117,7 +117,7 @@ function BookPage() {
 
     (async () => {
       const { data } = await supabase
-        .from("trucks").select("current_lat,current_lng").eq("id", booking.truck_id).maybeSingle();
+        .from("trucks").select("current_lat,current_lng").eq("id", booking.truck_id!).maybeSingle();
       if (cancelled) return;
       const start: LatLng =
         data?.current_lat != null && data?.current_lng != null
