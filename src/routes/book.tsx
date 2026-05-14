@@ -54,7 +54,6 @@ function BookPage() {
       .eq("is_online", true)
       .eq("is_available", true)
       .eq("verified", true)
-      .not("current_lat", "is", null)
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) toast.error("Could not load trucks: " + error.message);
