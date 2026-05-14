@@ -20,6 +20,8 @@ type TruckRow = {
   is_available: boolean;
   verified: boolean;
   driver_id: string | null;
+  current_lat: number | null;
+  current_lng: number | null;
 };
 
 function DocsPanel() {
