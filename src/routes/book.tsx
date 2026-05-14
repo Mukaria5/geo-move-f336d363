@@ -99,28 +99,78 @@ function BookPage() {
     return () => { supabase.removeChannel(channel); };
   }, [booking?.id]);
 
-  // ----- Live driver location for the assigned truck -----
+  // ----- Simulated driver movement for demo/presentation -----
+  // Real DB location is the starting point; from there we animate the truck
+  // along: start -> pickup -> dropoff, advancing the booking stage locally.
   const [driverPos, setDriverPos] = useState<LatLng | null>(null);
+  const [simStage, setSimStage] = useState<BookingStage | null>(null);
+
   useEffect(() => {
-    if (!booking?.truck_id) { setDriverPos(null); return; }
-    supabase.from("trucks").select("current_lat,current_lng").eq("id", booking.truck_id).maybeSingle()
-      .then(({ data }) => {
-        if (data?.current_lat != null && data?.current_lng != null)
-          setDriverPos({ lat: data.current_lat, lng: data.current_lng });
-      });
-    const channel = supabase
-      .channel(`truck:${booking.truck_id}`)
-      .on("postgres_changes",
-        { event: "UPDATE", schema: "public", table: "trucks", filter: `id=eq.${booking.truck_id}` },
-        (payload) => {
-          const t = payload.new as Truck;
-          if (t.current_lat != null && t.current_lng != null)
-            setDriverPos({ lat: t.current_lat, lng: t.current_lng });
-        },
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [booking?.truck_id]);
+    if (!booking?.truck_id || !pickup.coords || !dropoff.coords) {
+      setDriverPos(null);
+      setSimStage(null);
+      return;
+    }
+    let cancelled = false;
+    let raf = 0;
+    let timers: any[] = [];
+
+    (async () => {
+      const { data } = await supabase
+        .from("trucks").select("current_lat,current_lng").eq("id", booking.truck_id!).maybeSingle();
+      if (cancelled) return;
+      const start: LatLng =
+        data?.current_lat != null && data?.current_lng != null
+          ? { lat: data.current_lat, lng: data.current_lng }
+          : { lat: pickup.coords!.lat - 0.03, lng: pickup.coords!.lng - 0.03 };
+
+      setDriverPos(start);
+
+      const animate = (from: LatLng, to: LatLng, ms: number) =>
+        new Promise<void>((resolve) => {
+          const t0 = performance.now();
+          const tick = (now: number) => {
+            if (cancelled) return resolve();
+            const p = Math.min(1, (now - t0) / ms);
+            // ease-in-out
+            const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+            setDriverPos({
+              lat: from.lat + (to.lat - from.lat) * e,
+              lng: from.lng + (to.lng - from.lng) * e,
+            });
+            if (p < 1) raf = requestAnimationFrame(tick);
+            else resolve();
+          };
+          raf = requestAnimationFrame(tick);
+        });
+
+      // Stage timeline (fast, demo-friendly)
+      timers.push(setTimeout(() => !cancelled && setSimStage("accepted"), 1500));
+      timers.push(setTimeout(() => !cancelled && setSimStage("en_route"), 3000));
+      await new Promise((r) => timers.push(setTimeout(r, 3000)));
+
+      // Move to pickup
+      await animate(start, pickup.coords!, 12000);
+      if (cancelled) return;
+      setSimStage("loading");
+      await new Promise((r) => timers.push(setTimeout(r, 3500)));
+      if (cancelled) return;
+
+      // Move to dropoff
+      setSimStage("in_transit");
+      await animate(pickup.coords!, dropoff.coords!, 16000);
+      if (cancelled) return;
+
+      setSimStage("delivered");
+      timers.push(setTimeout(() => !cancelled && setSimStage("completed"), 2500));
+    })();
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+      timers.forEach(clearTimeout);
+    };
+  }, [booking?.truck_id, pickup.coords, dropoff.coords]);
 
   const trucksWithMeta = useMemo(() => {
     if (!pickup.coords) return [];
@@ -143,7 +193,7 @@ function BookPage() {
   }, [pickup.coords, dropoff.coords]);
 
   const selected = trucksWithMeta.find((t) => t.truck.id === selectedTruck);
-  const stage = (booking?.status ?? "requested") as BookingStage;
+  const stage = (simStage ?? booking?.status ?? "requested") as BookingStage;
 
   // Map center prefers pickup, falls back to Nairobi
   const center = pickup.coords ?? { lat: -1.2921, lng: 36.8219 };
