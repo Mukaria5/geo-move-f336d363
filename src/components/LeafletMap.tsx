@@ -44,9 +44,10 @@ export function LeafletMap({
         [center.lat, center.lng],
         zoom,
       );
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
-        subdomains: "abcd",
+        subdomains: "abc",
+        attribution: "© OpenStreetMap contributors",
       }).addTo(map);
       L.control.zoom({ position: "bottomright" }).addTo(map);
       map.on("click", (e: any) => onMapClick?.({ lat: e.latlng.lat, lng: e.latlng.lng }));
