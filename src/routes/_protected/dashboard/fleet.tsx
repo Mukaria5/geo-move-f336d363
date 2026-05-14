@@ -170,9 +170,14 @@ function TruckCard({ truck, onChange }: { truck: TruckRow; onChange: () => void 
 
   const toggleAvailable = async () => {
     setBusy(true);
-    const { error } = await supabase.from("trucks")
-      .update({ is_available: !truck.is_available })
-      .eq("id", truck.id);
+    const next = !truck.is_online;
+    const patch: Record<string, unknown> = { is_online: next, is_available: next };
+    // Seed a default location so clients can see it on the map.
+    if (next && (truck.current_lat == null || truck.current_lng == null)) {
+      patch.current_lat = -1.2921;
+      patch.current_lng = 36.8219;
+    }
+    const { error } = await supabase.from("trucks").update(patch).eq("id", truck.id);
     setBusy(false);
     if (error) toast.error(error.message); else onChange();
   };
