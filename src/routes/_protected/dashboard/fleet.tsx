@@ -211,12 +211,13 @@ function TruckCard({ truck, onChange }: { truck: TruckRow; onChange: () => void 
         </div>
         <button
           onClick={toggleAvailable}
-          disabled={busy}
+          disabled={busy || !truck.verified}
+          title={!truck.verified ? "Awaiting admin verification" : ""}
           className={`text-[11px] px-2 py-1 rounded-md font-medium ${
-            truck.is_available ? "bg-emerald-500/15 text-emerald-300" : "bg-white/5 text-muted-foreground"
+            truck.is_online ? "bg-emerald-500/15 text-emerald-700" : "bg-muted text-muted-foreground"
           }`}
         >
-          {truck.is_available ? "Available" : "Off duty"}
+          {truck.is_online ? "Online" : "Go online"}
         </button>
       </div>
     </div>
