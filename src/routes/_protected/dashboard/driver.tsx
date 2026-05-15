@@ -401,8 +401,6 @@ function ActiveJobView({
           )}
         </div>
       )}
-        </div>
-      )}
 
       <button onClick={onAdvance}
         className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 shadow-[0_0_30px_-8px_var(--safety-glow)] flex items-center justify-center gap-2">
