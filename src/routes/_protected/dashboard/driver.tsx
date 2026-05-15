@@ -195,16 +195,20 @@ function DriverDashboard() {
     }
   }
 
-  async function uploadPhoto(kind: "load" | "proof") {
+  async function uploadPhoto(kind: "pickup" | "load" | "dropoff" | "proof") {
     if (!user || !active) return;
     setPhotoBusy(true);
     const blob = new Blob([new Uint8Array([0x89, 0x50, 0x4e, 0x47])], { type: "image/png" });
     const path = `${user.id}/${active.id}/${kind}-${Date.now()}.png`;
     const { error } = await supabase.storage.from("trip-photos").upload(path, blob, { upsert: true });
+    if (error) { setPhotoBusy(false); return toast.error(error.message); }
+    const { error: dbErr } = await supabase.from("booking_photos").insert({
+      booking_id: active.id, driver_id: user.id, kind, file_path: path,
+    });
     setPhotoBusy(false);
-    if (error) return toast.error(error.message);
+    if (dbErr) return toast.error(dbErr.message);
     if (kind === "proof") setProofUploaded(true);
-    toast.success(`${kind === "proof" ? "Proof" : "Loading photo"} uploaded`);
+    toast.success(`${kind} photo shared with the client`);
   }
 
   const earnings = useMemo(() => {
@@ -335,12 +339,22 @@ function ActiveJobView({
   job, onAdvance, onUploadPhoto, photoBusy, proofUploaded,
 }: {
   job: BookingRow; onAdvance: () => void;
-  onUploadPhoto: (k: "load" | "proof") => void; photoBusy: boolean; proofUploaded: boolean;
+  onUploadPhoto: (k: "pickup" | "load" | "dropoff" | "proof") => void; photoBusy: boolean; proofUploaded: boolean;
 }) {
   const idx = STAGE_FLOW.findIndex((s) => s.id === job.status);
   const current = STAGE_FLOW[Math.max(0, idx)];
   const pickup = job.pickup_lat != null && job.pickup_lng != null ? { lat: job.pickup_lat, lng: job.pickup_lng } : null;
   const dropoff = job.dropoff_lat != null && job.dropoff_lng != null ? { lat: job.dropoff_lat, lng: job.dropoff_lng } : null;
+  const photoKind: "pickup" | "load" | "dropoff" | "proof" | null =
+    job.status === "en_route" ? "pickup"
+    : job.status === "loading" ? "load"
+    : job.status === "in_transit" ? "dropoff"
+    : job.status === "delivered" ? "proof"
+    : null;
+  const photoLabel = photoKind === "pickup" ? "Photos at pickup site"
+    : photoKind === "load" ? "Photos of machine loaded"
+    : photoKind === "dropoff" ? "Photos at drop-off site"
+    : photoKind === "proof" ? "Proof of delivery" : "";
   return (
     <div className="space-y-3">
       <div className="glass-strong rounded-2xl p-4 border border-primary/40">
@@ -352,7 +366,7 @@ function ActiveJobView({
           <div className="text-xs font-mono text-muted-foreground">KSh {(job.estimated_price ?? 0).toLocaleString()}</div>
         </div>
         <div className="font-display text-lg font-bold mb-0.5">{current.label}</div>
-        <div className="text-xs text-muted-foreground mb-3">Step {idx + 1} of {STAGE_FLOW.length - 1}</div>
+        <div className="text-xs text-muted-foreground mb-3">Step {idx + 1} of {STAGE_FLOW.length - 1} · client sees this live</div>
         <div className="flex gap-1 mb-4">
           {STAGE_FLOW.slice(0, -1).map((s, i) => (
             <div key={s.id} className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-white/10"}`} />
@@ -368,20 +382,18 @@ function ActiveJobView({
         </div>
       </div>
 
-      {(job.status === "loading" || job.status === "delivered") && (
+      {photoKind && (
         <div className="glass rounded-2xl p-4">
-          <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">
-            {job.status === "loading" ? "Loading photos" : "Proof of delivery"}
-          </div>
+          <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">{photoLabel}</div>
           <div className="grid grid-cols-3 gap-2">
             {[0, 1, 2].map((i) => (
-              <button key={i} onClick={() => onUploadPhoto(job.status === "delivered" ? "proof" : "load")}
+              <button key={i} onClick={() => onUploadPhoto(photoKind)}
                 className="aspect-square rounded-xl border border-dashed border-border hover:border-primary/60 hover:bg-primary/5 transition grid place-items-center text-muted-foreground">
                 {photoBusy ? <Upload className="h-5 w-5 animate-pulse" /> : <Camera className="h-5 w-5" />}
               </button>
             ))}
           </div>
-          {job.status === "delivered" && (
+          {photoKind === "proof" && (
             <div className={`mt-3 text-xs flex items-center gap-2 ${proofUploaded ? "text-primary" : "text-muted-foreground"}`}>
               <CheckCircle2 className="h-3.5 w-3.5" />
               {proofUploaded ? "Proof uploaded — ready to complete" : "Upload at least one photo"}
