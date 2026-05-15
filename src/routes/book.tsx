@@ -50,7 +50,7 @@ function BookPage() {
     setLoadingTrucks(true);
     supabase
       .from("trucks")
-      .select("*")
+      .select("*, location_updated_at")
       .eq("is_online", true)
       .eq("is_available", true)
       .eq("verified", true)
