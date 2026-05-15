@@ -284,6 +284,18 @@ function BookPage() {
                 onChange={setDropoff}
                 onPickOnMap={() => setPickingMap("dropoff")}
               />
+              {pickup.coords && dropoff.coords && (
+                <div className="mt-3 glass rounded-xl p-3 flex items-center justify-between">
+                  <div>
+                    <div className="text-[10px] font-mono text-muted-foreground uppercase">Trip distance</div>
+                    <div className="font-display text-lg font-bold">{tripKm.toFixed(1)} km</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] font-mono text-muted-foreground uppercase">Approx drive</div>
+                    <div className="font-display text-lg font-bold">{etaMinutes(tripKm)} min</div>
+                  </div>
+                </div>
+              )}
               <PrimaryBtn disabled={!pickup.coords || !dropoff.coords} onClick={() => setStep("machine")}>
                 Continue
               </PrimaryBtn>
