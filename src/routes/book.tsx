@@ -160,7 +160,14 @@ function BookPage() {
   const trucksWithMeta = useMemo(() => {
     if (!pickup.coords) return [];
     const NAIROBI = { lat: -1.2921, lng: 36.8219 };
+    const STALE_MS = 10 * 60 * 1000; // hide trucks whose location hasn't refreshed in 10 min
+    const now = Date.now();
     return trucks
+      .filter((t) => {
+        const ts = (t as any).location_updated_at as string | null | undefined;
+        // keep trucks that have never reported (newly online) OR refreshed recently
+        return !ts || now - new Date(ts).getTime() < STALE_MS;
+      })
       .map((t) => {
         const pos = (t.current_lat != null && t.current_lng != null)
           ? { lat: t.current_lat, lng: t.current_lng }
