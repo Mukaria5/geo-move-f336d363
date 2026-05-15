@@ -355,6 +355,28 @@ function BookPage() {
             <Panel key="track">
               <StageHeader stage={stage} truck={selected?.truck} price={booking.estimated_price ?? 0} />
               <StageProgress stage={stage} />
+              {photos.length > 0 && (
+                <div className="mt-4">
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2">
+                    From your driver · {photos.length} photo{photos.length === 1 ? "" : "s"}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {photos.slice(-6).map((p) => (
+                      <a key={p.id} href={p.url} target="_blank" rel="noreferrer"
+                        className="aspect-square rounded-lg overflow-hidden bg-white/5 border border-border block relative">
+                        {p.url ? (
+                          <img src={p.url} alt={p.kind} className="absolute inset-0 w-full h-full object-cover" />
+                        ) : (
+                          <div className="absolute inset-0 grid place-items-center text-muted-foreground text-xs">…</div>
+                        )}
+                        <div className="absolute bottom-0 inset-x-0 bg-black/55 text-white text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5">
+                          {p.kind}
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-3 gap-2 mt-4">
                 <ActionBtn icon={<Phone className="h-4 w-4" />} label="Call" />
                 <ActionBtn icon={<MessageSquare className="h-4 w-4" />} label="Chat" />
