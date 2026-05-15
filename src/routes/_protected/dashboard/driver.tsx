@@ -195,16 +195,20 @@ function DriverDashboard() {
     }
   }
 
-  async function uploadPhoto(kind: "load" | "proof") {
+  async function uploadPhoto(kind: "pickup" | "load" | "dropoff" | "proof") {
     if (!user || !active) return;
     setPhotoBusy(true);
     const blob = new Blob([new Uint8Array([0x89, 0x50, 0x4e, 0x47])], { type: "image/png" });
     const path = `${user.id}/${active.id}/${kind}-${Date.now()}.png`;
     const { error } = await supabase.storage.from("trip-photos").upload(path, blob, { upsert: true });
+    if (error) { setPhotoBusy(false); return toast.error(error.message); }
+    const { error: dbErr } = await supabase.from("booking_photos").insert({
+      booking_id: active.id, driver_id: user.id, kind, file_path: path,
+    });
     setPhotoBusy(false);
-    if (error) return toast.error(error.message);
+    if (dbErr) return toast.error(dbErr.message);
     if (kind === "proof") setProofUploaded(true);
-    toast.success(`${kind === "proof" ? "Proof" : "Loading photo"} uploaded`);
+    toast.success(`${kind} photo shared with the client`);
   }
 
   const earnings = useMemo(() => {
