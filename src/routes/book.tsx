@@ -98,78 +98,64 @@ function BookPage() {
     return () => { supabase.removeChannel(channel); };
   }, [booking?.id]);
 
-  // ----- Simulated driver movement for demo/presentation -----
-  // Real DB location is the starting point; from there we animate the truck
-  // along: start -> pickup -> dropoff, advancing the booking stage locally.
+  // ----- Real driver location tracking -----
+  // Subscribe to the assigned truck's row so the user sees the driver move on
+  // the map exactly as the driver's device pushes location updates.
   const [driverPos, setDriverPos] = useState<LatLng | null>(null);
-  const [simStage, setSimStage] = useState<BookingStage | null>(null);
 
   useEffect(() => {
-    if (!booking?.truck_id || !pickup.coords || !dropoff.coords) {
-      setDriverPos(null);
-      setSimStage(null);
-      return;
-    }
+    if (!booking?.truck_id) { setDriverPos(null); return; }
     let cancelled = false;
-    let raf = 0;
-    let timers: any[] = [];
+    supabase.from("trucks").select("current_lat,current_lng").eq("id", booking.truck_id).maybeSingle()
+      .then(({ data }) => {
+        if (cancelled || !data?.current_lat || !data?.current_lng) return;
+        setDriverPos({ lat: data.current_lat, lng: data.current_lng });
+      });
+    const ch = supabase
+      .channel(`truck:${booking.truck_id}`)
+      .on("postgres_changes",
+        { event: "UPDATE", schema: "public", table: "trucks", filter: `id=eq.${booking.truck_id}` },
+        (payload) => {
+          const row = payload.new as Truck;
+          if (row.current_lat != null && row.current_lng != null) {
+            setDriverPos({ lat: row.current_lat, lng: row.current_lng });
+          }
+        },
+      )
+      .subscribe();
+    return () => { cancelled = true; supabase.removeChannel(ch); };
+  }, [booking?.truck_id]);
 
-    (async () => {
-      const { data } = await supabase
-        .from("trucks").select("current_lat,current_lng").eq("id", booking.truck_id!).maybeSingle();
-      if (cancelled) return;
-      const start: LatLng =
-        data?.current_lat != null && data?.current_lng != null
-          ? { lat: data.current_lat, lng: data.current_lng }
-          : { lat: pickup.coords!.lat - 0.03, lng: pickup.coords!.lng - 0.03 };
+  // ----- Trip photos shared by the driver -----
+  type Photo = { id: string; kind: "pickup" | "load" | "dropoff" | "proof"; file_path: string; created_at: string; url?: string };
+  const [photos, setPhotos] = useState<Photo[]>([]);
 
-      setDriverPos(start);
-
-      const animate = (from: LatLng, to: LatLng, ms: number) =>
-        new Promise<void>((resolve) => {
-          const t0 = performance.now();
-          const tick = (now: number) => {
-            if (cancelled) return resolve();
-            const p = Math.min(1, (now - t0) / ms);
-            // ease-in-out
-            const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
-            setDriverPos({
-              lat: from.lat + (to.lat - from.lat) * e,
-              lng: from.lng + (to.lng - from.lng) * e,
-            });
-            if (p < 1) raf = requestAnimationFrame(tick);
-            else resolve();
-          };
-          raf = requestAnimationFrame(tick);
-        });
-
-      // Stage timeline (fast, demo-friendly)
-      timers.push(setTimeout(() => !cancelled && setSimStage("accepted"), 1500));
-      timers.push(setTimeout(() => !cancelled && setSimStage("en_route"), 3000));
-      await new Promise((r) => timers.push(setTimeout(r, 3000)));
-
-      // Move to pickup
-      await animate(start, pickup.coords!, 12000);
-      if (cancelled) return;
-      setSimStage("loading");
-      await new Promise((r) => timers.push(setTimeout(r, 3500)));
-      if (cancelled) return;
-
-      // Move to dropoff
-      setSimStage("in_transit");
-      await animate(pickup.coords!, dropoff.coords!, 16000);
-      if (cancelled) return;
-
-      setSimStage("delivered");
-      timers.push(setTimeout(() => !cancelled && setSimStage("completed"), 2500));
-    })();
-
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(raf);
-      timers.forEach(clearTimeout);
+  useEffect(() => {
+    if (!booking?.id) { setPhotos([]); return; }
+    const sign = async (rows: Photo[]) => {
+      const out: Photo[] = [];
+      for (const p of rows) {
+        const { data } = await supabase.storage.from("trip-photos").createSignedUrl(p.file_path, 3600);
+        out.push({ ...p, url: data?.signedUrl });
+      }
+      setPhotos(out);
     };
-  }, [booking?.truck_id, pickup.coords, dropoff.coords]);
+    supabase.from("booking_photos").select("*").eq("booking_id", booking.id)
+      .order("created_at", { ascending: true })
+      .then(({ data }) => sign((data ?? []) as Photo[]));
+    const ch = supabase
+      .channel(`photos:${booking.id}`)
+      .on("postgres_changes",
+        { event: "INSERT", schema: "public", table: "booking_photos", filter: `booking_id=eq.${booking.id}` },
+        async (payload) => {
+          const row = payload.new as Photo;
+          const { data } = await supabase.storage.from("trip-photos").createSignedUrl(row.file_path, 3600);
+          setPhotos((prev) => [...prev, { ...row, url: data?.signedUrl }]);
+        },
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [booking?.id]);
 
   const trucksWithMeta = useMemo(() => {
     if (!pickup.coords) return [];
