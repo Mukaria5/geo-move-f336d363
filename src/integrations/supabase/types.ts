@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_photos: {
+        Row: {
+          booking_id: string
+          created_at: string
+          driver_id: string
+          file_path: string
+          id: string
+          kind: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          driver_id: string
+          file_path: string
+          id?: string
+          kind: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          driver_id?: string
+          file_path?: string
+          id?: string
+          kind?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           client_id: string
