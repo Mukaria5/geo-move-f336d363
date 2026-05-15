@@ -218,7 +218,7 @@ function BookPage() {
         <LeafletMap
           center={center}
           zoom={pickup.coords ? 13 : 11}
-          trucks={step === "trucks" ? trucks.filter((t) => t.current_lat != null) : []}
+          trucks={step === "trucks" ? trucksWithMeta.map((t) => t.truck).filter((t) => t.current_lat != null) : []}
           pickup={pickup.coords}
           dropoff={dropoff.coords}
           driverPos={step === "tracking" ? driverPos : null}
