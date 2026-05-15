@@ -182,7 +182,7 @@ function BookPage() {
   }, [pickup.coords, dropoff.coords]);
 
   const selected = trucksWithMeta.find((t) => t.truck.id === selectedTruck);
-  const stage = (simStage ?? booking?.status ?? "requested") as BookingStage;
+  const stage = (booking?.status ?? "requested") as BookingStage;
 
   // Map center prefers pickup, falls back to Nairobi
   const center = pickup.coords ?? { lat: -1.2921, lng: 36.8219 };
