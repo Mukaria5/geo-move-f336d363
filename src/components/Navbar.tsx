@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Truck, Menu } from "lucide-react";
 import { useState } from "react";
+import { InstallPWAButton } from "@/components/InstallPWAButton";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -28,6 +29,7 @@ export function Navbar() {
             ))}
           </nav>
           <div className="flex items-center gap-2">
+            <InstallPWAButton className="hidden sm:inline-flex items-center gap-1.5 h-9 px-3 text-sm rounded-lg glass text-foreground/90 hover:text-foreground transition-colors" />
             <Link to="/auth/login" className="hidden sm:inline-flex h-9 px-4 text-sm rounded-lg text-foreground/90 hover:text-foreground transition-colors items-center">
               Sign in
             </Link>
@@ -44,6 +46,7 @@ export function Navbar() {
             {links.map((l) => (
               <a key={l.to} href={l.to} onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground">{l.label}</a>
             ))}
+            <InstallPWAButton />
           </div>
         )}
       </div>
