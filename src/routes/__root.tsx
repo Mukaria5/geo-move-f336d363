@@ -7,9 +7,11 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/lib/auth-context";
+import { registerServiceWorker } from "@/lib/register-sw";
 
 import appCss from "../styles.css?url";
 
@@ -117,6 +119,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
