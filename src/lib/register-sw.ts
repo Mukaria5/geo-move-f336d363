@@ -65,7 +65,7 @@ export async function registerServiceWorker() {
     };
 
     wb.addEventListener("waiting", promptUpdate);
-    wb.addEventListener("externalwaiting", promptUpdate);
+    
 
     await wb.register();
   } catch (err) {
