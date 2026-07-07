@@ -92,7 +92,7 @@ export function DashboardShell({ title, role, children }: { title: string; role:
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 px-2 pb-2">
         <div className="glass-strong rounded-2xl grid grid-cols-4 p-1">
           {items.slice(0, 4).map((it, i) => {
-            const active = location.pathname === it.to && i === 0;
+            const active = location.pathname === it.to;
             return (
               <Link
                 key={`${it.label}-${i}`}
