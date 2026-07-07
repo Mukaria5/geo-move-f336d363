@@ -21,8 +21,8 @@ const NAV: Record<AppRole, NavItem[]> = {
   fleet: [
     { to: "/dashboard/fleet", label: "Overview", icon: Home },
     { to: "/dashboard/fleet", label: "Fleet", icon: Building2 },
-    { to: "/dashboard/fleet", label: "Drivers", icon: Users },
-    { to: "/dashboard/fleet", label: "Earnings", icon: DollarSign },
+    { to: "/dashboard/fleet/drivers", label: "Drivers", icon: Users },
+    { to: "/dashboard/fleet/earnings", label: "Earnings", icon: DollarSign },
   ],
   admin: [
     { to: "/dashboard/admin", label: "Overview", icon: Home },
@@ -57,7 +57,7 @@ export function DashboardShell({ title, role, children }: { title: string; role:
           </Link>
           <nav className="hidden md:flex items-center gap-1 ml-4">
             {items.map((it, i) => {
-              const active = location.pathname === it.to && i === 0;
+              const active = location.pathname === it.to;
               return (
                 <Link
                   key={`${it.label}-${i}`}
@@ -92,7 +92,7 @@ export function DashboardShell({ title, role, children }: { title: string; role:
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 px-2 pb-2">
         <div className="glass-strong rounded-2xl grid grid-cols-4 p-1">
           {items.slice(0, 4).map((it, i) => {
-            const active = location.pathname === it.to && i === 0;
+            const active = location.pathname === it.to;
             return (
               <Link
                 key={`${it.label}-${i}`}
