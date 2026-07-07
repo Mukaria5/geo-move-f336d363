@@ -57,7 +57,7 @@ export function DashboardShell({ title, role, children }: { title: string; role:
           </Link>
           <nav className="hidden md:flex items-center gap-1 ml-4">
             {items.map((it, i) => {
-              const active = location.pathname === it.to && i === 0;
+              const active = location.pathname === it.to;
               return (
                 <Link
                   key={`${it.label}-${i}`}
