@@ -25,6 +25,7 @@ import { Route as ProtectedDashboardFleetRouteImport } from './routes/_protected
 import { Route as ProtectedDashboardDriverRouteImport } from './routes/_protected/dashboard/driver'
 import { Route as ProtectedDashboardClientRouteImport } from './routes/_protected/dashboard/client'
 import { Route as ProtectedDashboardAdminRouteImport } from './routes/_protected/dashboard/admin'
+import { Route as ProtectedDashboardFleetEarningsRouteImport } from './routes/_protected/dashboard/fleet.earnings'
 import { Route as ProtectedDashboardFleetDriversRouteImport } from './routes/_protected/dashboard/fleet.drivers'
 
 const BookRoute = BookRouteImport.update({
@@ -110,6 +111,12 @@ const ProtectedDashboardAdminRoute = ProtectedDashboardAdminRouteImport.update({
   path: '/dashboard/admin',
   getParentRoute: () => ProtectedRoute,
 } as any)
+const ProtectedDashboardFleetEarningsRoute =
+  ProtectedDashboardFleetEarningsRouteImport.update({
+    id: '/earnings',
+    path: '/earnings',
+    getParentRoute: () => ProtectedDashboardFleetRoute,
+  } as any)
 const ProtectedDashboardFleetDriversRoute =
   ProtectedDashboardFleetDriversRouteImport.update({
     id: '/drivers',
@@ -134,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/profile': typeof ProtectedOnboardingProfileRoute
   '/onboarding/role': typeof ProtectedOnboardingRoleRoute
   '/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRoute
+  '/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -152,6 +160,7 @@ export interface FileRoutesByTo {
   '/onboarding/profile': typeof ProtectedOnboardingProfileRoute
   '/onboarding/role': typeof ProtectedOnboardingRoleRoute
   '/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRoute
+  '/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -172,6 +181,7 @@ export interface FileRoutesById {
   '/_protected/onboarding/profile': typeof ProtectedOnboardingProfileRoute
   '/_protected/onboarding/role': typeof ProtectedOnboardingRoleRoute
   '/_protected/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRoute
+  '/_protected/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/onboarding/profile'
     | '/onboarding/role'
     | '/dashboard/fleet/drivers'
+    | '/dashboard/fleet/earnings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/onboarding/profile'
     | '/onboarding/role'
     | '/dashboard/fleet/drivers'
+    | '/dashboard/fleet/earnings'
   id:
     | '__root__'
     | '/'
@@ -229,6 +241,7 @@ export interface FileRouteTypes {
     | '/_protected/onboarding/profile'
     | '/_protected/onboarding/role'
     | '/_protected/dashboard/fleet/drivers'
+    | '/_protected/dashboard/fleet/earnings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -357,6 +370,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardAdminRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_protected/dashboard/fleet/earnings': {
+      id: '/_protected/dashboard/fleet/earnings'
+      path: '/earnings'
+      fullPath: '/dashboard/fleet/earnings'
+      preLoaderRoute: typeof ProtectedDashboardFleetEarningsRouteImport
+      parentRoute: typeof ProtectedDashboardFleetRoute
+    }
     '/_protected/dashboard/fleet/drivers': {
       id: '/_protected/dashboard/fleet/drivers'
       path: '/drivers'
@@ -369,11 +389,13 @@ declare module '@tanstack/react-router' {
 
 interface ProtectedDashboardFleetRouteChildren {
   ProtectedDashboardFleetDriversRoute: typeof ProtectedDashboardFleetDriversRoute
+  ProtectedDashboardFleetEarningsRoute: typeof ProtectedDashboardFleetEarningsRoute
 }
 
 const ProtectedDashboardFleetRouteChildren: ProtectedDashboardFleetRouteChildren =
   {
     ProtectedDashboardFleetDriversRoute: ProtectedDashboardFleetDriversRoute,
+    ProtectedDashboardFleetEarningsRoute: ProtectedDashboardFleetEarningsRoute,
   }
 
 const ProtectedDashboardFleetRouteWithChildren =

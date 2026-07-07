@@ -21,8 +21,8 @@ const NAV: Record<AppRole, NavItem[]> = {
   fleet: [
     { to: "/dashboard/fleet", label: "Overview", icon: Home },
     { to: "/dashboard/fleet", label: "Fleet", icon: Building2 },
-    { to: "/dashboard/fleet", label: "Drivers", icon: Users },
-    { to: "/dashboard/fleet", label: "Earnings", icon: DollarSign },
+    { to: "/dashboard/fleet/drivers", label: "Drivers", icon: Users },
+    { to: "/dashboard/fleet/earnings", label: "Earnings", icon: DollarSign },
   ],
   admin: [
     { to: "/dashboard/admin", label: "Overview", icon: Home },
