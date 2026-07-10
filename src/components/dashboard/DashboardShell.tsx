@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from "@tanstack/react-router";
-import { Truck, LogOut, Bell, Home, Briefcase, DollarSign, Users, FileText, Settings, MapPin, Building2, ShieldAlert } from "lucide-react";
+import { motion } from "framer-motion";
+import { Truck, LogOut, Bell, Home, Briefcase, DollarSign, Users, FileText, Settings, MapPin, Building2, ShieldAlert, Package } from "lucide-react";
 import type { ReactNode } from "react";
 import { useAuth, type AppRole } from "@/lib/auth-context";
 
@@ -9,26 +10,29 @@ const NAV: Record<AppRole, NavItem[]> = {
   client: [
     { to: "/dashboard/client", label: "Home", icon: Home },
     { to: "/book", label: "Book", icon: MapPin },
-    { to: "/dashboard/client", label: "Trips", icon: Briefcase },
+    { to: "/dashboard/client", label: "Trips", icon: Package },
     { to: "/dashboard/client", label: "Profile", icon: Settings },
   ],
   driver: [
-    { to: "/dashboard/driver", label: "Jobs", icon: Briefcase },
+    { to: "/dashboard/driver", label: "Home", icon: Home },
+    { to: "/dashboard/driver", label: "Trips", icon: Briefcase },
     { to: "/dashboard/driver", label: "Map", icon: MapPin },
     { to: "/dashboard/driver", label: "Earnings", icon: DollarSign },
     { to: "/dashboard/driver", label: "Profile", icon: Settings },
   ],
   fleet: [
-    { to: "/dashboard/fleet", label: "Overview", icon: Home },
+    { to: "/dashboard/fleet", label: "Dashboard", icon: Home },
     { to: "/dashboard/fleet", label: "Fleet", icon: Building2 },
     { to: "/dashboard/fleet/drivers", label: "Drivers", icon: Users },
-    { to: "/dashboard/fleet/earnings", label: "Earnings", icon: DollarSign },
+    { to: "/dashboard/fleet/earnings", label: "Reports", icon: DollarSign },
+    { to: "/dashboard/fleet", label: "Profile", icon: Settings },
   ],
   admin: [
-    { to: "/dashboard/admin", label: "Overview", icon: Home },
+    { to: "/dashboard/admin", label: "Home", icon: Home },
     { to: "/dashboard/admin", label: "Users", icon: Users },
     { to: "/dashboard/admin", label: "Docs", icon: FileText },
     { to: "/dashboard/admin", label: "Disputes", icon: ShieldAlert },
+    { to: "/dashboard/admin", label: "Profile", icon: Settings },
   ],
 };
 
@@ -89,20 +93,27 @@ export function DashboardShell({ title, role, children }: { title: string; role:
       {user && <div className="text-[10px] text-muted-foreground text-center pb-6 font-mono">{user.email}</div>}
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 px-2 pb-2">
-        <div className="glass-strong rounded-2xl grid grid-cols-4 p-1">
-          {items.slice(0, 4).map((it, i) => {
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <div className={`glass-strong rounded-2xl grid p-1`} style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
+          {items.map((it, i) => {
             const active = location.pathname === it.to;
             return (
               <Link
                 key={`${it.label}-${i}`}
                 to={it.to}
-                className={`flex flex-col items-center justify-center gap-0.5 h-14 rounded-xl text-[10px] font-medium transition ${
-                  active ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"
+                className={`relative flex flex-col items-center justify-center gap-0.5 h-14 rounded-xl text-[10px] font-medium transition ${
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <it.icon className="h-4 w-4" />
-                {it.label}
+                {active && (
+                  <motion.div
+                    layoutId="bottom-nav-active"
+                    className="absolute inset-0 bg-primary/15 rounded-xl"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <it.icon className="h-4 w-4 relative z-10" />
+                <span className="relative z-10">{it.label}</span>
               </Link>
             );
           })}
