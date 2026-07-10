@@ -1,37 +1,59 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { Truck, ArrowRight, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import { Truck, ArrowRight } from "lucide-react";
 import { useAuth, dashboardPath } from "@/lib/auth-context";
+import { SplashScreen } from "@/components/SplashScreen";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "LoadLink — Move Heavy Equipment Smarter" },
       { name: "description", content: "On-demand low loader transport. Book, dispatch, and track heavy equipment in real time." },
-      { property: "og:title", content: "LoadLink — Move Heavy Equipment Smarter" },
-      { property: "og:description", content: "On-demand low loader transport for heavy equipment." },
     ],
   }),
   component: Welcome,
 });
 
+const SPLASH_KEY = "ll_splash_shown";
+
 function Welcome() {
   const { user, role, onboarded, loading } = useAuth();
   const navigate = useNavigate();
+  const [showSplash, setShowSplash] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return sessionStorage.getItem(SPLASH_KEY) !== "1";
+  });
 
+  // Splash timer — 2.4s then dismiss.
   useEffect(() => {
-    if (loading || !user) return;
+    if (!showSplash) return;
+    const t = setTimeout(() => {
+      sessionStorage.setItem(SPLASH_KEY, "1");
+      setShowSplash(false);
+    }, 2400);
+    return () => clearTimeout(t);
+  }, [showSplash]);
+
+  // Auto-redirect authenticated users to their dashboard after splash.
+  useEffect(() => {
+    if (showSplash || loading || !user) return;
     if (!role) { navigate({ to: "/onboarding/role" }); return; }
     if (!onboarded) { navigate({ to: "/onboarding/profile" }); return; }
     navigate({ to: dashboardPath(role) });
-  }, [user, role, onboarded, loading, navigate]);
+  }, [user, role, onboarded, loading, navigate, showSplash]);
+
+  if (showSplash) {
+    return (
+      <AnimatePresence>
+        <SplashScreen key="splash" />
+      </AnimatePresence>
+    );
+  }
 
   if (loading || user) {
-    return (
-      <div className="min-h-screen grid place-items-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
+    // Signed in — splash is done, redirect effect will fire.
+    return <div className="min-h-screen bg-background" />;
   }
 
   return (
