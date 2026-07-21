@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-export type AppRole = "client" | "driver" | "fleet" | "admin";
+export type AppRole = "client" | "driver" | "fleet" | "admin" | "dispatcher";
 
 type AuthCtx = {
   user: User | null;
@@ -85,6 +85,7 @@ export function dashboardPath(role: AppRole | null): string {
     case "driver": return "/dashboard/driver";
     case "fleet": return "/dashboard/fleet";
     case "admin": return "/dashboard/admin";
+    case "dispatcher": return "/dashboard/orders";
     case "client": return "/dashboard/client";
     default: return "/onboarding/role";
   }

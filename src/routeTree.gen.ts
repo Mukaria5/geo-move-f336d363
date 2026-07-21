@@ -21,10 +21,13 @@ import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as ProtectedOnboardingRoleRouteImport } from './routes/_protected/onboarding/role'
 import { Route as ProtectedOnboardingProfileRouteImport } from './routes/_protected/onboarding/profile'
 import { Route as ProtectedOnboardingDocumentsRouteImport } from './routes/_protected/onboarding/documents'
+import { Route as ProtectedDashboardOrdersRouteImport } from './routes/_protected/dashboard/orders'
 import { Route as ProtectedDashboardFleetRouteImport } from './routes/_protected/dashboard/fleet'
 import { Route as ProtectedDashboardDriverRouteImport } from './routes/_protected/dashboard/driver'
 import { Route as ProtectedDashboardClientRouteImport } from './routes/_protected/dashboard/client'
 import { Route as ProtectedDashboardAdminRouteImport } from './routes/_protected/dashboard/admin'
+import { Route as ProtectedDashboardOrdersNewRouteImport } from './routes/_protected/dashboard/orders.new'
+import { Route as ProtectedDashboardOrdersOrderIdRouteImport } from './routes/_protected/dashboard/orders.$orderId'
 import { Route as ProtectedDashboardFleetEarningsRouteImport } from './routes/_protected/dashboard/fleet.earnings'
 import { Route as ProtectedDashboardFleetDriversRouteImport } from './routes/_protected/dashboard/fleet.drivers'
 
@@ -89,6 +92,12 @@ const ProtectedOnboardingDocumentsRoute =
     path: '/onboarding/documents',
     getParentRoute: () => ProtectedRoute,
   } as any)
+const ProtectedDashboardOrdersRoute =
+  ProtectedDashboardOrdersRouteImport.update({
+    id: '/dashboard/orders',
+    path: '/dashboard/orders',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
 const ProtectedDashboardFleetRoute = ProtectedDashboardFleetRouteImport.update({
   id: '/dashboard/fleet',
   path: '/dashboard/fleet',
@@ -111,6 +120,18 @@ const ProtectedDashboardAdminRoute = ProtectedDashboardAdminRouteImport.update({
   path: '/dashboard/admin',
   getParentRoute: () => ProtectedRoute,
 } as any)
+const ProtectedDashboardOrdersNewRoute =
+  ProtectedDashboardOrdersNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => ProtectedDashboardOrdersRoute,
+  } as any)
+const ProtectedDashboardOrdersOrderIdRoute =
+  ProtectedDashboardOrdersOrderIdRouteImport.update({
+    id: '/$orderId',
+    path: '/$orderId',
+    getParentRoute: () => ProtectedDashboardOrdersRoute,
+  } as any)
 const ProtectedDashboardFleetEarningsRoute =
   ProtectedDashboardFleetEarningsRouteImport.update({
     id: '/earnings',
@@ -137,11 +158,14 @@ export interface FileRoutesByFullPath {
   '/dashboard/client': typeof ProtectedDashboardClientRoute
   '/dashboard/driver': typeof ProtectedDashboardDriverRoute
   '/dashboard/fleet': typeof ProtectedDashboardFleetRouteWithChildren
+  '/dashboard/orders': typeof ProtectedDashboardOrdersRouteWithChildren
   '/onboarding/documents': typeof ProtectedOnboardingDocumentsRoute
   '/onboarding/profile': typeof ProtectedOnboardingProfileRoute
   '/onboarding/role': typeof ProtectedOnboardingRoleRoute
   '/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRoute
   '/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
+  '/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
+  '/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -156,11 +180,14 @@ export interface FileRoutesByTo {
   '/dashboard/client': typeof ProtectedDashboardClientRoute
   '/dashboard/driver': typeof ProtectedDashboardDriverRoute
   '/dashboard/fleet': typeof ProtectedDashboardFleetRouteWithChildren
+  '/dashboard/orders': typeof ProtectedDashboardOrdersRouteWithChildren
   '/onboarding/documents': typeof ProtectedOnboardingDocumentsRoute
   '/onboarding/profile': typeof ProtectedOnboardingProfileRoute
   '/onboarding/role': typeof ProtectedOnboardingRoleRoute
   '/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRoute
   '/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
+  '/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
+  '/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -177,11 +204,14 @@ export interface FileRoutesById {
   '/_protected/dashboard/client': typeof ProtectedDashboardClientRoute
   '/_protected/dashboard/driver': typeof ProtectedDashboardDriverRoute
   '/_protected/dashboard/fleet': typeof ProtectedDashboardFleetRouteWithChildren
+  '/_protected/dashboard/orders': typeof ProtectedDashboardOrdersRouteWithChildren
   '/_protected/onboarding/documents': typeof ProtectedOnboardingDocumentsRoute
   '/_protected/onboarding/profile': typeof ProtectedOnboardingProfileRoute
   '/_protected/onboarding/role': typeof ProtectedOnboardingRoleRoute
   '/_protected/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRoute
   '/_protected/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
+  '/_protected/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
+  '/_protected/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -198,11 +228,14 @@ export interface FileRouteTypes {
     | '/dashboard/client'
     | '/dashboard/driver'
     | '/dashboard/fleet'
+    | '/dashboard/orders'
     | '/onboarding/documents'
     | '/onboarding/profile'
     | '/onboarding/role'
     | '/dashboard/fleet/drivers'
     | '/dashboard/fleet/earnings'
+    | '/dashboard/orders/$orderId'
+    | '/dashboard/orders/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -217,11 +250,14 @@ export interface FileRouteTypes {
     | '/dashboard/client'
     | '/dashboard/driver'
     | '/dashboard/fleet'
+    | '/dashboard/orders'
     | '/onboarding/documents'
     | '/onboarding/profile'
     | '/onboarding/role'
     | '/dashboard/fleet/drivers'
     | '/dashboard/fleet/earnings'
+    | '/dashboard/orders/$orderId'
+    | '/dashboard/orders/new'
   id:
     | '__root__'
     | '/'
@@ -237,11 +273,14 @@ export interface FileRouteTypes {
     | '/_protected/dashboard/client'
     | '/_protected/dashboard/driver'
     | '/_protected/dashboard/fleet'
+    | '/_protected/dashboard/orders'
     | '/_protected/onboarding/documents'
     | '/_protected/onboarding/profile'
     | '/_protected/onboarding/role'
     | '/_protected/dashboard/fleet/drivers'
     | '/_protected/dashboard/fleet/earnings'
+    | '/_protected/dashboard/orders/$orderId'
+    | '/_protected/dashboard/orders/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -342,6 +381,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedOnboardingDocumentsRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_protected/dashboard/orders': {
+      id: '/_protected/dashboard/orders'
+      path: '/dashboard/orders'
+      fullPath: '/dashboard/orders'
+      preLoaderRoute: typeof ProtectedDashboardOrdersRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_protected/dashboard/fleet': {
       id: '/_protected/dashboard/fleet'
       path: '/dashboard/fleet'
@@ -369,6 +415,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/admin'
       preLoaderRoute: typeof ProtectedDashboardAdminRouteImport
       parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/dashboard/orders/new': {
+      id: '/_protected/dashboard/orders/new'
+      path: '/new'
+      fullPath: '/dashboard/orders/new'
+      preLoaderRoute: typeof ProtectedDashboardOrdersNewRouteImport
+      parentRoute: typeof ProtectedDashboardOrdersRoute
+    }
+    '/_protected/dashboard/orders/$orderId': {
+      id: '/_protected/dashboard/orders/$orderId'
+      path: '/$orderId'
+      fullPath: '/dashboard/orders/$orderId'
+      preLoaderRoute: typeof ProtectedDashboardOrdersOrderIdRouteImport
+      parentRoute: typeof ProtectedDashboardOrdersRoute
     }
     '/_protected/dashboard/fleet/earnings': {
       id: '/_protected/dashboard/fleet/earnings'
@@ -403,11 +463,28 @@ const ProtectedDashboardFleetRouteWithChildren =
     ProtectedDashboardFleetRouteChildren,
   )
 
+interface ProtectedDashboardOrdersRouteChildren {
+  ProtectedDashboardOrdersOrderIdRoute: typeof ProtectedDashboardOrdersOrderIdRoute
+  ProtectedDashboardOrdersNewRoute: typeof ProtectedDashboardOrdersNewRoute
+}
+
+const ProtectedDashboardOrdersRouteChildren: ProtectedDashboardOrdersRouteChildren =
+  {
+    ProtectedDashboardOrdersOrderIdRoute: ProtectedDashboardOrdersOrderIdRoute,
+    ProtectedDashboardOrdersNewRoute: ProtectedDashboardOrdersNewRoute,
+  }
+
+const ProtectedDashboardOrdersRouteWithChildren =
+  ProtectedDashboardOrdersRoute._addFileChildren(
+    ProtectedDashboardOrdersRouteChildren,
+  )
+
 interface ProtectedRouteChildren {
   ProtectedDashboardAdminRoute: typeof ProtectedDashboardAdminRoute
   ProtectedDashboardClientRoute: typeof ProtectedDashboardClientRoute
   ProtectedDashboardDriverRoute: typeof ProtectedDashboardDriverRoute
   ProtectedDashboardFleetRoute: typeof ProtectedDashboardFleetRouteWithChildren
+  ProtectedDashboardOrdersRoute: typeof ProtectedDashboardOrdersRouteWithChildren
   ProtectedOnboardingDocumentsRoute: typeof ProtectedOnboardingDocumentsRoute
   ProtectedOnboardingProfileRoute: typeof ProtectedOnboardingProfileRoute
   ProtectedOnboardingRoleRoute: typeof ProtectedOnboardingRoleRoute
@@ -418,6 +495,7 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedDashboardClientRoute: ProtectedDashboardClientRoute,
   ProtectedDashboardDriverRoute: ProtectedDashboardDriverRoute,
   ProtectedDashboardFleetRoute: ProtectedDashboardFleetRouteWithChildren,
+  ProtectedDashboardOrdersRoute: ProtectedDashboardOrdersRouteWithChildren,
   ProtectedOnboardingDocumentsRoute: ProtectedOnboardingDocumentsRoute,
   ProtectedOnboardingProfileRoute: ProtectedOnboardingProfileRoute,
   ProtectedOnboardingRoleRoute: ProtectedOnboardingRoleRoute,
@@ -441,13 +519,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
