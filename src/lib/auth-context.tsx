@@ -85,6 +85,7 @@ export function dashboardPath(role: AppRole | null): string {
     case "driver": return "/dashboard/driver";
     case "fleet": return "/dashboard/fleet";
     case "admin": return "/dashboard/admin";
+    case "dispatcher": return "/dashboard/orders";
     case "client": return "/dashboard/client";
     default: return "/onboarding/role";
   }
