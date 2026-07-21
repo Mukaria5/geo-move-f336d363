@@ -229,6 +229,238 @@ export type Database = {
         }
         Relationships: []
       }
+      order_documents: {
+        Row: {
+          created_at: string
+          file_path: string
+          id: string
+          kind: string
+          label: string | null
+          order_id: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_path: string
+          id?: string
+          kind: string
+          label?: string | null
+          order_id: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_path?: string
+          id?: string
+          kind?: string
+          label?: string | null
+          order_id?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_documents_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          id: string
+          note: string | null
+          order_id: string
+          status: Database["public"]["Enums"]["order_status"]
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          order_id: string
+          status: Database["public"]["Enums"]["order_status"]
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          order_id?: string
+          status?: Database["public"]["Enums"]["order_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          archived: boolean
+          base_charge: number | null
+          cargo_category: string | null
+          cargo_dimensions: string | null
+          cargo_name: string | null
+          cargo_quantity: number | null
+          cargo_weight_tons: number | null
+          client_email: string | null
+          client_id: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          created_by: string
+          distance_km: number | null
+          driver_id: string | null
+          dropoff_address: string
+          dropoff_at: string | null
+          dropoff_contact_name: string | null
+          dropoff_contact_phone: string | null
+          dropoff_lat: number | null
+          dropoff_lng: number | null
+          dropoff_notes: string | null
+          estimated_total: number | null
+          eta_minutes: number | null
+          extra_charges: number | null
+          final_total: number | null
+          fleet_owner_user_id: string | null
+          fuel_surcharge: number | null
+          id: string
+          loading_fee: number | null
+          offloading_fee: number | null
+          order_number: string
+          pickup_address: string
+          pickup_at: string | null
+          pickup_contact_name: string | null
+          pickup_contact_phone: string | null
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_notes: string | null
+          price_per_km: number | null
+          special_instructions: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          toll_charges: number | null
+          truck_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          archived?: boolean
+          base_charge?: number | null
+          cargo_category?: string | null
+          cargo_dimensions?: string | null
+          cargo_name?: string | null
+          cargo_quantity?: number | null
+          cargo_weight_tons?: number | null
+          client_email?: string | null
+          client_id?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          created_by: string
+          distance_km?: number | null
+          driver_id?: string | null
+          dropoff_address: string
+          dropoff_at?: string | null
+          dropoff_contact_name?: string | null
+          dropoff_contact_phone?: string | null
+          dropoff_lat?: number | null
+          dropoff_lng?: number | null
+          dropoff_notes?: string | null
+          estimated_total?: number | null
+          eta_minutes?: number | null
+          extra_charges?: number | null
+          final_total?: number | null
+          fleet_owner_user_id?: string | null
+          fuel_surcharge?: number | null
+          id?: string
+          loading_fee?: number | null
+          offloading_fee?: number | null
+          order_number?: string
+          pickup_address: string
+          pickup_at?: string | null
+          pickup_contact_name?: string | null
+          pickup_contact_phone?: string | null
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          pickup_notes?: string | null
+          price_per_km?: number | null
+          special_instructions?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          toll_charges?: number | null
+          truck_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          archived?: boolean
+          base_charge?: number | null
+          cargo_category?: string | null
+          cargo_dimensions?: string | null
+          cargo_name?: string | null
+          cargo_quantity?: number | null
+          cargo_weight_tons?: number | null
+          client_email?: string | null
+          client_id?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          created_by?: string
+          distance_km?: number | null
+          driver_id?: string | null
+          dropoff_address?: string
+          dropoff_at?: string | null
+          dropoff_contact_name?: string | null
+          dropoff_contact_phone?: string | null
+          dropoff_lat?: number | null
+          dropoff_lng?: number | null
+          dropoff_notes?: string | null
+          estimated_total?: number | null
+          eta_minutes?: number | null
+          extra_charges?: number | null
+          final_total?: number | null
+          fleet_owner_user_id?: string | null
+          fuel_surcharge?: number | null
+          id?: string
+          loading_fee?: number | null
+          offloading_fee?: number | null
+          order_number?: string
+          pickup_address?: string
+          pickup_at?: string | null
+          pickup_contact_name?: string | null
+          pickup_contact_phone?: string | null
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          pickup_notes?: string | null
+          price_per_km?: number | null
+          special_instructions?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          toll_charges?: number | null
+          truck_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_fleet_owner_user_id_fkey"
+            columns: ["fleet_owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_companies"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "orders_truck_id_fkey"
+            columns: ["truck_id"]
+            isOneToOne: false
+            referencedRelation: "trucks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -374,6 +606,19 @@ export type Database = {
         | "insurance"
         | "ntsa_inspection"
         | "company_registration"
+      order_status:
+        | "pending"
+        | "confirmed"
+        | "assigned"
+        | "en_route_pickup"
+        | "arrived_pickup"
+        | "loading"
+        | "in_transit"
+        | "delayed"
+        | "arrived_dropoff"
+        | "delivered"
+        | "completed"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -510,6 +755,20 @@ export const Constants = {
         "insurance",
         "ntsa_inspection",
         "company_registration",
+      ],
+      order_status: [
+        "pending",
+        "confirmed",
+        "assigned",
+        "en_route_pickup",
+        "arrived_pickup",
+        "loading",
+        "in_transit",
+        "delayed",
+        "arrived_dropoff",
+        "delivered",
+        "completed",
+        "cancelled",
       ],
     },
   },
