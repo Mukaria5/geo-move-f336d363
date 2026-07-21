@@ -12,31 +12,38 @@ type NavItem = { to: string; label: string; icon: any };
 const NAV: Record<AppRole, NavItem[]> = {
   client: [
     { to: "/dashboard/client", label: "Home",     icon: Home },
+    { to: "/dashboard/orders", label: "Orders",   icon: Package },
     { to: "/book",             label: "Book",     icon: MapPin },
-    { to: "/dashboard/client", label: "Tracking", icon: RouteIcon },
     { to: "/dashboard/client", label: "Payments", icon: CreditCard },
     { to: "/dashboard/client", label: "Profile",  icon: Settings },
   ],
   driver: [
     { to: "/dashboard/driver", label: "Home",     icon: Home },
-    { to: "/dashboard/driver", label: "Trips",    icon: Package },
+    { to: "/dashboard/orders", label: "Trips",    icon: Package },
     { to: "/dashboard/driver", label: "Map",      icon: MapPin },
     { to: "/dashboard/driver", label: "History",  icon: BarChart3 },
     { to: "/dashboard/driver", label: "Profile",  icon: Settings },
   ],
   fleet: [
     { to: "/dashboard/fleet",          label: "Home",    icon: Home },
-    { to: "/dashboard/fleet",          label: "Fleet",   icon: Building2 },
+    { to: "/dashboard/orders",         label: "Orders",  icon: Package },
     { to: "/dashboard/fleet/drivers",  label: "Drivers", icon: Users },
     { to: "/dashboard/fleet/earnings", label: "Reports", icon: DollarSign },
-    { to: "/dashboard/fleet",          label: "Profile", icon: Settings },
+    { to: "/dashboard/fleet",          label: "Fleet",   icon: Building2 },
+  ],
+  dispatcher: [
+    { to: "/dashboard/orders",         label: "Orders",  icon: Package },
+    { to: "/dashboard/orders/new",     label: "New",     icon: RouteIcon },
+    { to: "/dashboard/fleet/drivers",  label: "Drivers", icon: Users },
+    { to: "/dashboard/fleet",          label: "Fleet",   icon: Building2 },
+    { to: "/dashboard/client",         label: "Profile", icon: Settings },
   ],
   admin: [
-    { to: "/dashboard/admin", label: "Home",     icon: Home },
-    { to: "/dashboard/admin", label: "Users",    icon: Users },
-    { to: "/dashboard/admin", label: "Docs",     icon: FileText },
-    { to: "/dashboard/admin", label: "Disputes", icon: ShieldAlert },
-    { to: "/dashboard/admin", label: "Profile",  icon: Settings },
+    { to: "/dashboard/admin",  label: "Home",     icon: Home },
+    { to: "/dashboard/orders", label: "Orders",   icon: Package },
+    { to: "/dashboard/admin",  label: "Users",    icon: Users },
+    { to: "/dashboard/admin",  label: "Docs",     icon: FileText },
+    { to: "/dashboard/admin",  label: "Disputes", icon: ShieldAlert },
   ],
 };
 
