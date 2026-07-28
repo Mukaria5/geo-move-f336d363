@@ -49,14 +49,28 @@ function AdminDashboard() {
 
   return (
     <DashboardShell title="Admin console" role="Admin">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-        <StatCard label="Trucks" value={String(trucks.length)} sub={`${trucks.filter(t=>t.verified).length} verified`} />
-        <StatCard label="Companies" value={String(companies.length)} sub={`${companies.filter(c=>c.verified).length} verified`} />
-        <StatCard label="Drivers" value={String(drivers.length)} sub={`${drivers.filter(d=>d.verified).length} verified`} />
-        <StatCard label="Documents" value={String(docs.length)} sub={`${docs.filter(d=>d.status==='pending').length} pending`} />
+      {/* Executive hero */}
+      <div className="card-premium p-5 mb-4 relative overflow-hidden">
+        <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-gold/20 blur-2xl pointer-events-none" />
+        <div className="flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.25em] text-primary-foreground/70">
+          <ShieldCheck className="h-3 w-3" /> Command center
+        </div>
+        <div className="font-display text-2xl font-bold mt-2 text-primary-foreground">
+          Verify · Approve · Ship
+        </div>
+        <div className="text-primary-foreground/70 text-sm mt-1">
+          {trucks.filter(t=>!t.verified).length + companies.filter(c=>!c.verified).length + drivers.filter(d=>!d.verified).length + docs.filter(d=>d.status==='pending').length} items need your review
+        </div>
       </div>
 
-      <div className="flex gap-1 mb-3 p-1 glass rounded-lg w-fit">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+        <StatCard label="Trucks" value={String(trucks.length)} sub={`${trucks.filter(t=>t.verified).length} verified`} tone="info" />
+        <StatCard label="Companies" value={String(companies.length)} sub={`${companies.filter(c=>c.verified).length} verified`} />
+        <StatCard label="Drivers" value={String(drivers.length)} sub={`${drivers.filter(d=>d.verified).length} verified`} tone="success" />
+        <StatCard label="Docs" value={String(docs.length)} sub={`${docs.filter(d=>d.status==='pending').length} pending`} tone="warning" />
+      </div>
+
+      <div className="flex gap-1 mb-3 p-1 card-elevated rounded-2xl w-full sm:w-fit">
         {[
           { k: "trucks", label: "Trucks", icon: Truck },
           { k: "companies", label: "Companies", icon: Building2 },
@@ -66,12 +80,13 @@ function AdminDashboard() {
           <button
             key={k}
             onClick={() => setTab(k as any)}
-            className={`text-xs px-3 py-1.5 rounded-md inline-flex items-center gap-1.5 ${tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            className={`flex-1 sm:flex-none text-xs px-3 py-2 rounded-xl inline-flex items-center justify-center gap-1.5 transition ${tab === k ? "bg-primary text-primary-foreground shadow-soft" : "text-muted-foreground hover:text-foreground"}`}
           >
-            <Icon className="h-3 w-3" /> {label}
+            <Icon className="h-3.5 w-3.5" /> {label}
           </button>
         ))}
       </div>
+
 
       <div className="glass rounded-2xl p-3 space-y-2">
         {tab === "trucks" && trucks.map((t) => (
