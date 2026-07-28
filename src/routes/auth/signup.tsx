@@ -82,15 +82,15 @@ function Signup() {
             <button
               key={r.id}
               onClick={() => setRole(r.id)}
-              className="w-full text-left rounded-xl p-4 border border-border bg-white/5 hover:border-primary/40 transition-all flex items-center gap-4"
+              className="w-full text-left rounded-xl p-4 border border-border bg-secondary/60 hover:border-primary/40 transition-all flex items-center gap-4"
             >
-              <div className="h-11 w-11 rounded-xl bg-white/5 grid place-items-center">
+              <div className="h-11 w-11 rounded-xl bg-secondary/60 grid place-items-center">
                 <r.icon className="h-5 w-5" />
               </div>
               <div className="flex-1">
                 <div className="font-semibold flex items-center gap-2">
                   {r.title}
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-muted-foreground">{r.tag}</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">{r.tag}</span>
                 </div>
                 <div className="text-xs text-muted-foreground mt-0.5">{r.desc}</div>
               </div>

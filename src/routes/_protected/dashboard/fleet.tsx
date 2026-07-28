@@ -59,16 +59,16 @@ function DocsPanel() {
       ) : (
         <div className="space-y-2">
           {docs.map((d) => (
-            <div key={d.id} className="flex items-center gap-2 rounded-lg border border-border bg-white/5 p-3">
+            <div key={d.id} className="flex items-center gap-2 rounded-lg border border-border bg-secondary/60 p-3">
               <FileText className="h-4 w-4 text-primary shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold capitalize truncate">{String(d.doc_type).replace(/_/g, " ")}</div>
                 <div className="text-[11px] text-muted-foreground font-mono truncate">{d.file_path}</div>
               </div>
-              <span className={`text-[10px] px-2 py-1 rounded ${d.status === "approved" ? "bg-emerald-500/15 text-emerald-300" : d.status === "rejected" ? "bg-red-500/15 text-red-300" : "bg-amber-500/15 text-amber-300"}`}>
+              <span className={`text-[10px] px-2 py-1 rounded ${d.status === "approved" ? "status-success" : d.status === "rejected" ? "status-urgent" : "status-warning"}`}>
                 {d.status}
               </span>
-              <button onClick={() => view(d.file_path)} className="h-8 w-8 grid place-items-center rounded-md hover:bg-white/10" title="View">
+              <button onClick={() => view(d.file_path)} className="h-8 w-8 grid place-items-center rounded-md hover:bg-secondary" title="View">
                 <Eye className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -187,7 +187,7 @@ function TruckCard({ truck, onChange }: { truck: TruckRow; onChange: () => void 
   };
 
   return (
-    <div className="rounded-xl border border-border bg-white/5 p-3">
+    <div className="rounded-xl border border-border bg-secondary/60 p-3">
       <div className="flex items-start gap-3">
         <div className="h-10 w-10 rounded-lg bg-primary/15 grid place-items-center">
           <Truck className="h-4 w-4 text-primary" />
@@ -196,9 +196,9 @@ function TruckCard({ truck, onChange }: { truck: TruckRow; onChange: () => void 
           <div className="font-semibold text-sm flex items-center gap-2">
             {truck.truck_model}
             {truck.verified ? (
-              <span className="text-[10px] inline-flex items-center gap-1 text-emerald-400"><CheckCircle2 className="h-3 w-3" /> Verified</span>
+              <span className="text-[10px] inline-flex items-center gap-1 text-[color:var(--success)]"><CheckCircle2 className="h-3 w-3" /> Verified</span>
             ) : (
-              <span className="text-[10px] inline-flex items-center gap-1 text-amber-400"><Clock className="h-3 w-3" /> Pending admin</span>
+              <span className="text-[10px] inline-flex items-center gap-1 text-[color:var(--warning)]"><Clock className="h-3 w-3" /> Pending admin</span>
             )}
           </div>
           <div className="text-xs text-muted-foreground font-mono mt-0.5">{truck.plate} · {truck.capacity_tons}t</div>
@@ -214,7 +214,7 @@ function TruckCard({ truck, onChange }: { truck: TruckRow; onChange: () => void 
           disabled={busy || !truck.verified}
           title={!truck.verified ? "Awaiting admin verification" : ""}
           className={`text-[11px] px-2 py-1 rounded-md font-medium ${
-            truck.is_online ? "bg-emerald-500/15 text-emerald-700" : "bg-muted text-muted-foreground"
+            truck.is_online ? "status-success" : "bg-muted text-muted-foreground"
           }`}
         >
           {truck.is_online ? "Online" : "Go online"}
@@ -289,7 +289,7 @@ function AddTruckModal({ userId, onClose, onCreated }: { userId: string; onClose
       >
         <div className="flex items-center justify-between">
           <h3 className="font-display text-lg font-bold">Add a truck</h3>
-          <button type="button" onClick={onClose} className="h-8 w-8 grid place-items-center rounded-lg hover:bg-white/5"><X className="h-4 w-4" /></button>
+          <button type="button" onClick={onClose} className="h-8 w-8 grid place-items-center rounded-lg hover:bg-secondary/60"><X className="h-4 w-4" /></button>
         </div>
 
         <FormField label="Truck model" placeholder="e.g. Mercedes Actros 4148" value={form.truck_model} onChange={update("truck_model")} />
@@ -301,7 +301,7 @@ function AddTruckModal({ userId, onClose, onCreated }: { userId: string; onClose
         </div>
         <FormField label="Driver name (optional)" placeholder="Search profile name" value={form.driver_email} onChange={update("driver_email")} />
 
-        <div className="text-[11px] text-muted-foreground bg-amber-500/10 border border-amber-500/20 rounded-lg p-2">
+        <div className="text-[11px] text-muted-foreground status-warning border-0 rounded-lg p-2">
           New trucks are not visible to clients until an admin verifies them.
         </div>
 
@@ -323,7 +323,7 @@ function FormField({ label, ...rest }: { label: string } & React.InputHTMLAttrib
       <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">{label}</span>
       <input
         {...rest}
-        className="mt-1 w-full h-10 px-3 rounded-lg bg-white/5 border border-border focus:border-primary/60 outline-none text-sm"
+        className="mt-1 w-full h-10 px-3 rounded-lg bg-secondary/60 border border-border focus:border-primary/60 outline-none text-sm"
       />
     </label>
   );

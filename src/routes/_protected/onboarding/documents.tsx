@@ -84,10 +84,10 @@ function Documents() {
           const done = uploaded[d.id];
           return (
             <label key={d.id} className={`block rounded-xl p-4 border transition-all cursor-pointer ${
-              done ? "border-primary/60 bg-primary/5" : "border-border bg-white/5 hover:border-primary/40"
+              done ? "border-primary/60 bg-primary/5" : "border-border bg-secondary/60 hover:border-primary/40"
             }`}>
               <div className="flex items-center gap-3">
-                <div className={`h-10 w-10 rounded-lg grid place-items-center ${done ? "bg-primary text-primary-foreground" : "bg-white/10"}`}>
+                <div className={`h-10 w-10 rounded-lg grid place-items-center ${done ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>
                   {done ? <Check className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
                 </div>
                 <div className="flex-1 min-w-0">

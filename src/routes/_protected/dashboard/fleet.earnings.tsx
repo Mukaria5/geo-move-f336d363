@@ -107,12 +107,12 @@ function FleetEarnings() {
               return (
                 <div
                   key={b.id}
-                  className="rounded-xl border border-border bg-white/5 p-3"
+                  className="rounded-xl border border-border bg-secondary/60 p-3"
                 >
                   <div className="flex items-start gap-3">
                     <div className="h-10 w-10 rounded-lg bg-primary/15 grid place-items-center">
                       {b.status === "completed" ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                        <CheckCircle2 className="h-4 w-4 text-[color:var(--success)]" />
                       ) : (
                         <TrendingUp className="h-4 w-4 text-primary" />
                       )}

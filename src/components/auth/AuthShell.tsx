@@ -47,7 +47,7 @@ export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className={"w-full h-11 px-3 rounded-lg bg-white/5 border border-border focus:border-primary/60 outline-none text-sm transition " + (props.className ?? "")}
+      className={"w-full h-11 px-3 rounded-lg bg-secondary/60 border border-border focus:border-primary/60 outline-none text-sm transition " + (props.className ?? "")}
     />
   );
 }
@@ -67,7 +67,7 @@ export function GhostButton({ children, ...rest }: React.ButtonHTMLAttributes<HT
   return (
     <button
       {...rest}
-      className={"w-full h-11 rounded-lg glass font-medium hover:bg-white/5 inline-flex items-center justify-center gap-2 " + (rest.className ?? "")}
+      className={"w-full h-11 rounded-lg glass font-medium hover:bg-secondary/60 inline-flex items-center justify-center gap-2 " + (rest.className ?? "")}
     />
   );
 }

@@ -75,16 +75,16 @@ function RolePicker() {
               transition={{ delay: i * 0.05 }}
               onClick={() => setSelected(r.id)}
               className={`w-full text-left rounded-xl p-4 border transition-all flex items-center gap-4 ${
-                active ? "border-primary bg-primary/10" : "border-border bg-white/5 hover:border-primary/40"
+                active ? "border-primary bg-primary/10" : "border-border bg-secondary/60 hover:border-primary/40"
               }`}
             >
-              <div className={`h-11 w-11 rounded-xl grid place-items-center ${active ? "bg-primary text-primary-foreground" : "bg-white/5"}`}>
+              <div className={`h-11 w-11 rounded-xl grid place-items-center ${active ? "bg-primary text-primary-foreground" : "bg-secondary/60"}`}>
                 <r.icon className="h-5 w-5" />
               </div>
               <div className="flex-1">
                 <div className="font-semibold flex items-center gap-2">
                   {r.title}
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-muted-foreground">{r.tag}</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">{r.tag}</span>
                 </div>
                 <div className="text-xs text-muted-foreground mt-0.5">{r.desc}</div>
               </div>

@@ -90,7 +90,7 @@ function Login() {
       subtitle="Sign in to manage your transport jobs."
       footer={<>Don't have an account? <Link to="/auth/signup" className="text-primary font-medium">Create one</Link></>}
     >
-      <div className="grid grid-cols-2 gap-1 p-1 rounded-lg bg-white/5 mb-5 text-xs font-mono uppercase tracking-wider">
+      <div className="grid grid-cols-2 gap-1 p-1 rounded-lg bg-secondary/60 mb-5 text-xs font-mono uppercase tracking-wider">
         {(["email", "phone"] as Mode[]).map((m) => (
           <button
             key={m}
