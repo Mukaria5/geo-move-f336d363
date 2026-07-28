@@ -222,31 +222,38 @@ function DriverDashboard() {
     <DashboardShell title="Driver dashboard" role="Operator">
       <button
         onClick={toggleOnline}
-        className={`w-full glass-strong rounded-2xl p-5 mb-3 flex items-center gap-4 border transition-all ${online ? "border-primary bg-primary/10" : "border-border"}`}
+        className={`w-full rounded-3xl p-5 mb-3 flex items-center gap-4 border transition-all press ${
+          online
+            ? "card-premium border-transparent shadow-glow"
+            : "card-elevated border-border"
+        }`}
       >
-        <div className={`relative h-12 w-12 rounded-full grid place-items-center ${online ? "bg-primary" : "bg-secondary"}`}>
-          <Power className={`h-5 w-5 ${online ? "text-primary-foreground" : ""}`} strokeWidth={2.5} />
-          {online && <div className="absolute inset-0 rounded-full pulse-ring opacity-50" />}
+        <div className={`relative h-12 w-12 rounded-2xl grid place-items-center ${online ? "bg-gold text-primary" : "bg-primary-soft text-primary"}`}>
+          <Power className="h-5 w-5" strokeWidth={2.5} />
+          {online && <div className="absolute inset-0 rounded-2xl pulse-ring opacity-50" />}
         </div>
-        <div className="flex-1 text-left">
-          <div className="font-display text-lg font-bold">{online ? "You're online" : "You're offline"}</div>
-          <div className="text-xs text-muted-foreground">
+        <div className="flex-1 text-left min-w-0">
+          <div className={`font-display text-lg font-bold ${online ? "text-primary-foreground" : ""}`}>
+            {online ? "You're online" : "You're offline"}
+          </div>
+          <div className={`text-xs truncate ${online ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
             {!truck ? "Register your truck to start" : active ? "On an active trip" : online ? "Sharing live location · receiving requests" : "Tap to start receiving jobs"}
           </div>
         </div>
-        <div className={`text-xs font-mono px-2 py-1 rounded ${online ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>
-          {online ? "LIVE" : "OFF"}
+        <div className={`text-[10px] font-mono uppercase tracking-widest px-2 py-1 rounded-full ${online ? "bg-gold text-primary" : "bg-secondary text-muted-foreground"}`}>
+          {online ? "Live" : "Off"}
         </div>
       </button>
 
-      <div className="grid grid-cols-3 gap-1 glass rounded-xl p-1 mb-4 text-xs font-medium">
+      <div className="grid grid-cols-3 gap-1 card-elevated p-1 mb-4 text-xs font-medium rounded-2xl">
         {(["jobs", "earnings", "truck"] as Tab[]).map((t) => (
           <button key={t} onClick={() => setTab(t)}
-            className={`py-2 rounded-lg transition-colors capitalize ${tab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+            className={`py-2.5 rounded-xl transition-colors capitalize ${tab === t ? "bg-primary text-primary-foreground shadow-soft" : "text-muted-foreground hover:text-foreground"}`}>
             {t}
           </button>
         ))}
       </div>
+
 
       <AnimatePresence mode="wait">
         {tab === "jobs" && (
