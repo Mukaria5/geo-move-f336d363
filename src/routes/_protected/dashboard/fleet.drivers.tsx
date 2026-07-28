@@ -88,7 +88,7 @@ function FleetDrivers() {
             {rows.map((d) => (
               <div
                 key={d.driver_id}
-                className="rounded-xl border border-border bg-white/5 p-3"
+                className="rounded-xl border border-border bg-secondary/60 p-3"
               >
                 <div className="flex items-start gap-3">
                   <div className="h-10 w-10 rounded-lg bg-primary/15 grid place-items-center">
@@ -117,7 +117,7 @@ function FleetDrivers() {
                           <span
                             className={`text-[10px] px-1.5 py-0.5 rounded ${
                               t.is_online
-                                ? "bg-emerald-500/15 text-emerald-300"
+                                ? "status-success"
                                 : "bg-muted text-muted-foreground"
                             }`}
                           >

@@ -59,16 +59,16 @@ function DocsPanel() {
       ) : (
         <div className="space-y-2">
           {docs.map((d) => (
-            <div key={d.id} className="flex items-center gap-2 rounded-lg border border-border bg-white/5 p-3">
+            <div key={d.id} className="flex items-center gap-2 rounded-lg border border-border bg-secondary/60 p-3">
               <FileText className="h-4 w-4 text-primary shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold capitalize truncate">{String(d.doc_type).replace(/_/g, " ")}</div>
                 <div className="text-[11px] text-muted-foreground font-mono truncate">{d.file_path}</div>
               </div>
-              <span className={`text-[10px] px-2 py-1 rounded ${d.status === "approved" ? "bg-emerald-500/15 text-emerald-300" : d.status === "rejected" ? "bg-red-500/15 text-red-300" : "bg-amber-500/15 text-amber-300"}`}>
+              <span className={`text-[10px] px-2 py-1 rounded ${d.status === "approved" ? "status-success" : d.status === "rejected" ? "status-urgent" : "status-warning"}`}>
                 {d.status}
               </span>
-              <button onClick={() => view(d.file_path)} className="h-8 w-8 grid place-items-center rounded-md hover:bg-white/10" title="View">
+              <button onClick={() => view(d.file_path)} className="h-8 w-8 grid place-items-center rounded-md hover:bg-secondary" title="View">
                 <Eye className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -106,44 +106,58 @@ function FleetDashboard() {
 
   return (
     <DashboardShell title={company?.company_name ?? "Fleet dashboard"} role="Fleet">
-      <div className="glass-strong rounded-2xl p-5 mb-4">
-        <div className="flex items-center gap-3">
-          <div className="h-12 w-12 rounded-xl bg-primary/15 grid place-items-center">
-            <Building2 className="h-5 w-5 text-primary" />
+      {/* Hero */}
+      <div className="card-premium p-5 mb-4 relative overflow-hidden">
+        <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-gold/20 blur-2xl pointer-events-none" />
+        <div className="flex items-center gap-3 relative">
+          <div className="h-12 w-12 rounded-2xl bg-gold/90 text-primary grid place-items-center shrink-0 shadow-gold">
+            <Building2 className="h-5 w-5" strokeWidth={2.4} />
           </div>
-          <div className="flex-1">
-            <div className="font-display text-lg font-bold">{company?.company_name ?? "Your fleet"}</div>
-            <div className="text-xs text-muted-foreground">
-              {trucks.length} trucks · {company?.verified ? "Verified company" : "Company pending verification"}
+          <div className="flex-1 min-w-0">
+            <div className="font-display text-xl font-bold text-primary-foreground truncate">{company?.company_name ?? "Your fleet"}</div>
+            <div className="text-xs text-primary-foreground/70 mt-0.5">
+              {trucks.length} trucks · {company?.verified ? "Verified company" : "Pending verification"}
             </div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-        <StatCard label="Trucks" value={String(trucks.length)} />
-        <StatCard label="Verified" value={String(verifiedCount)} sub="visible to clients" />
+        <StatCard label="Trucks" value={String(trucks.length)} tone="info" />
+        <StatCard label="Verified" value={String(verifiedCount)} sub="live to clients" tone="success" />
         <StatCard label="Online" value={String(onlineCount)} />
         <StatCard label="Revenue" value="KSh 0" sub="this month" />
       </div>
 
-      <div className="glass rounded-2xl p-4">
+
+      <div className="card-elevated p-4">
         <div className="flex items-center justify-between mb-3">
-          <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground">My trucks</div>
+          <div className="text-sm font-display font-semibold">My trucks</div>
           <button
             onClick={() => setShowAdd(true)}
-            className="text-xs font-medium text-primary inline-flex items-center gap-1 px-2 py-1 rounded hover:bg-primary/10"
+            className="text-xs font-semibold text-primary inline-flex items-center gap-1 px-3 h-8 rounded-full bg-primary-soft press"
           >
-            <Plus className="h-3 w-3" /> Add truck
+            <Plus className="h-3.5 w-3.5" /> Add truck
           </button>
         </div>
 
         {loading ? (
-          <div className="py-10 grid place-items-center"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+          <div className="space-y-2">
+            {[0,1,2].map(i => <div key={i} className="skeleton h-16" />)}
+          </div>
         ) : trucks.length === 0 ? (
-          <div className="text-center py-8 text-sm text-muted-foreground">
-            <Truck className="h-6 w-6 mx-auto mb-2 opacity-50" />
-            No trucks added yet. Add your first truck to start receiving jobs.
+          <div className="text-center py-10">
+            <div className="h-14 w-14 rounded-3xl bg-primary-soft grid place-items-center mx-auto mb-3">
+              <Truck className="h-6 w-6 text-primary" strokeWidth={1.8} />
+            </div>
+            <div className="font-display font-semibold text-sm">No trucks yet</div>
+            <div className="text-xs text-muted-foreground mt-1">Add your first truck to start receiving jobs.</div>
+            <button
+              onClick={() => setShowAdd(true)}
+              className="inline-flex items-center gap-1.5 mt-4 rounded-full bg-primary text-primary-foreground px-4 h-9 text-xs font-semibold press"
+            >
+              <Plus className="h-3.5 w-3.5" /> Add first truck
+            </button>
           </div>
         ) : (
           <div className="space-y-2">
@@ -151,6 +165,7 @@ function FleetDashboard() {
           </div>
         )}
       </div>
+
 
       <DocsPanel />
 
@@ -187,23 +202,22 @@ function TruckCard({ truck, onChange }: { truck: TruckRow; onChange: () => void 
   };
 
   return (
-    <div className="rounded-xl border border-border bg-white/5 p-3">
+    <div className="rounded-2xl border border-border bg-card p-3 shadow-soft hover:shadow-float transition">
       <div className="flex items-start gap-3">
-        <div className="h-10 w-10 rounded-lg bg-primary/15 grid place-items-center">
-          <Truck className="h-4 w-4 text-primary" />
+        <div className="h-11 w-11 rounded-2xl bg-primary-soft grid place-items-center shrink-0">
+          <Truck className="h-5 w-5 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm flex items-center gap-2">
-            {truck.truck_model}
+          <div className="font-semibold text-sm flex items-center gap-2 flex-wrap">
+            <span className="truncate">{truck.truck_model}</span>
             {truck.verified ? (
-              <span className="text-[10px] inline-flex items-center gap-1 text-emerald-400"><CheckCircle2 className="h-3 w-3" /> Verified</span>
+              <span className="text-[10px] inline-flex items-center gap-1 px-2 py-0.5 rounded-full status-success"><CheckCircle2 className="h-3 w-3" /> Verified</span>
             ) : (
-              <span className="text-[10px] inline-flex items-center gap-1 text-amber-400"><Clock className="h-3 w-3" /> Pending admin</span>
+              <span className="text-[10px] inline-flex items-center gap-1 px-2 py-0.5 rounded-full status-warning"><Clock className="h-3 w-3" /> Pending</span>
             )}
           </div>
           <div className="text-xs text-muted-foreground font-mono mt-0.5">{truck.plate} · {truck.capacity_tons}t</div>
           <div className="text-xs mt-1">
-            <span className="text-muted-foreground">Base </span>
             <span className="font-mono">KSh {Number(truck.base_price).toLocaleString()}</span>
             <span className="text-muted-foreground"> + </span>
             <span className="font-mono">KSh {Number(truck.price_per_km).toLocaleString()}/km</span>
@@ -213,8 +227,8 @@ function TruckCard({ truck, onChange }: { truck: TruckRow; onChange: () => void 
           onClick={toggleAvailable}
           disabled={busy || !truck.verified}
           title={!truck.verified ? "Awaiting admin verification" : ""}
-          className={`text-[11px] px-2 py-1 rounded-md font-medium ${
-            truck.is_online ? "bg-emerald-500/15 text-emerald-700" : "bg-muted text-muted-foreground"
+          className={`text-[11px] px-3 h-8 rounded-full font-semibold press disabled:opacity-40 ${
+            truck.is_online ? "status-success" : "bg-primary text-primary-foreground shadow-soft"
           }`}
         >
           {truck.is_online ? "Online" : "Go online"}
@@ -223,6 +237,7 @@ function TruckCard({ truck, onChange }: { truck: TruckRow; onChange: () => void 
     </div>
   );
 }
+
 
 function AddTruckModal({ userId, onClose, onCreated }: { userId: string; onClose: () => void; onCreated: () => void }) {
   const [form, setForm] = useState({
@@ -278,18 +293,20 @@ function AddTruckModal({ userId, onClose, onCreated }: { userId: string; onClose
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm grid place-items-center p-4"
+      className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={onClose}
     >
       <motion.form
-        initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
+        initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 320, damping: 32 }}
         onSubmit={submit}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md glass-strong rounded-2xl p-5 space-y-3"
+        className="w-full max-w-md bg-card rounded-t-3xl sm:rounded-3xl p-5 space-y-3 shadow-elevated safe-bottom"
       >
+        <div className="mx-auto h-1 w-10 rounded-full bg-border sm:hidden" />
         <div className="flex items-center justify-between">
           <h3 className="font-display text-lg font-bold">Add a truck</h3>
-          <button type="button" onClick={onClose} className="h-8 w-8 grid place-items-center rounded-lg hover:bg-white/5"><X className="h-4 w-4" /></button>
+          <button type="button" onClick={onClose} className="h-9 w-9 grid place-items-center rounded-full bg-secondary hover:bg-secondary/80 press"><X className="h-4 w-4" /></button>
         </div>
 
         <FormField label="Truck model" placeholder="e.g. Mercedes Actros 4148" value={form.truck_model} onChange={update("truck_model")} />
@@ -301,14 +318,14 @@ function AddTruckModal({ userId, onClose, onCreated }: { userId: string; onClose
         </div>
         <FormField label="Driver name (optional)" placeholder="Search profile name" value={form.driver_email} onChange={update("driver_email")} />
 
-        <div className="text-[11px] text-muted-foreground bg-amber-500/10 border border-amber-500/20 rounded-lg p-2">
-          New trucks are not visible to clients until an admin verifies them.
+        <div className="text-[11px] rounded-xl status-warning p-2.5">
+          New trucks are hidden from clients until admin verification.
         </div>
 
         <button
           type="submit"
           disabled={busy}
-          className="w-full h-11 rounded-lg bg-primary text-primary-foreground font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 glow-safety"
+          className="w-full h-12 rounded-2xl bg-primary text-primary-foreground font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 shadow-glow press"
         >
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Add truck"}
         </button>
@@ -320,12 +337,13 @@ function AddTruckModal({ userId, onClose, onCreated }: { userId: string; onClose
 function FormField({ label, ...rest }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="block">
-      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">{label}</span>
+      <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">{label}</span>
       <input
         {...rest}
-        className="mt-1 w-full h-10 px-3 rounded-lg bg-white/5 border border-border focus:border-primary/60 outline-none text-sm"
+        className="mt-1 w-full h-11 px-3.5 rounded-xl bg-secondary/70 border border-border focus:border-primary focus:bg-card outline-none text-sm transition"
       />
     </label>
   );
 }
+
 

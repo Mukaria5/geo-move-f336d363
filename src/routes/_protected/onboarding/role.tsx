@@ -74,28 +74,30 @@ function RolePicker() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
               onClick={() => setSelected(r.id)}
-              className={`w-full text-left rounded-xl p-4 border transition-all flex items-center gap-4 ${
-                active ? "border-primary bg-primary/10" : "border-border bg-white/5 hover:border-primary/40"
+              className={`w-full text-left rounded-2xl p-4 border transition-all flex items-center gap-4 press ${
+                active
+                  ? "border-primary bg-primary-soft shadow-soft"
+                  : "border-border bg-card hover:border-primary/40 shadow-soft"
               }`}
             >
-              <div className={`h-11 w-11 rounded-xl grid place-items-center ${active ? "bg-primary text-primary-foreground" : "bg-white/5"}`}>
-                <r.icon className="h-5 w-5" />
+              <div className={`h-12 w-12 rounded-2xl grid place-items-center shrink-0 ${active ? "bg-primary text-primary-foreground shadow-glow" : "bg-primary-soft text-primary"}`}>
+                <r.icon className="h-5 w-5" strokeWidth={2.2} />
               </div>
-              <div className="flex-1">
-                <div className="font-semibold flex items-center gap-2">
+              <div className="flex-1 min-w-0">
+                <div className="font-display font-semibold flex items-center gap-2 flex-wrap">
                   {r.title}
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-muted-foreground">{r.tag}</span>
+                  <span className="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">{r.tag}</span>
                 </div>
                 <div className="text-xs text-muted-foreground mt-0.5">{r.desc}</div>
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              <ChevronRight className={`h-4 w-4 transition ${active ? "text-primary" : "text-muted-foreground"}`} />
             </motion.button>
           );
         })}
         <button
           onClick={confirm}
           disabled={!selected || busy}
-          className="w-full mt-2 h-11 rounded-lg bg-primary text-primary-foreground font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-40 glow-safety"
+          className="w-full mt-2 h-12 rounded-2xl bg-primary text-primary-foreground font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-40 shadow-glow press"
         >
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Continue"}
         </button>

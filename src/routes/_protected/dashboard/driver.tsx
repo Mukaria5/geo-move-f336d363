@@ -222,31 +222,38 @@ function DriverDashboard() {
     <DashboardShell title="Driver dashboard" role="Operator">
       <button
         onClick={toggleOnline}
-        className={`w-full glass-strong rounded-2xl p-5 mb-3 flex items-center gap-4 border transition-all ${online ? "border-primary bg-primary/10" : "border-border"}`}
+        className={`w-full rounded-3xl p-5 mb-3 flex items-center gap-4 border transition-all press ${
+          online
+            ? "card-premium border-transparent shadow-glow"
+            : "card-elevated border-border"
+        }`}
       >
-        <div className={`relative h-12 w-12 rounded-full grid place-items-center ${online ? "bg-primary" : "bg-white/10"}`}>
-          <Power className={`h-5 w-5 ${online ? "text-primary-foreground" : ""}`} strokeWidth={2.5} />
-          {online && <div className="absolute inset-0 rounded-full pulse-ring opacity-50" />}
+        <div className={`relative h-12 w-12 rounded-2xl grid place-items-center ${online ? "bg-gold text-primary" : "bg-primary-soft text-primary"}`}>
+          <Power className="h-5 w-5" strokeWidth={2.5} />
+          {online && <div className="absolute inset-0 rounded-2xl pulse-ring opacity-50" />}
         </div>
-        <div className="flex-1 text-left">
-          <div className="font-display text-lg font-bold">{online ? "You're online" : "You're offline"}</div>
-          <div className="text-xs text-muted-foreground">
+        <div className="flex-1 text-left min-w-0">
+          <div className={`font-display text-lg font-bold ${online ? "text-primary-foreground" : ""}`}>
+            {online ? "You're online" : "You're offline"}
+          </div>
+          <div className={`text-xs truncate ${online ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
             {!truck ? "Register your truck to start" : active ? "On an active trip" : online ? "Sharing live location · receiving requests" : "Tap to start receiving jobs"}
           </div>
         </div>
-        <div className={`text-xs font-mono px-2 py-1 rounded ${online ? "bg-primary/20 text-primary" : "bg-white/10 text-muted-foreground"}`}>
-          {online ? "LIVE" : "OFF"}
+        <div className={`text-[10px] font-mono uppercase tracking-widest px-2 py-1 rounded-full ${online ? "bg-gold text-primary" : "bg-secondary text-muted-foreground"}`}>
+          {online ? "Live" : "Off"}
         </div>
       </button>
 
-      <div className="grid grid-cols-3 gap-1 glass rounded-xl p-1 mb-4 text-xs font-medium">
+      <div className="grid grid-cols-3 gap-1 card-elevated p-1 mb-4 text-xs font-medium rounded-2xl">
         {(["jobs", "earnings", "truck"] as Tab[]).map((t) => (
           <button key={t} onClick={() => setTab(t)}
-            className={`py-2 rounded-lg transition-colors capitalize ${tab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+            className={`py-2.5 rounded-xl transition-colors capitalize ${tab === t ? "bg-primary text-primary-foreground shadow-soft" : "text-muted-foreground hover:text-foreground"}`}>
             {t}
           </button>
         ))}
       </div>
+
 
       <AnimatePresence mode="wait">
         {tab === "jobs" && (
@@ -323,7 +330,7 @@ function JobRequestCard({ job, truck, onAccept, onReject }: { job: BookingRow; t
         <Pill icon={<Clock className="h-3 w-3" />} label={`${km.toFixed(1)} km away`} />
       </div>
       <div className="flex gap-2">
-        <button onClick={onReject} className="flex-1 h-11 rounded-xl border border-border text-sm font-medium hover:bg-white/5 transition flex items-center justify-center gap-1">
+        <button onClick={onReject} className="flex-1 h-11 rounded-xl border border-border text-sm font-medium hover:bg-secondary/60 transition flex items-center justify-center gap-1">
           <X className="h-4 w-4" /> Decline
         </button>
         <button onClick={onAccept} className="flex-[2] h-11 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 transition flex items-center justify-center gap-1">
@@ -369,7 +376,7 @@ function ActiveJobView({
         <div className="text-xs text-muted-foreground mb-3">Step {idx + 1} of {STAGE_FLOW.length - 1} · client sees this live</div>
         <div className="flex gap-1 mb-4">
           {STAGE_FLOW.slice(0, -1).map((s, i) => (
-            <div key={s.id} className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-white/10"}`} />
+            <div key={s.id} className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-secondary"}`} />
           ))}
         </div>
         <div className="rounded-xl overflow-hidden h-48 relative">
@@ -544,7 +551,7 @@ function Input({ label, value, onChange, placeholder, type = "text" }: { label: 
     <label className="block">
       <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-1">{label}</div>
       <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} type={type}
-        className="w-full bg-white/5 border border-border rounded-lg px-3 h-10 text-sm outline-none focus:border-primary" />
+        className="w-full bg-secondary/60 border border-border rounded-lg px-3 h-10 text-sm outline-none focus:border-primary" />
     </label>
   );
 }
@@ -562,12 +569,12 @@ function RouteRow({ color, label, place }: { color: "primary" | "muted"; label: 
   );
 }
 function Pill({ icon, label }: { icon: React.ReactNode; label: string }) {
-  return <div className="rounded-lg bg-white/5 border border-border px-2 py-1.5 flex items-center justify-center gap-1 font-mono">{icon}{label}</div>;
+  return <div className="rounded-lg bg-secondary/60 border border-border px-2 py-1.5 flex items-center justify-center gap-1 font-mono">{icon}{label}</div>;
 }
 function Empty({ icon, title, sub }: { icon: React.ReactNode; title: string; sub: string }) {
   return (
     <div className="glass rounded-2xl p-10 text-center">
-      <div className="h-12 w-12 mx-auto rounded-full bg-white/5 grid place-items-center text-muted-foreground mb-3">{icon}</div>
+      <div className="h-12 w-12 mx-auto rounded-full bg-secondary/60 grid place-items-center text-muted-foreground mb-3">{icon}</div>
       <div className="font-semibold text-sm">{title}</div>
       <div className="text-xs text-muted-foreground mt-1">{sub}</div>
     </div>
