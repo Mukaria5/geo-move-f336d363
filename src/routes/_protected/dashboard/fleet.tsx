@@ -293,18 +293,20 @@ function AddTruckModal({ userId, onClose, onCreated }: { userId: string; onClose
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm grid place-items-center p-4"
+      className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={onClose}
     >
       <motion.form
-        initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
+        initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 320, damping: 32 }}
         onSubmit={submit}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md glass-strong rounded-2xl p-5 space-y-3"
+        className="w-full max-w-md bg-card rounded-t-3xl sm:rounded-3xl p-5 space-y-3 shadow-elevated safe-bottom"
       >
+        <div className="mx-auto h-1 w-10 rounded-full bg-border sm:hidden" />
         <div className="flex items-center justify-between">
           <h3 className="font-display text-lg font-bold">Add a truck</h3>
-          <button type="button" onClick={onClose} className="h-8 w-8 grid place-items-center rounded-lg hover:bg-secondary/60"><X className="h-4 w-4" /></button>
+          <button type="button" onClick={onClose} className="h-9 w-9 grid place-items-center rounded-full bg-secondary hover:bg-secondary/80 press"><X className="h-4 w-4" /></button>
         </div>
 
         <FormField label="Truck model" placeholder="e.g. Mercedes Actros 4148" value={form.truck_model} onChange={update("truck_model")} />
@@ -316,14 +318,14 @@ function AddTruckModal({ userId, onClose, onCreated }: { userId: string; onClose
         </div>
         <FormField label="Driver name (optional)" placeholder="Search profile name" value={form.driver_email} onChange={update("driver_email")} />
 
-        <div className="text-[11px] text-muted-foreground status-warning border-0 rounded-lg p-2">
-          New trucks are not visible to clients until an admin verifies them.
+        <div className="text-[11px] rounded-xl status-warning p-2.5">
+          New trucks are hidden from clients until admin verification.
         </div>
 
         <button
           type="submit"
           disabled={busy}
-          className="w-full h-11 rounded-lg bg-primary text-primary-foreground font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 glow-safety"
+          className="w-full h-12 rounded-2xl bg-primary text-primary-foreground font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 shadow-glow press"
         >
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Add truck"}
         </button>
@@ -335,12 +337,13 @@ function AddTruckModal({ userId, onClose, onCreated }: { userId: string; onClose
 function FormField({ label, ...rest }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="block">
-      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">{label}</span>
+      <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">{label}</span>
       <input
         {...rest}
-        className="mt-1 w-full h-10 px-3 rounded-lg bg-secondary/60 border border-border focus:border-primary/60 outline-none text-sm"
+        className="mt-1 w-full h-11 px-3.5 rounded-xl bg-secondary/70 border border-border focus:border-primary focus:bg-card outline-none text-sm transition"
       />
     </label>
   );
 }
+
 
