@@ -28,8 +28,11 @@ import { Route as ProtectedDashboardClientRouteImport } from './routes/_protecte
 import { Route as ProtectedDashboardAdminRouteImport } from './routes/_protected/dashboard/admin'
 import { Route as ProtectedDashboardOrdersNewRouteImport } from './routes/_protected/dashboard/orders.new'
 import { Route as ProtectedDashboardOrdersOrderIdRouteImport } from './routes/_protected/dashboard/orders.$orderId'
+import { Route as ProtectedDashboardFleetNewRouteImport } from './routes/_protected/dashboard/fleet.new'
+import { Route as ProtectedDashboardFleetMapRouteImport } from './routes/_protected/dashboard/fleet.map'
 import { Route as ProtectedDashboardFleetEarningsRouteImport } from './routes/_protected/dashboard/fleet.earnings'
 import { Route as ProtectedDashboardFleetDriversRouteImport } from './routes/_protected/dashboard/fleet.drivers'
+import { Route as ProtectedDashboardFleetVehiclesVehicleIdRouteImport } from './routes/_protected/dashboard/fleet.vehicles.$vehicleId'
 
 const BookRoute = BookRouteImport.update({
   id: '/book',
@@ -132,6 +135,18 @@ const ProtectedDashboardOrdersOrderIdRoute =
     path: '/$orderId',
     getParentRoute: () => ProtectedDashboardOrdersRoute,
   } as any)
+const ProtectedDashboardFleetNewRoute =
+  ProtectedDashboardFleetNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => ProtectedDashboardFleetRoute,
+  } as any)
+const ProtectedDashboardFleetMapRoute =
+  ProtectedDashboardFleetMapRouteImport.update({
+    id: '/map',
+    path: '/map',
+    getParentRoute: () => ProtectedDashboardFleetRoute,
+  } as any)
 const ProtectedDashboardFleetEarningsRoute =
   ProtectedDashboardFleetEarningsRouteImport.update({
     id: '/earnings',
@@ -142,6 +157,12 @@ const ProtectedDashboardFleetDriversRoute =
   ProtectedDashboardFleetDriversRouteImport.update({
     id: '/drivers',
     path: '/drivers',
+    getParentRoute: () => ProtectedDashboardFleetRoute,
+  } as any)
+const ProtectedDashboardFleetVehiclesVehicleIdRoute =
+  ProtectedDashboardFleetVehiclesVehicleIdRouteImport.update({
+    id: '/vehicles/$vehicleId',
+    path: '/vehicles/$vehicleId',
     getParentRoute: () => ProtectedDashboardFleetRoute,
   } as any)
 
@@ -164,8 +185,11 @@ export interface FileRoutesByFullPath {
   '/onboarding/role': typeof ProtectedOnboardingRoleRoute
   '/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRoute
   '/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
+  '/dashboard/fleet/map': typeof ProtectedDashboardFleetMapRoute
+  '/dashboard/fleet/new': typeof ProtectedDashboardFleetNewRoute
   '/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
   '/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
+  '/dashboard/fleet/vehicles/$vehicleId': typeof ProtectedDashboardFleetVehiclesVehicleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -186,8 +210,11 @@ export interface FileRoutesByTo {
   '/onboarding/role': typeof ProtectedOnboardingRoleRoute
   '/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRoute
   '/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
+  '/dashboard/fleet/map': typeof ProtectedDashboardFleetMapRoute
+  '/dashboard/fleet/new': typeof ProtectedDashboardFleetNewRoute
   '/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
   '/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
+  '/dashboard/fleet/vehicles/$vehicleId': typeof ProtectedDashboardFleetVehiclesVehicleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -210,8 +237,11 @@ export interface FileRoutesById {
   '/_protected/onboarding/role': typeof ProtectedOnboardingRoleRoute
   '/_protected/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRoute
   '/_protected/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
+  '/_protected/dashboard/fleet/map': typeof ProtectedDashboardFleetMapRoute
+  '/_protected/dashboard/fleet/new': typeof ProtectedDashboardFleetNewRoute
   '/_protected/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
   '/_protected/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
+  '/_protected/dashboard/fleet/vehicles/$vehicleId': typeof ProtectedDashboardFleetVehiclesVehicleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -234,8 +264,11 @@ export interface FileRouteTypes {
     | '/onboarding/role'
     | '/dashboard/fleet/drivers'
     | '/dashboard/fleet/earnings'
+    | '/dashboard/fleet/map'
+    | '/dashboard/fleet/new'
     | '/dashboard/orders/$orderId'
     | '/dashboard/orders/new'
+    | '/dashboard/fleet/vehicles/$vehicleId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -256,8 +289,11 @@ export interface FileRouteTypes {
     | '/onboarding/role'
     | '/dashboard/fleet/drivers'
     | '/dashboard/fleet/earnings'
+    | '/dashboard/fleet/map'
+    | '/dashboard/fleet/new'
     | '/dashboard/orders/$orderId'
     | '/dashboard/orders/new'
+    | '/dashboard/fleet/vehicles/$vehicleId'
   id:
     | '__root__'
     | '/'
@@ -279,8 +315,11 @@ export interface FileRouteTypes {
     | '/_protected/onboarding/role'
     | '/_protected/dashboard/fleet/drivers'
     | '/_protected/dashboard/fleet/earnings'
+    | '/_protected/dashboard/fleet/map'
+    | '/_protected/dashboard/fleet/new'
     | '/_protected/dashboard/orders/$orderId'
     | '/_protected/dashboard/orders/new'
+    | '/_protected/dashboard/fleet/vehicles/$vehicleId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -430,6 +469,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardOrdersOrderIdRouteImport
       parentRoute: typeof ProtectedDashboardOrdersRoute
     }
+    '/_protected/dashboard/fleet/new': {
+      id: '/_protected/dashboard/fleet/new'
+      path: '/new'
+      fullPath: '/dashboard/fleet/new'
+      preLoaderRoute: typeof ProtectedDashboardFleetNewRouteImport
+      parentRoute: typeof ProtectedDashboardFleetRoute
+    }
+    '/_protected/dashboard/fleet/map': {
+      id: '/_protected/dashboard/fleet/map'
+      path: '/map'
+      fullPath: '/dashboard/fleet/map'
+      preLoaderRoute: typeof ProtectedDashboardFleetMapRouteImport
+      parentRoute: typeof ProtectedDashboardFleetRoute
+    }
     '/_protected/dashboard/fleet/earnings': {
       id: '/_protected/dashboard/fleet/earnings'
       path: '/earnings'
@@ -444,18 +497,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardFleetDriversRouteImport
       parentRoute: typeof ProtectedDashboardFleetRoute
     }
+    '/_protected/dashboard/fleet/vehicles/$vehicleId': {
+      id: '/_protected/dashboard/fleet/vehicles/$vehicleId'
+      path: '/vehicles/$vehicleId'
+      fullPath: '/dashboard/fleet/vehicles/$vehicleId'
+      preLoaderRoute: typeof ProtectedDashboardFleetVehiclesVehicleIdRouteImport
+      parentRoute: typeof ProtectedDashboardFleetRoute
+    }
   }
 }
 
 interface ProtectedDashboardFleetRouteChildren {
   ProtectedDashboardFleetDriversRoute: typeof ProtectedDashboardFleetDriversRoute
   ProtectedDashboardFleetEarningsRoute: typeof ProtectedDashboardFleetEarningsRoute
+  ProtectedDashboardFleetMapRoute: typeof ProtectedDashboardFleetMapRoute
+  ProtectedDashboardFleetNewRoute: typeof ProtectedDashboardFleetNewRoute
+  ProtectedDashboardFleetVehiclesVehicleIdRoute: typeof ProtectedDashboardFleetVehiclesVehicleIdRoute
 }
 
 const ProtectedDashboardFleetRouteChildren: ProtectedDashboardFleetRouteChildren =
   {
     ProtectedDashboardFleetDriversRoute: ProtectedDashboardFleetDriversRoute,
     ProtectedDashboardFleetEarningsRoute: ProtectedDashboardFleetEarningsRoute,
+    ProtectedDashboardFleetMapRoute: ProtectedDashboardFleetMapRoute,
+    ProtectedDashboardFleetNewRoute: ProtectedDashboardFleetNewRoute,
+    ProtectedDashboardFleetVehiclesVehicleIdRoute:
+      ProtectedDashboardFleetVehiclesVehicleIdRoute,
   }
 
 const ProtectedDashboardFleetRouteWithChildren =

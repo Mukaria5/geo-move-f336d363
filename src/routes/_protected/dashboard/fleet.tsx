@@ -1,28 +1,26 @@
-import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Building2, Truck, Plus, Loader2, CheckCircle2, Clock, X, FileText, Eye } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+  Building2, Truck, Plus, Loader2, FileText, Eye, Search, Map as MapIcon,
+  AlertTriangle, Wrench, Sparkles, X, ChevronRight,
+} from "lucide-react";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { DashboardShell, StatCard } from "@/components/dashboard/DashboardShell";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ListSkeleton } from "@/components/ui/SkeletonList";
+import { PullToRefresh } from "@/components/ui/PullToRefresh";
+import { VehicleCard } from "@/components/fleet/VehicleCard";
+import { VehicleStatusSheet } from "@/components/fleet/VehicleStatusSheet";
+import { AssignVehicleSheet } from "@/components/fleet/AssignVehicleSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
+import {
+  FLEET_FILTERS, VEHICLE_STATUS_META, buildFleetAlerts, matchesFilter, utilization,
+  BUSY_STATUSES, type FleetFilter, type VehicleRow,
+} from "@/lib/fleet-data";
 
 export const Route = createFileRoute("/_protected/dashboard/fleet")({ component: FleetDashboard });
-
-type TruckRow = {
-  id: string;
-  truck_model: string;
-  plate: string;
-  capacity_tons: number;
-  base_price: number;
-  price_per_km: number;
-  is_online: boolean;
-  is_available: boolean;
-  verified: boolean;
-  driver_id: string | null;
-  current_lat: number | null;
-  current_lng: number | null;
-};
 
 function DocsPanel() {
   const { user } = useAuth();
@@ -42,10 +40,10 @@ function DocsPanel() {
   };
 
   return (
-    <div className="glass rounded-2xl p-4 mt-4">
+    <div className="card-elevated p-4 mt-4">
       <div className="flex items-center justify-between mb-3">
-        <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground">My documents</div>
-        <a href="/onboarding/documents" className="text-xs font-medium text-primary inline-flex items-center gap-1 px-2 py-1 rounded hover:bg-primary/10">
+        <div className="text-sm font-display font-semibold">Company documents</div>
+        <a href="/onboarding/documents" className="text-xs font-semibold text-primary inline-flex items-center gap-1 px-3 h-8 rounded-full bg-primary-soft press">
           <Plus className="h-3 w-3" /> Upload
         </a>
       </div>
@@ -59,16 +57,16 @@ function DocsPanel() {
       ) : (
         <div className="space-y-2">
           {docs.map((d) => (
-            <div key={d.id} className="flex items-center gap-2 rounded-lg border border-border bg-secondary/60 p-3">
+            <div key={d.id} className="flex items-center gap-2 rounded-2xl border border-border bg-secondary/50 p-3">
               <FileText className="h-4 w-4 text-primary shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold capitalize truncate">{String(d.doc_type).replace(/_/g, " ")}</div>
                 <div className="text-[11px] text-muted-foreground font-mono truncate">{d.file_path}</div>
               </div>
-              <span className={`text-[10px] px-2 py-1 rounded ${d.status === "approved" ? "status-success" : d.status === "rejected" ? "status-urgent" : "status-warning"}`}>
+              <span className={`text-[10px] px-2 py-1 rounded-full ${d.status === "approved" ? "status-success" : d.status === "rejected" ? "status-urgent" : "status-warning"}`}>
                 {d.status}
               </span>
-              <button onClick={() => view(d.file_path)} className="h-8 w-8 grid place-items-center rounded-md hover:bg-secondary" title="View">
+              <button onClick={() => view(d.file_path)} className="h-8 w-8 grid place-items-center rounded-full hover:bg-secondary press" title="View">
                 <Eye className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -79,12 +77,54 @@ function DocsPanel() {
   );
 }
 
+function FleetChart({ vehicles }: { vehicles: VehicleRow[] }) {
+  const buckets = [
+    { key: "available", label: "Available", n: vehicles.filter(v => v.status === "available" || v.status === "idle").length, cls: "bg-emerald-500" },
+    { key: "on_trip", label: "On trip", n: vehicles.filter(v => BUSY_STATUSES.includes(v.status)).length, cls: "bg-blue-500" },
+    { key: "maintenance", label: "Maintenance", n: vehicles.filter(v => v.status === "maintenance" || v.status === "out_of_service").length, cls: "bg-orange-500" },
+    { key: "offline", label: "Offline", n: vehicles.filter(v => v.status === "offline").length, cls: "bg-rose-500" },
+  ];
+  const total = Math.max(vehicles.length, 1);
+  return (
+    <div className="card-elevated p-4">
+      <div className="text-sm font-display font-semibold mb-3">Fleet status</div>
+      <div className="flex h-3 w-full rounded-full overflow-hidden bg-secondary">
+        {buckets.map((b) => (
+          <motion.div
+            key={b.key}
+            className={b.cls}
+            initial={{ width: 0 }}
+            animate={{ width: `${(b.n / total) * 100}%` }}
+            transition={{ type: "spring", stiffness: 160, damping: 26 }}
+          />
+        ))}
+      </div>
+      <div className="grid grid-cols-2 gap-y-1.5 mt-3">
+        {buckets.map((b) => (
+          <div key={b.key} className="flex items-center gap-1.5 text-[11px]">
+            <span className={`h-2 w-2 rounded-full ${b.cls}`} />
+            <span className="text-muted-foreground">{b.label}</span>
+            <span className="font-semibold ml-auto mr-3 font-mono">{b.n}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FleetDashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [company, setCompany] = useState<any>(null);
-  const [trucks, setTrucks] = useState<TruckRow[]>([]);
+  const [vehicles, setVehicles] = useState<VehicleRow[]>([]);
+  const [drivers, setDrivers] = useState<Record<string, string>>({});
+  const [orders, setOrders] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-  const [showAdd, setShowAdd] = useState(false);
+  const [q, setQ] = useState("");
+  const [filter, setFilter] = useState<FleetFilter>("all");
+  const [statusFor, setStatusFor] = useState<VehicleRow | null>(null);
+  const [assignFor, setAssignFor] = useState<VehicleRow | null>(null);
+  const [selection, setSelection] = useState<string[] | null>(null);
 
   const refresh = async () => {
     if (!user) return;
@@ -93,257 +133,275 @@ function FleetDashboard() {
       supabase.from("trucks").select("*").eq("owner_id", user.id).order("created_at", { ascending: false }),
     ]);
     setCompany(c);
-    setTrucks((t as TruckRow[]) ?? []);
+    const list = (t as VehicleRow[]) ?? [];
+    setVehicles(list);
+
+    const driverIds = Array.from(new Set(list.map((v) => v.driver_id).filter(Boolean))) as string[];
+    if (driverIds.length) {
+      const { data: p } = await supabase.from("profiles").select("id, full_name").in("id", driverIds);
+      setDrivers(Object.fromEntries((p ?? []).map((x: any) => [x.id, x.full_name ?? "Driver"])));
+    }
+    const orderIds = Array.from(new Set(list.map((v) => v.current_order_id).filter(Boolean))) as string[];
+    if (orderIds.length) {
+      const { data: o } = await supabase.from("orders").select("id, order_number").in("id", orderIds);
+      setOrders(Object.fromEntries((o ?? []).map((x: any) => [x.id, x.order_number])));
+    }
     setLoading(false);
   };
 
-  useEffect(() => {
-    refresh();
-  }, [user]);
+  useEffect(() => { refresh(); }, [user]);
 
-  const verifiedCount = trucks.filter((t) => t.verified).length;
-  const onlineCount = trucks.filter((t) => t.is_online).length;
+  const alerts = useMemo(() => buildFleetAlerts(vehicles), [vehicles]);
+
+  const filtered = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    return vehicles.filter((v) => {
+      if (!matchesFilter(v.status, filter)) return false;
+      if (!term) return true;
+      const driver = v.driver_id ? drivers[v.driver_id] ?? "" : "";
+      return [
+        v.plate, v.fleet_number, v.vehicle_type, v.make, v.model, v.truck_model,
+        v.branch, VEHICLE_STATUS_META[v.status].label, driver,
+      ].filter(Boolean).join(" ").toLowerCase().includes(term);
+    });
+  }, [vehicles, q, filter, drivers]);
+
+  const kpi = {
+    total: vehicles.length,
+    available: vehicles.filter((v) => v.status === "available" || v.status === "idle").length,
+    onTrip: vehicles.filter((v) => BUSY_STATUSES.includes(v.status)).length,
+    maintenance: vehicles.filter((v) => v.status === "maintenance" || v.status === "out_of_service").length,
+    offline: vehicles.filter((v) => v.status === "offline").length,
+  };
+
+  const upcoming = vehicles
+    .filter((v) => v.next_service_date)
+    .sort((a, b) => (a.next_service_date! < b.next_service_date! ? -1 : 1))
+    .slice(0, 4);
+
+  const recent = vehicles.slice(0, 3);
 
   return (
-    <DashboardShell title={company?.company_name ?? "Fleet dashboard"} role="Fleet">
-      {/* Hero */}
-      <div className="card-premium p-5 mb-4 relative overflow-hidden">
-        <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-gold/20 blur-2xl pointer-events-none" />
-        <div className="flex items-center gap-3 relative">
-          <div className="h-12 w-12 rounded-2xl bg-gold/90 text-primary grid place-items-center shrink-0 shadow-gold">
-            <Building2 className="h-5 w-5" strokeWidth={2.4} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="font-display text-xl font-bold text-primary-foreground truncate">{company?.company_name ?? "Your fleet"}</div>
-            <div className="text-xs text-primary-foreground/70 mt-0.5">
-              {trucks.length} trucks · {company?.verified ? "Verified company" : "Pending verification"}
+    <DashboardShell title={company?.company_name ?? "Fleet"} role="Fleet">
+      <PullToRefresh onRefresh={refresh}>
+        {/* Hero */}
+        <div className="card-premium p-5 mb-4 relative overflow-hidden">
+          <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-gold/20 blur-2xl pointer-events-none" />
+          <div className="flex items-center gap-3 relative">
+            <div className="h-12 w-12 rounded-2xl bg-gold/90 text-primary grid place-items-center shrink-0 shadow-gold">
+              <Building2 className="h-5 w-5" strokeWidth={2.4} />
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-        <StatCard label="Trucks" value={String(trucks.length)} tone="info" />
-        <StatCard label="Verified" value={String(verifiedCount)} sub="live to clients" tone="success" />
-        <StatCard label="Online" value={String(onlineCount)} />
-        <StatCard label="Revenue" value="KSh 0" sub="this month" />
-      </div>
-
-
-      <div className="card-elevated p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="text-sm font-display font-semibold">My trucks</div>
-          <button
-            onClick={() => setShowAdd(true)}
-            className="text-xs font-semibold text-primary inline-flex items-center gap-1 px-3 h-8 rounded-full bg-primary-soft press"
-          >
-            <Plus className="h-3.5 w-3.5" /> Add truck
-          </button>
-        </div>
-
-        {loading ? (
-          <div className="space-y-2">
-            {[0,1,2].map(i => <div key={i} className="skeleton h-16" />)}
-          </div>
-        ) : trucks.length === 0 ? (
-          <div className="text-center py-10">
-            <div className="h-14 w-14 rounded-3xl bg-primary-soft grid place-items-center mx-auto mb-3">
-              <Truck className="h-6 w-6 text-primary" strokeWidth={1.8} />
+            <div className="flex-1 min-w-0">
+              <div className="font-display text-xl font-bold text-primary-foreground truncate">
+                {company?.company_name ?? "Your fleet"}
+              </div>
+              <div className="text-xs text-primary-foreground/70 mt-0.5">
+                {kpi.total} vehicles · {utilization(vehicles)}% utilisation · {company?.verified ? "Verified" : "Pending verification"}
+              </div>
             </div>
-            <div className="font-display font-semibold text-sm">No trucks yet</div>
-            <div className="text-xs text-muted-foreground mt-1">Add your first truck to start receiving jobs.</div>
-            <button
-              onClick={() => setShowAdd(true)}
-              className="inline-flex items-center gap-1.5 mt-4 rounded-full bg-primary text-primary-foreground px-4 h-9 text-xs font-semibold press"
+            <Link
+              to="/dashboard/fleet/map"
+              className="h-10 px-3 rounded-full bg-primary-foreground/15 text-primary-foreground text-xs font-semibold inline-flex items-center gap-1.5 press"
             >
-              <Plus className="h-3.5 w-3.5" /> Add first truck
-            </button>
+              <MapIcon className="h-3.5 w-3.5" /> Map
+            </Link>
           </div>
-        ) : (
-          <div className="space-y-2">
-            {trucks.map((t) => <TruckCard key={t.id} truck={t} onChange={refresh} />)}
+        </div>
+
+        {/* KPIs */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+          <StatCard label="Total" value={String(kpi.total)} sub="vehicles" tone="info" />
+          <StatCard label="Available" value={String(kpi.available)} sub="ready to dispatch" tone="success" />
+          <StatCard label="On trip" value={String(kpi.onTrip)} sub="active orders" />
+          <StatCard label="Maintenance" value={String(kpi.maintenance)} sub="in workshop" tone="warning" />
+          <StatCard label="Offline" value={String(kpi.offline)} sub="not reporting" tone="urgent" />
+          <StatCard label="Utilisation" value={`${utilization(vehicles)}%`} sub="fleet in use" tone="info" />
+        </div>
+
+        <div className="grid gap-3 mb-4">
+          <FleetChart vehicles={vehicles} />
+
+          {/* Attention required */}
+          <div className="card-elevated p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle className="h-4 w-4 text-orange-500" />
+              <div className="text-sm font-display font-semibold">Attention required</div>
+              <span className="ml-auto text-xs text-muted-foreground">{alerts.length}</span>
+            </div>
+            {alerts.length === 0 ? (
+              <div className="text-xs text-muted-foreground py-3 text-center">Everything is compliant and reporting.</div>
+            ) : (
+              <div className="space-y-1.5 max-h-64 overflow-y-auto">
+                {alerts.slice(0, 8).map((a) => (
+                  <Link
+                    key={a.id}
+                    to="/dashboard/fleet/vehicles/$vehicleId"
+                    params={{ vehicleId: a.truckId }}
+                    className="flex items-center gap-2 rounded-2xl border border-border bg-secondary/50 p-2.5 press"
+                  >
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${a.severity === "urgent" ? "status-urgent" : "status-warning"}`}>
+                      {a.title}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-semibold font-mono truncate">{a.plate}</div>
+                      <div className="text-[11px] text-muted-foreground truncate">{a.detail}</div>
+                    </div>
+                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
+          {/* Upcoming maintenance */}
+          <div className="card-elevated p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Wrench className="h-4 w-4 text-primary" />
+              <div className="text-sm font-display font-semibold">Upcoming maintenance</div>
+            </div>
+            {upcoming.length === 0 ? (
+              <div className="text-xs text-muted-foreground py-3 text-center">No scheduled services yet.</div>
+            ) : (
+              <div className="space-y-1.5">
+                {upcoming.map((v) => (
+                  <Link
+                    key={v.id}
+                    to="/dashboard/fleet/vehicles/$vehicleId"
+                    params={{ vehicleId: v.id }}
+                    className="flex items-center gap-2 text-xs rounded-2xl bg-secondary/50 border border-border p-2.5 press"
+                  >
+                    <span className="font-mono font-semibold">{v.plate}</span>
+                    <span className="text-muted-foreground truncate">{v.vehicle_type ?? v.truck_model}</span>
+                    <span className="ml-auto font-mono text-muted-foreground">{v.next_service_date}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
 
-      <DocsPanel />
+          {/* Recently added */}
+          {recent.length > 0 && (
+            <div className="card-elevated p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="h-4 w-4 text-gold" />
+                <div className="text-sm font-display font-semibold">Recently added</div>
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {recent.map((v) => (
+                  <Link
+                    key={v.id}
+                    to="/dashboard/fleet/vehicles/$vehicleId"
+                    params={{ vehicleId: v.id }}
+                    className="shrink-0 rounded-2xl border border-border bg-secondary/50 p-3 min-w-[9.5rem] press"
+                  >
+                    <Truck className="h-4 w-4 text-primary mb-1.5" />
+                    <div className="text-sm font-semibold font-mono truncate">{v.plate}</div>
+                    <div className="text-[11px] text-muted-foreground truncate">{v.vehicle_type ?? v.truck_model}</div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
-      <AnimatePresence>
-        {showAdd && user && (
-          <AddTruckModal
-            userId={user.id}
-            onClose={() => setShowAdd(false)}
-            onCreated={() => { setShowAdd(false); refresh(); }}
-          />
-        )}
-      </AnimatePresence>
+        {/* Search + filters */}
+        <div className="sticky top-[4.6rem] z-20 -mx-4 px-4 py-2 bg-background/85 backdrop-blur">
+          <div className="relative">
+            <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Registration, fleet no, driver, type, branch…"
+              className="w-full h-11 pl-10 pr-9 rounded-2xl bg-secondary/70 border border-border focus:border-primary focus:bg-card outline-none text-sm transition"
+            />
+            {q && (
+              <button onClick={() => setQ("")} className="absolute right-3 top-1/2 -translate-y-1/2 press" aria-label="Clear search">
+                <X className="h-4 w-4 text-muted-foreground" />
+              </button>
+            )}
+          </div>
+          <div className="flex gap-1.5 mt-2 overflow-x-auto pb-1">
+            {FLEET_FILTERS.map((f) => (
+              <button
+                key={f.key}
+                onClick={() => setFilter(f.key)}
+                className={`shrink-0 h-8 px-3.5 rounded-full text-xs font-semibold press transition ${
+                  filter === f.key ? "bg-primary text-primary-foreground shadow-soft" : "bg-secondary text-muted-foreground"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Selection bar */}
+        <AnimatePresence>
+          {selection && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+              className="flex items-center gap-2 rounded-2xl bg-primary text-primary-foreground px-3 h-11 my-2"
+            >
+              <span className="text-xs font-semibold">{selection.length} selected</span>
+              <button onClick={() => setSelection(null)} className="ml-auto text-xs font-semibold px-3 h-8 rounded-full bg-primary-foreground/15 press">
+                Done
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Vehicle list */}
+        <div className="mt-3 space-y-2">
+          {loading ? (
+            <ListSkeleton count={4} />
+          ) : filtered.length === 0 ? (
+            <EmptyState
+              icon={Truck}
+              title={vehicles.length === 0 ? "No vehicles yet" : "No matching vehicles"}
+              description={vehicles.length === 0
+                ? "Add your first vehicle to start dispatching orders."
+                : "Try a different search term or filter."}
+              action={vehicles.length === 0 ? (
+                <Link to="/dashboard/fleet/new" className="inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-5 h-11 text-sm font-semibold shadow-glow press">
+                  <Plus className="h-4 w-4" /> Add vehicle
+                </Link>
+              ) : undefined}
+            />
+          ) : (
+            filtered.map((v) => (
+              <VehicleCard
+                key={v.id}
+                vehicle={v}
+                driverName={v.driver_id ? drivers[v.driver_id] : null}
+                orderNumber={v.current_order_id ? orders[v.current_order_id] : null}
+                onOpen={() => navigate({ to: "/dashboard/fleet/vehicles/$vehicleId", params: { vehicleId: v.id } })}
+                onQuickStatus={() => setStatusFor(v)}
+                onAssign={() => setAssignFor(v)}
+                selectionMode={selection !== null}
+                selected={selection?.includes(v.id)}
+                onLongPress={() => setSelection((s) => (s ? s : [v.id]))}
+                onToggleSelect={() =>
+                  setSelection((s) => (s ? (s.includes(v.id) ? s.filter((x) => x !== v.id) : [...s, v.id]) : [v.id]))
+                }
+              />
+            ))
+          )}
+        </div>
+
+        <DocsPanel />
+      </PullToRefresh>
+
+      {/* FAB */}
+      <Link
+        to="/dashboard/fleet/new"
+        className="fixed right-4 z-40 h-14 pl-4 pr-5 rounded-full bg-primary text-primary-foreground shadow-glow inline-flex items-center gap-2 font-semibold text-sm press"
+        style={{ bottom: "calc(5.6rem + env(safe-area-inset-bottom))" }}
+      >
+        <Plus className="h-5 w-5" /> Add Vehicle
+      </Link>
+
+      <VehicleStatusSheet vehicle={statusFor} open={!!statusFor} onClose={() => setStatusFor(null)} onChanged={refresh} />
+      <AssignVehicleSheet vehicle={assignFor} open={!!assignFor} onClose={() => setAssignFor(null)} onAssigned={refresh} />
     </DashboardShell>
   );
 }
-
-function TruckCard({ truck, onChange }: { truck: TruckRow; onChange: () => void }) {
-  const [busy, setBusy] = useState(false);
-
-  const toggleAvailable = async () => {
-    setBusy(true);
-    const next = !truck.is_online;
-    const patch: { is_online: boolean; is_available: boolean; current_lat?: number; current_lng?: number } = {
-      is_online: next,
-      is_available: next,
-    };
-    if (next && (truck.current_lat == null || truck.current_lng == null)) {
-      patch.current_lat = -1.2921;
-      patch.current_lng = 36.8219;
-    }
-    const { error } = await supabase.from("trucks").update(patch).eq("id", truck.id);
-    setBusy(false);
-    if (error) toast.error(error.message); else onChange();
-  };
-
-  return (
-    <div className="rounded-2xl border border-border bg-card p-3 shadow-soft hover:shadow-float transition">
-      <div className="flex items-start gap-3">
-        <div className="h-11 w-11 rounded-2xl bg-primary-soft grid place-items-center shrink-0">
-          <Truck className="h-5 w-5 text-primary" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm flex items-center gap-2 flex-wrap">
-            <span className="truncate">{truck.truck_model}</span>
-            {truck.verified ? (
-              <span className="text-[10px] inline-flex items-center gap-1 px-2 py-0.5 rounded-full status-success"><CheckCircle2 className="h-3 w-3" /> Verified</span>
-            ) : (
-              <span className="text-[10px] inline-flex items-center gap-1 px-2 py-0.5 rounded-full status-warning"><Clock className="h-3 w-3" /> Pending</span>
-            )}
-          </div>
-          <div className="text-xs text-muted-foreground font-mono mt-0.5">{truck.plate} · {truck.capacity_tons}t</div>
-          <div className="text-xs mt-1">
-            <span className="font-mono">KSh {Number(truck.base_price).toLocaleString()}</span>
-            <span className="text-muted-foreground"> + </span>
-            <span className="font-mono">KSh {Number(truck.price_per_km).toLocaleString()}/km</span>
-          </div>
-        </div>
-        <button
-          onClick={toggleAvailable}
-          disabled={busy || !truck.verified}
-          title={!truck.verified ? "Awaiting admin verification" : ""}
-          className={`text-[11px] px-3 h-8 rounded-full font-semibold press disabled:opacity-40 ${
-            truck.is_online ? "status-success" : "bg-primary text-primary-foreground shadow-soft"
-          }`}
-        >
-          {truck.is_online ? "Online" : "Go online"}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-
-function AddTruckModal({ userId, onClose, onCreated }: { userId: string; onClose: () => void; onCreated: () => void }) {
-  const [form, setForm] = useState({
-    truck_model: "",
-    plate: "",
-    capacity_tons: "30",
-    base_price: "5000",
-    price_per_km: "300",
-    driver_email: "",
-  });
-  const [busy, setBusy] = useState(false);
-
-  const update = (k: keyof typeof form) => (e: any) => setForm((f) => ({ ...f, [k]: e.target.value }));
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.truck_model || !form.plate) {
-      toast.error("Model and plate are required");
-      return;
-    }
-    setBusy(true);
-
-    let driver_id: string | null = null;
-    if (form.driver_email.trim()) {
-      // Best-effort lookup via profiles (no auth.users access from client)
-      const { data: prof } = await supabase
-        .from("profiles").select("id").ilike("full_name", `%${form.driver_email.trim()}%`).maybeSingle();
-      if (prof?.id) driver_id = prof.id;
-    }
-
-    const { error } = await supabase.from("trucks").insert({
-      owner_id: userId,
-      fleet_owner_user_id: userId,
-      truck_model: form.truck_model,
-      plate: form.plate.toUpperCase(),
-      capacity_tons: Number(form.capacity_tons) || 30,
-      base_price: Number(form.base_price) || 0,
-      price_per_km: Number(form.price_per_km) || 0,
-      driver_id,
-      is_available: true,
-      is_online: false,
-      verified: false,
-    });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Truck added — awaiting admin verification before it appears to clients.");
-    onCreated();
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
-      onClick={onClose}
-    >
-      <motion.form
-        initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
-        transition={{ type: "spring", stiffness: 320, damping: 32 }}
-        onSubmit={submit}
-        onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md bg-card rounded-t-3xl sm:rounded-3xl p-5 space-y-3 shadow-elevated safe-bottom"
-      >
-        <div className="mx-auto h-1 w-10 rounded-full bg-border sm:hidden" />
-        <div className="flex items-center justify-between">
-          <h3 className="font-display text-lg font-bold">Add a truck</h3>
-          <button type="button" onClick={onClose} className="h-9 w-9 grid place-items-center rounded-full bg-secondary hover:bg-secondary/80 press"><X className="h-4 w-4" /></button>
-        </div>
-
-        <FormField label="Truck model" placeholder="e.g. Mercedes Actros 4148" value={form.truck_model} onChange={update("truck_model")} />
-        <FormField label="Number plate" placeholder="KCA 123A" value={form.plate} onChange={update("plate")} />
-        <div className="grid grid-cols-3 gap-2">
-          <FormField label="Capacity (t)" type="number" value={form.capacity_tons} onChange={update("capacity_tons")} />
-          <FormField label="Base (KSh)" type="number" value={form.base_price} onChange={update("base_price")} />
-          <FormField label="Per km (KSh)" type="number" value={form.price_per_km} onChange={update("price_per_km")} />
-        </div>
-        <FormField label="Driver name (optional)" placeholder="Search profile name" value={form.driver_email} onChange={update("driver_email")} />
-
-        <div className="text-[11px] rounded-xl status-warning p-2.5">
-          New trucks are hidden from clients until admin verification.
-        </div>
-
-        <button
-          type="submit"
-          disabled={busy}
-          className="w-full h-12 rounded-2xl bg-primary text-primary-foreground font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 shadow-glow press"
-        >
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Add truck"}
-        </button>
-      </motion.form>
-    </motion.div>
-  );
-}
-
-function FormField({ label, ...rest }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <label className="block">
-      <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">{label}</span>
-      <input
-        {...rest}
-        className="mt-1 w-full h-11 px-3.5 rounded-xl bg-secondary/70 border border-border focus:border-primary focus:bg-card outline-none text-sm transition"
-      />
-    </label>
-  );
-}
-
-
