@@ -493,64 +493,139 @@ export type Database = {
       }
       trucks: {
         Row: {
+          axles: number | null
           base_price: number
+          branch: string | null
           capacity_tons: number
+          chassis_no: string | null
+          color: string | null
           created_at: string
           current_lat: number | null
           current_lng: number | null
+          current_order_id: string | null
           driver_id: string | null
+          fleet_number: string | null
           fleet_owner_user_id: string | null
+          fuel_level_pct: number | null
+          fuel_type: string | null
           id: string
+          insurance_expiry: string | null
           is_available: boolean
           is_online: boolean
+          last_service_date: string | null
           location_updated_at: string | null
+          make: string | null
+          model: string | null
+          next_service_date: string | null
           notes: string | null
           owner_id: string
+          photo_url: string | null
           plate: string
           price_per_km: number
+          road_licence_expiry: string | null
+          status: Database["public"]["Enums"]["vehicle_status"]
+          status_changed_at: string
+          tracker_id: string | null
+          tracker_provider: string | null
+          tracker_sim: string | null
+          tracker_status: string | null
+          transmission: string | null
           truck_model: string
           updated_at: string
+          vehicle_type: string | null
           verified: boolean
+          weight_kg: number | null
+          year: number | null
         }
         Insert: {
+          axles?: number | null
           base_price?: number
+          branch?: string | null
           capacity_tons?: number
+          chassis_no?: string | null
+          color?: string | null
           created_at?: string
           current_lat?: number | null
           current_lng?: number | null
+          current_order_id?: string | null
           driver_id?: string | null
+          fleet_number?: string | null
           fleet_owner_user_id?: string | null
+          fuel_level_pct?: number | null
+          fuel_type?: string | null
           id?: string
+          insurance_expiry?: string | null
           is_available?: boolean
           is_online?: boolean
+          last_service_date?: string | null
           location_updated_at?: string | null
+          make?: string | null
+          model?: string | null
+          next_service_date?: string | null
           notes?: string | null
           owner_id: string
+          photo_url?: string | null
           plate: string
           price_per_km?: number
+          road_licence_expiry?: string | null
+          status?: Database["public"]["Enums"]["vehicle_status"]
+          status_changed_at?: string
+          tracker_id?: string | null
+          tracker_provider?: string | null
+          tracker_sim?: string | null
+          tracker_status?: string | null
+          transmission?: string | null
           truck_model: string
           updated_at?: string
+          vehicle_type?: string | null
           verified?: boolean
+          weight_kg?: number | null
+          year?: number | null
         }
         Update: {
+          axles?: number | null
           base_price?: number
+          branch?: string | null
           capacity_tons?: number
+          chassis_no?: string | null
+          color?: string | null
           created_at?: string
           current_lat?: number | null
           current_lng?: number | null
+          current_order_id?: string | null
           driver_id?: string | null
+          fleet_number?: string | null
           fleet_owner_user_id?: string | null
+          fuel_level_pct?: number | null
+          fuel_type?: string | null
           id?: string
+          insurance_expiry?: string | null
           is_available?: boolean
           is_online?: boolean
+          last_service_date?: string | null
           location_updated_at?: string | null
+          make?: string | null
+          model?: string | null
+          next_service_date?: string | null
           notes?: string | null
           owner_id?: string
+          photo_url?: string | null
           plate?: string
           price_per_km?: number
+          road_licence_expiry?: string | null
+          status?: Database["public"]["Enums"]["vehicle_status"]
+          status_changed_at?: string
+          tracker_id?: string | null
+          tracker_provider?: string | null
+          tracker_sim?: string | null
+          tracker_status?: string | null
+          transmission?: string | null
           truck_model?: string
           updated_at?: string
+          vehicle_type?: string | null
           verified?: boolean
+          weight_kg?: number | null
+          year?: number | null
         }
         Relationships: [
           {
@@ -582,6 +657,182 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vehicle_documents: {
+        Row: {
+          created_at: string
+          expires_on: string | null
+          file_path: string
+          id: string
+          kind: string
+          label: string | null
+          truck_id: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          expires_on?: string | null
+          file_path: string
+          id?: string
+          kind: string
+          label?: string | null
+          truck_id: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          expires_on?: string | null
+          file_path?: string
+          id?: string
+          kind?: string
+          label?: string | null
+          truck_id?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_documents_truck_id_fkey"
+            columns: ["truck_id"]
+            isOneToOne: false
+            referencedRelation: "trucks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicle_fuel_logs: {
+        Row: {
+          cost: number
+          created_at: string
+          created_by: string | null
+          filled_at: string
+          id: string
+          litres: number
+          odometer_km: number | null
+          station: string | null
+          truck_id: string
+        }
+        Insert: {
+          cost?: number
+          created_at?: string
+          created_by?: string | null
+          filled_at?: string
+          id?: string
+          litres?: number
+          odometer_km?: number | null
+          station?: string | null
+          truck_id: string
+        }
+        Update: {
+          cost?: number
+          created_at?: string
+          created_by?: string | null
+          filled_at?: string
+          id?: string
+          litres?: number
+          odometer_km?: number | null
+          station?: string | null
+          truck_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_fuel_logs_truck_id_fkey"
+            columns: ["truck_id"]
+            isOneToOne: false
+            referencedRelation: "trucks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicle_maintenance: {
+        Row: {
+          cost: number | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          next_due_date: string | null
+          odometer_km: number | null
+          service_date: string
+          service_type: string
+          status: string
+          truck_id: string
+          updated_at: string
+          vendor: string | null
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          next_due_date?: string | null
+          odometer_km?: number | null
+          service_date?: string
+          service_type: string
+          status?: string
+          truck_id: string
+          updated_at?: string
+          vendor?: string | null
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          next_due_date?: string | null
+          odometer_km?: number | null
+          service_date?: string
+          service_type?: string
+          status?: string
+          truck_id?: string
+          updated_at?: string
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_maintenance_truck_id_fkey"
+            columns: ["truck_id"]
+            isOneToOne: false
+            referencedRelation: "trucks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicle_status_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          id: string
+          note: string | null
+          status: Database["public"]["Enums"]["vehicle_status"]
+          truck_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          status: Database["public"]["Enums"]["vehicle_status"]
+          truck_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          status?: Database["public"]["Enums"]["vehicle_status"]
+          truck_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_status_events_truck_id_fkey"
+            columns: ["truck_id"]
+            isOneToOne: false
+            referencedRelation: "trucks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -619,6 +870,16 @@ export type Database = {
         | "delivered"
         | "completed"
         | "cancelled"
+      vehicle_status:
+        | "available"
+        | "assigned"
+        | "loading"
+        | "on_trip"
+        | "offloading"
+        | "maintenance"
+        | "out_of_service"
+        | "offline"
+        | "idle"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -769,6 +1030,17 @@ export const Constants = {
         "delivered",
         "completed",
         "cancelled",
+      ],
+      vehicle_status: [
+        "available",
+        "assigned",
+        "loading",
+        "on_trip",
+        "offloading",
+        "maintenance",
+        "out_of_service",
+        "offline",
+        "idle",
       ],
     },
   },
