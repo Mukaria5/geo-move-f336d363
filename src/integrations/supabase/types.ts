@@ -145,6 +145,47 @@ export type Database = {
         }
         Relationships: []
       }
+      driver_documents: {
+        Row: {
+          created_at: string
+          driver_id: string
+          expires_on: string | null
+          file_path: string
+          id: string
+          kind: string
+          label: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          driver_id: string
+          expires_on?: string | null
+          file_path: string
+          id?: string
+          kind: string
+          label?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          driver_id?: string
+          expires_on?: string | null
+          file_path?: string
+          id?: string
+          kind?: string
+          label?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_documents_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       driver_profiles: {
         Row: {
           capacity_tons: number | null
@@ -189,6 +230,194 @@ export type Database = {
           years_experience?: number | null
         }
         Relationships: []
+      }
+      driver_status_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          driver_id: string
+          id: string
+          note: string | null
+          status: Database["public"]["Enums"]["driver_status"]
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          driver_id: string
+          id?: string
+          note?: string | null
+          status: Database["public"]["Enums"]["driver_status"]
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          driver_id?: string
+          id?: string
+          note?: string | null
+          status?: Database["public"]["Enums"]["driver_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_status_events_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      drivers: {
+        Row: {
+          address: string | null
+          assigned_truck_id: string | null
+          blood_group: string | null
+          branch: string | null
+          created_at: string
+          current_lat: number | null
+          current_lng: number | null
+          current_order_id: string | null
+          date_of_birth: string | null
+          department: string | null
+          distance_km: number
+          email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          employee_id: string | null
+          employment_status: string
+          employment_type: string | null
+          full_name: string
+          gender: string | null
+          hire_date: string | null
+          hours_driven: number
+          id: string
+          licence_class: string | null
+          licence_expiry: string | null
+          licence_issue_date: string | null
+          licence_no: string | null
+          location_updated_at: string | null
+          medical_expiry: string | null
+          national_id_no: string | null
+          notes: string | null
+          on_time_trips: number
+          owner_id: string
+          passport_no: string | null
+          phone: string | null
+          photo_url: string | null
+          rating: number
+          status: Database["public"]["Enums"]["driver_status"]
+          status_changed_at: string
+          status_note: string | null
+          total_trips: number
+          updated_at: string
+          user_id: string | null
+          years_experience: number | null
+        }
+        Insert: {
+          address?: string | null
+          assigned_truck_id?: string | null
+          blood_group?: string | null
+          branch?: string | null
+          created_at?: string
+          current_lat?: number | null
+          current_lng?: number | null
+          current_order_id?: string | null
+          date_of_birth?: string | null
+          department?: string | null
+          distance_km?: number
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          employee_id?: string | null
+          employment_status?: string
+          employment_type?: string | null
+          full_name: string
+          gender?: string | null
+          hire_date?: string | null
+          hours_driven?: number
+          id?: string
+          licence_class?: string | null
+          licence_expiry?: string | null
+          licence_issue_date?: string | null
+          licence_no?: string | null
+          location_updated_at?: string | null
+          medical_expiry?: string | null
+          national_id_no?: string | null
+          notes?: string | null
+          on_time_trips?: number
+          owner_id: string
+          passport_no?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          rating?: number
+          status?: Database["public"]["Enums"]["driver_status"]
+          status_changed_at?: string
+          status_note?: string | null
+          total_trips?: number
+          updated_at?: string
+          user_id?: string | null
+          years_experience?: number | null
+        }
+        Update: {
+          address?: string | null
+          assigned_truck_id?: string | null
+          blood_group?: string | null
+          branch?: string | null
+          created_at?: string
+          current_lat?: number | null
+          current_lng?: number | null
+          current_order_id?: string | null
+          date_of_birth?: string | null
+          department?: string | null
+          distance_km?: number
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          employee_id?: string | null
+          employment_status?: string
+          employment_type?: string | null
+          full_name?: string
+          gender?: string | null
+          hire_date?: string | null
+          hours_driven?: number
+          id?: string
+          licence_class?: string | null
+          licence_expiry?: string | null
+          licence_issue_date?: string | null
+          licence_no?: string | null
+          location_updated_at?: string | null
+          medical_expiry?: string | null
+          national_id_no?: string | null
+          notes?: string | null
+          on_time_trips?: number
+          owner_id?: string
+          passport_no?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          rating?: number
+          status?: Database["public"]["Enums"]["driver_status"]
+          status_changed_at?: string
+          status_note?: string | null
+          total_trips?: number
+          updated_at?: string
+          user_id?: string | null
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drivers_assigned_truck_id_fkey"
+            columns: ["assigned_truck_id"]
+            isOneToOne: false
+            referencedRelation: "trucks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "drivers_current_order_id_fkey"
+            columns: ["current_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       fleet_companies: {
         Row: {
@@ -857,6 +1086,16 @@ export type Database = {
         | "insurance"
         | "ntsa_inspection"
         | "company_registration"
+      driver_status:
+        | "available"
+        | "assigned"
+        | "driving"
+        | "loading"
+        | "offloading"
+        | "rest_break"
+        | "off_duty"
+        | "on_leave"
+        | "suspended"
       order_status:
         | "pending"
         | "confirmed"
@@ -1016,6 +1255,17 @@ export const Constants = {
         "insurance",
         "ntsa_inspection",
         "company_registration",
+      ],
+      driver_status: [
+        "available",
+        "assigned",
+        "driving",
+        "loading",
+        "offloading",
+        "rest_break",
+        "off_duty",
+        "on_leave",
+        "suspended",
       ],
       order_status: [
         "pending",
