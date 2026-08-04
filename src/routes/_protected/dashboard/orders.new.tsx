@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { distanceKm, etaMinutes, geocode, type Truck } from "@/lib/booking-data";
 import { CARGO_CATEGORIES, computeTotal, ksh } from "@/lib/orders-data";
+import { driverAssignmentIssue } from "@/lib/driver-data-model";
 
 export const Route = createFileRoute("/_protected/dashboard/orders/new")({
   component: NewOrderWizard,
@@ -177,14 +178,14 @@ function NewOrderWizard() {
         .eq("verified", true)
         .eq("is_available", true);
       setTrucks((t as Truck[]) ?? []);
+      // Only drivers who are eligible for dispatch (not suspended / expired licence / already busy)
       const { data: d } = await supabase
-        .from("user_roles")
-        .select("user_id, profiles:profiles!inner(id, full_name)")
-        .eq("role", "driver");
-      const list = (d ?? []).map((r: any) => ({
-        id: r.user_id,
-        full_name: r.profiles?.full_name || "Driver",
-      }));
+        .from("drivers")
+        .select("*")
+        .not("user_id", "is", null);
+      const list = ((d as any[]) ?? [])
+        .filter((r) => !driverAssignmentIssue(r))
+        .map((r) => ({ id: r.user_id as string, full_name: r.full_name as string }));
       setDrivers(list);
     })();
   }, []);
