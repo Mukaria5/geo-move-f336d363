@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { distanceKm, etaMinutes, geocode, type Truck } from "@/lib/booking-data";
 import { CARGO_CATEGORIES, computeTotal, ksh } from "@/lib/orders-data";
+import { driverAssignmentIssue } from "@/lib/driver-data-model";
 
 export const Route = createFileRoute("/_protected/dashboard/orders/new")({
   component: NewOrderWizard,
