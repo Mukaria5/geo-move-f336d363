@@ -183,7 +183,17 @@ function DriversDashboard() {
             <div className="text-[11px] text-muted-foreground truncate">6-step onboarding</div>
           </div>
         </Link>
+        <Link to="/dashboard/fleet/clients" className="card-elevated p-4 press flex items-center gap-3 col-span-2">
+          <div className="h-10 w-10 rounded-2xl bg-primary-soft grid place-items-center">
+            <Users className="h-4 w-4 text-primary" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-sm font-semibold">Client management</div>
+            <div className="text-[11px] text-muted-foreground truncate">CRM directory & revenue</div>
+          </div>
+        </Link>
       </div>
+
 
       {/* Attention required */}
       {alerts.length > 0 && (
