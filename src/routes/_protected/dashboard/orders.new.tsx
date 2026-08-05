@@ -18,8 +18,11 @@ export const Route = createFileRoute("/_protected/dashboard/orders/new")({
 });
 
 type LatLng = { lat: number; lng: number };
+type CrmClientLite = { id: string; name: string; client_code: string | null; contact_phone: string | null; contact_email: string | null };
+
 type State = {
   client_id: string | null;
+  crm_client_id: string | null;
   client_name: string;
   client_phone: string;
   client_email: string;
@@ -154,9 +157,10 @@ function NewOrderWizard() {
   const [saving, setSaving] = useState(false);
   const [trucks, setTrucks] = useState<Truck[]>([]);
   const [drivers, setDrivers] = useState<{ id: string; full_name: string }[]>([]);
+  const [crmClients, setCrmClients] = useState<CrmClientLite[]>([]);
 
   const [s, setS] = useState<State>({
-    client_id: null, client_name: "", client_phone: "", client_email: "",
+    client_id: null, crm_client_id: null, client_name: "", client_phone: "", client_email: "",
     pickup_address: "", pickup_lat: null, pickup_lng: null,
     pickup_contact_name: "", pickup_contact_phone: "", pickup_notes: "", pickup_at: "",
     dropoff_address: "", dropoff_lat: null, dropoff_lng: null,
@@ -187,6 +191,11 @@ function NewOrderWizard() {
         .filter((r) => !driverAssignmentIssue(r))
         .map((r) => ({ id: r.user_id as string, full_name: r.full_name as string }));
       setDrivers(list);
+      const { data: cl } = await supabase
+        .from("clients")
+        .select("id, name, client_code, contact_phone, contact_email")
+        .order("name");
+      setCrmClients((cl as CrmClientLite[]) ?? []);
     })();
   }, []);
 
@@ -239,6 +248,7 @@ function NewOrderWizard() {
         created_by: user.id,
         fleet_owner_user_id: role === "fleet" ? user.id : null,
         client_id: s.client_id,
+        crm_client_id: s.crm_client_id,
         client_name: s.client_name,
         client_phone: s.client_phone || null,
         client_email: s.client_email || null,
