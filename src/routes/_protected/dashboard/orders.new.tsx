@@ -322,16 +322,42 @@ function NewOrderWizard() {
         {step === 1 && (
           <div className="space-y-3">
             <div className="text-sm font-semibold">Client information</div>
+            {crmClients.length > 0 && (
+              <label className="block">
+                <span className="text-[11px] font-medium text-muted-foreground">Existing client</span>
+                <select
+                  value={s.crm_client_id ?? ""}
+                  onChange={(e) => {
+                    const c = crmClients.find((x) => x.id === e.target.value);
+                    set(c
+                      ? {
+                          crm_client_id: c.id,
+                          client_name: c.name,
+                          client_phone: c.contact_phone ?? "",
+                          client_email: c.contact_email ?? "",
+                        }
+                      : { crm_client_id: null });
+                  }}
+                  className="mt-1 w-full h-11 px-3 rounded-2xl border border-border bg-card text-sm outline-none focus:border-primary"
+                >
+                  <option value="">New / one-off client</option>
+                  {crmClients.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}{c.client_code ? ` · ${c.client_code}` : ""}</option>
+                  ))}
+                </select>
+              </label>
+            )}
             <Input label="Client name *" value={s.client_name} onChange={(e) => set({ client_name: e.target.value })} placeholder="Acme Construction Ltd" />
             <div className="grid grid-cols-2 gap-2">
               <Input label="Phone" value={s.client_phone} onChange={(e) => set({ client_phone: e.target.value })} placeholder="+254…" />
               <Input label="Email" value={s.client_email} onChange={(e) => set({ client_email: e.target.value })} placeholder="ops@acme.co" />
             </div>
-            <div className="text-[11px] text-muted-foreground">
-              Placeholder: link to existing client directory in a future release.
-            </div>
+            <Link to="/dashboard/fleet/clients/new" className="text-[11px] text-primary font-semibold">
+              + Add this customer to the client directory
+            </Link>
           </div>
         )}
+
 
         {step === 2 && (
           <div className="space-y-3">
