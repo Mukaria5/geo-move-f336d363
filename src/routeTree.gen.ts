@@ -37,6 +37,7 @@ import { Route as ProtectedDashboardFleetVehiclesVehicleIdRouteImport } from './
 import { Route as ProtectedDashboardFleetDriversNewRouteImport } from './routes/_protected/dashboard/fleet.drivers.new'
 import { Route as ProtectedDashboardFleetDriversMapRouteImport } from './routes/_protected/dashboard/fleet.drivers.map'
 import { Route as ProtectedDashboardFleetDriversDriverIdRouteImport } from './routes/_protected/dashboard/fleet.drivers.$driverId'
+import { Route as ProtectedDashboardFleetClientsNewRouteImport } from './routes/_protected/dashboard/fleet.clients.new'
 
 const BookRoute = BookRouteImport.update({
   id: '/book',
@@ -193,6 +194,12 @@ const ProtectedDashboardFleetDriversDriverIdRoute =
     path: '/$driverId',
     getParentRoute: () => ProtectedDashboardFleetDriversRoute,
   } as any)
+const ProtectedDashboardFleetClientsNewRoute =
+  ProtectedDashboardFleetClientsNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => ProtectedDashboardFleetClientsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -211,13 +218,14 @@ export interface FileRoutesByFullPath {
   '/onboarding/documents': typeof ProtectedOnboardingDocumentsRoute
   '/onboarding/profile': typeof ProtectedOnboardingProfileRoute
   '/onboarding/role': typeof ProtectedOnboardingRoleRoute
-  '/dashboard/fleet/clients': typeof ProtectedDashboardFleetClientsRoute
+  '/dashboard/fleet/clients': typeof ProtectedDashboardFleetClientsRouteWithChildren
   '/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRouteWithChildren
   '/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
   '/dashboard/fleet/map': typeof ProtectedDashboardFleetMapRoute
   '/dashboard/fleet/new': typeof ProtectedDashboardFleetNewRoute
   '/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
   '/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
+  '/dashboard/fleet/clients/new': typeof ProtectedDashboardFleetClientsNewRoute
   '/dashboard/fleet/drivers/$driverId': typeof ProtectedDashboardFleetDriversDriverIdRoute
   '/dashboard/fleet/drivers/map': typeof ProtectedDashboardFleetDriversMapRoute
   '/dashboard/fleet/drivers/new': typeof ProtectedDashboardFleetDriversNewRoute
@@ -240,13 +248,14 @@ export interface FileRoutesByTo {
   '/onboarding/documents': typeof ProtectedOnboardingDocumentsRoute
   '/onboarding/profile': typeof ProtectedOnboardingProfileRoute
   '/onboarding/role': typeof ProtectedOnboardingRoleRoute
-  '/dashboard/fleet/clients': typeof ProtectedDashboardFleetClientsRoute
+  '/dashboard/fleet/clients': typeof ProtectedDashboardFleetClientsRouteWithChildren
   '/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRouteWithChildren
   '/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
   '/dashboard/fleet/map': typeof ProtectedDashboardFleetMapRoute
   '/dashboard/fleet/new': typeof ProtectedDashboardFleetNewRoute
   '/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
   '/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
+  '/dashboard/fleet/clients/new': typeof ProtectedDashboardFleetClientsNewRoute
   '/dashboard/fleet/drivers/$driverId': typeof ProtectedDashboardFleetDriversDriverIdRoute
   '/dashboard/fleet/drivers/map': typeof ProtectedDashboardFleetDriversMapRoute
   '/dashboard/fleet/drivers/new': typeof ProtectedDashboardFleetDriversNewRoute
@@ -271,13 +280,14 @@ export interface FileRoutesById {
   '/_protected/onboarding/documents': typeof ProtectedOnboardingDocumentsRoute
   '/_protected/onboarding/profile': typeof ProtectedOnboardingProfileRoute
   '/_protected/onboarding/role': typeof ProtectedOnboardingRoleRoute
-  '/_protected/dashboard/fleet/clients': typeof ProtectedDashboardFleetClientsRoute
+  '/_protected/dashboard/fleet/clients': typeof ProtectedDashboardFleetClientsRouteWithChildren
   '/_protected/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRouteWithChildren
   '/_protected/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
   '/_protected/dashboard/fleet/map': typeof ProtectedDashboardFleetMapRoute
   '/_protected/dashboard/fleet/new': typeof ProtectedDashboardFleetNewRoute
   '/_protected/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
   '/_protected/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
+  '/_protected/dashboard/fleet/clients/new': typeof ProtectedDashboardFleetClientsNewRoute
   '/_protected/dashboard/fleet/drivers/$driverId': typeof ProtectedDashboardFleetDriversDriverIdRoute
   '/_protected/dashboard/fleet/drivers/map': typeof ProtectedDashboardFleetDriversMapRoute
   '/_protected/dashboard/fleet/drivers/new': typeof ProtectedDashboardFleetDriversNewRoute
@@ -309,6 +319,7 @@ export interface FileRouteTypes {
     | '/dashboard/fleet/new'
     | '/dashboard/orders/$orderId'
     | '/dashboard/orders/new'
+    | '/dashboard/fleet/clients/new'
     | '/dashboard/fleet/drivers/$driverId'
     | '/dashboard/fleet/drivers/map'
     | '/dashboard/fleet/drivers/new'
@@ -338,6 +349,7 @@ export interface FileRouteTypes {
     | '/dashboard/fleet/new'
     | '/dashboard/orders/$orderId'
     | '/dashboard/orders/new'
+    | '/dashboard/fleet/clients/new'
     | '/dashboard/fleet/drivers/$driverId'
     | '/dashboard/fleet/drivers/map'
     | '/dashboard/fleet/drivers/new'
@@ -368,6 +380,7 @@ export interface FileRouteTypes {
     | '/_protected/dashboard/fleet/new'
     | '/_protected/dashboard/orders/$orderId'
     | '/_protected/dashboard/orders/new'
+    | '/_protected/dashboard/fleet/clients/new'
     | '/_protected/dashboard/fleet/drivers/$driverId'
     | '/_protected/dashboard/fleet/drivers/map'
     | '/_protected/dashboard/fleet/drivers/new'
@@ -584,8 +597,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardFleetDriversDriverIdRouteImport
       parentRoute: typeof ProtectedDashboardFleetDriversRoute
     }
+    '/_protected/dashboard/fleet/clients/new': {
+      id: '/_protected/dashboard/fleet/clients/new'
+      path: '/new'
+      fullPath: '/dashboard/fleet/clients/new'
+      preLoaderRoute: typeof ProtectedDashboardFleetClientsNewRouteImport
+      parentRoute: typeof ProtectedDashboardFleetClientsRoute
+    }
   }
 }
+
+interface ProtectedDashboardFleetClientsRouteChildren {
+  ProtectedDashboardFleetClientsNewRoute: typeof ProtectedDashboardFleetClientsNewRoute
+}
+
+const ProtectedDashboardFleetClientsRouteChildren: ProtectedDashboardFleetClientsRouteChildren =
+  {
+    ProtectedDashboardFleetClientsNewRoute:
+      ProtectedDashboardFleetClientsNewRoute,
+  }
+
+const ProtectedDashboardFleetClientsRouteWithChildren =
+  ProtectedDashboardFleetClientsRoute._addFileChildren(
+    ProtectedDashboardFleetClientsRouteChildren,
+  )
 
 interface ProtectedDashboardFleetDriversRouteChildren {
   ProtectedDashboardFleetDriversDriverIdRoute: typeof ProtectedDashboardFleetDriversDriverIdRoute
@@ -609,7 +644,7 @@ const ProtectedDashboardFleetDriversRouteWithChildren =
   )
 
 interface ProtectedDashboardFleetRouteChildren {
-  ProtectedDashboardFleetClientsRoute: typeof ProtectedDashboardFleetClientsRoute
+  ProtectedDashboardFleetClientsRoute: typeof ProtectedDashboardFleetClientsRouteWithChildren
   ProtectedDashboardFleetDriversRoute: typeof ProtectedDashboardFleetDriversRouteWithChildren
   ProtectedDashboardFleetEarningsRoute: typeof ProtectedDashboardFleetEarningsRoute
   ProtectedDashboardFleetMapRoute: typeof ProtectedDashboardFleetMapRoute
@@ -619,7 +654,8 @@ interface ProtectedDashboardFleetRouteChildren {
 
 const ProtectedDashboardFleetRouteChildren: ProtectedDashboardFleetRouteChildren =
   {
-    ProtectedDashboardFleetClientsRoute: ProtectedDashboardFleetClientsRoute,
+    ProtectedDashboardFleetClientsRoute:
+      ProtectedDashboardFleetClientsRouteWithChildren,
     ProtectedDashboardFleetDriversRoute:
       ProtectedDashboardFleetDriversRouteWithChildren,
     ProtectedDashboardFleetEarningsRoute: ProtectedDashboardFleetEarningsRoute,
