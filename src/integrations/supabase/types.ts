@@ -115,6 +115,266 @@ export type Database = {
           },
         ]
       }
+      client_activity: {
+        Row: {
+          actor_id: string | null
+          client_id: string
+          created_at: string
+          detail: string | null
+          id: string
+          kind: string
+          ref_id: string | null
+          title: string
+        }
+        Insert: {
+          actor_id?: string | null
+          client_id: string
+          created_at?: string
+          detail?: string | null
+          id?: string
+          kind: string
+          ref_id?: string | null
+          title: string
+        }
+        Update: {
+          actor_id?: string | null
+          client_id?: string
+          created_at?: string
+          detail?: string | null
+          id?: string
+          kind?: string
+          ref_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_activity_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_contacts: {
+        Row: {
+          client_id: string
+          created_at: string
+          email: string | null
+          id: string
+          is_primary: boolean
+          name: string
+          phone: string | null
+          position: string | null
+          preferred_method: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_primary?: boolean
+          name: string
+          phone?: string | null
+          position?: string | null
+          preferred_method?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_primary?: boolean
+          name?: string
+          phone?: string | null
+          position?: string | null
+          preferred_method?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_contacts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_documents: {
+        Row: {
+          client_id: string
+          created_at: string
+          expires_on: string | null
+          file_path: string
+          id: string
+          kind: string
+          label: string | null
+          uploaded_by: string | null
+          version: number
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          expires_on?: string | null
+          file_path: string
+          id?: string
+          kind: string
+          label?: string | null
+          uploaded_by?: string | null
+          version?: number
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          expires_on?: string | null
+          file_path?: string
+          id?: string
+          kind?: string
+          label?: string | null
+          uploaded_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_notes: {
+        Row: {
+          author_id: string | null
+          body: string
+          client_id: string
+          created_at: string
+          edit_count: number
+          edited_at: string | null
+          id: string
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          client_id: string
+          created_at?: string
+          edit_count?: number
+          edited_at?: string | null
+          id?: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          client_id?: string
+          created_at?: string
+          edit_count?: number
+          edited_at?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_notes_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          address: string | null
+          city: string | null
+          client_code: string | null
+          client_type: Database["public"]["Enums"]["client_type"]
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          credit_limit: number | null
+          currency: string
+          customer_since: string
+          id: string
+          industry: string | null
+          last_order_at: string | null
+          logo_url: string | null
+          name: string
+          notes: string | null
+          outstanding_balance: number
+          owner_id: string
+          payment_method: string | null
+          payment_terms: string | null
+          status: Database["public"]["Enums"]["client_status"]
+          tax_number: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          client_code?: string | null
+          client_type?: Database["public"]["Enums"]["client_type"]
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          credit_limit?: number | null
+          currency?: string
+          customer_since?: string
+          id?: string
+          industry?: string | null
+          last_order_at?: string | null
+          logo_url?: string | null
+          name: string
+          notes?: string | null
+          outstanding_balance?: number
+          owner_id: string
+          payment_method?: string | null
+          payment_terms?: string | null
+          status?: Database["public"]["Enums"]["client_status"]
+          tax_number?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          client_code?: string | null
+          client_type?: Database["public"]["Enums"]["client_type"]
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          credit_limit?: number | null
+          currency?: string
+          customer_since?: string
+          id?: string
+          industry?: string | null
+          last_order_at?: string | null
+          logo_url?: string | null
+          name?: string
+          notes?: string | null
+          outstanding_balance?: number
+          owner_id?: string
+          payment_method?: string | null
+          payment_terms?: string | null
+          status?: Database["public"]["Enums"]["client_status"]
+          tax_number?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           doc_type: Database["public"]["Enums"]["doc_type"]
@@ -546,6 +806,7 @@ export type Database = {
           client_phone: string | null
           created_at: string
           created_by: string
+          crm_client_id: string | null
           distance_km: number | null
           driver_id: string | null
           dropoff_address: string
@@ -593,6 +854,7 @@ export type Database = {
           client_phone?: string | null
           created_at?: string
           created_by: string
+          crm_client_id?: string | null
           distance_km?: number | null
           driver_id?: string | null
           dropoff_address: string
@@ -640,6 +902,7 @@ export type Database = {
           client_phone?: string | null
           created_at?: string
           created_by?: string
+          crm_client_id?: string | null
           distance_km?: number | null
           driver_id?: string | null
           dropoff_address?: string
@@ -674,6 +937,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "orders_crm_client_id_fkey"
+            columns: ["crm_client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "orders_fleet_owner_user_id_fkey"
             columns: ["fleet_owner_user_id"]
@@ -1078,6 +1348,8 @@ export type Database = {
     }
     Enums: {
       app_role: "client" | "driver" | "fleet" | "admin" | "dispatcher"
+      client_status: "active" | "preferred" | "inactive" | "suspended"
+      client_type: "business" | "individual"
       doc_status: "pending" | "approved" | "rejected"
       doc_type:
         | "national_id"
@@ -1247,6 +1519,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["client", "driver", "fleet", "admin", "dispatcher"],
+      client_status: ["active", "preferred", "inactive", "suspended"],
+      client_type: ["business", "individual"],
       doc_status: ["pending", "approved", "rejected"],
       doc_type: [
         "national_id",
