@@ -679,6 +679,143 @@ export type Database = {
           },
         ]
       }
+      expenses: {
+        Row: {
+          amount: number
+          category: Database["public"]["Enums"]["expense_category"]
+          created_at: string
+          created_by: string | null
+          driver_id: string | null
+          expense_date: string
+          id: string
+          notes: string | null
+          order_id: string | null
+          owner_id: string
+          receipt_path: string | null
+          truck_id: string | null
+          updated_at: string
+          vendor: string | null
+        }
+        Insert: {
+          amount?: number
+          category?: Database["public"]["Enums"]["expense_category"]
+          created_at?: string
+          created_by?: string | null
+          driver_id?: string | null
+          expense_date?: string
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          owner_id: string
+          receipt_path?: string | null
+          truck_id?: string | null
+          updated_at?: string
+          vendor?: string | null
+        }
+        Update: {
+          amount?: number
+          category?: Database["public"]["Enums"]["expense_category"]
+          created_at?: string
+          created_by?: string | null
+          driver_id?: string | null
+          expense_date?: string
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          owner_id?: string
+          receipt_path?: string | null
+          truck_id?: string | null
+          updated_at?: string
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_truck_id_fkey"
+            columns: ["truck_id"]
+            isOneToOne: false
+            referencedRelation: "trucks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      finance_documents: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          file_path: string
+          id: string
+          invoice_id: string | null
+          kind: string
+          label: string | null
+          owner_id: string
+          payment_id: string | null
+          uploaded_by: string | null
+          version: number
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          file_path: string
+          id?: string
+          invoice_id?: string | null
+          kind?: string
+          label?: string | null
+          owner_id: string
+          payment_id?: string | null
+          uploaded_by?: string | null
+          version?: number
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          file_path?: string
+          id?: string
+          invoice_id?: string | null
+          kind?: string
+          label?: string | null
+          owner_id?: string
+          payment_id?: string | null
+          uploaded_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_documents_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_documents_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fleet_companies: {
         Row: {
           company_name: string
@@ -717,6 +854,181 @@ export type Database = {
           verified?: boolean
         }
         Relationships: []
+      }
+      invoice_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          detail: string | null
+          id: string
+          invoice_id: string
+          kind: string
+          title: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          detail?: string | null
+          id?: string
+          invoice_id: string
+          kind: string
+          title: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          detail?: string | null
+          id?: string
+          invoice_id?: string
+          kind?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_events_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_items: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          id: string
+          invoice_id: string
+          quantity: number
+          sort_order: number
+          unit_price: number
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          description: string
+          id?: string
+          invoice_id: string
+          quantity?: number
+          sort_order?: number
+          unit_price?: number
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          id?: string
+          invoice_id?: string
+          quantity?: number
+          sort_order?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          amount_paid: number
+          client_id: string | null
+          client_name: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          discount: number
+          due_date: string
+          extra_charges: number
+          id: string
+          invoice_number: string
+          issue_date: string
+          notes: string | null
+          order_id: string | null
+          owner_id: string
+          paid_at: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          subtotal: number
+          tax_amount: number
+          tax_rate: number
+          terms: string | null
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          amount_paid?: number
+          client_id?: string | null
+          client_name?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          discount?: number
+          due_date?: string
+          extra_charges?: number
+          id?: string
+          invoice_number: string
+          issue_date?: string
+          notes?: string | null
+          order_id?: string | null
+          owner_id: string
+          paid_at?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          terms?: string | null
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          amount_paid?: number
+          client_id?: string | null
+          client_name?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          discount?: number
+          due_date?: string
+          extra_charges?: number
+          id?: string
+          invoice_number?: string
+          issue_date?: string
+          notes?: string | null
+          order_id?: string | null
+          owner_id?: string
+          paid_at?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          terms?: string | null
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       order_documents: {
         Row: {
@@ -956,6 +1268,82 @@ export type Database = {
             columns: ["truck_id"]
             isOneToOne: false
             referencedRelation: "trucks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          client_id: string | null
+          created_at: string
+          id: string
+          invoice_id: string | null
+          method: Database["public"]["Enums"]["payment_method"]
+          notes: string | null
+          order_id: string | null
+          owner_id: string
+          payment_date: string
+          payment_number: string | null
+          proof_path: string | null
+          recorded_by: string | null
+          reference_no: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          invoice_id?: string | null
+          method?: Database["public"]["Enums"]["payment_method"]
+          notes?: string | null
+          order_id?: string | null
+          owner_id: string
+          payment_date?: string
+          payment_number?: string | null
+          proof_path?: string | null
+          recorded_by?: string | null
+          reference_no?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          invoice_id?: string | null
+          method?: Database["public"]["Enums"]["payment_method"]
+          notes?: string | null
+          order_id?: string | null
+          owner_id?: string
+          payment_date?: string
+          payment_number?: string | null
+          proof_path?: string | null
+          recorded_by?: string | null
+          reference_no?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
             referencedColumns: ["id"]
           },
         ]
@@ -1368,6 +1756,24 @@ export type Database = {
         | "off_duty"
         | "on_leave"
         | "suspended"
+      expense_category:
+        | "fuel"
+        | "maintenance"
+        | "driver_allowance"
+        | "tolls"
+        | "accommodation"
+        | "repairs"
+        | "office"
+        | "insurance"
+        | "licences"
+        | "other"
+      invoice_status:
+        | "draft"
+        | "sent"
+        | "partially_paid"
+        | "paid"
+        | "overdue"
+        | "cancelled"
       order_status:
         | "pending"
         | "confirmed"
@@ -1381,6 +1787,13 @@ export type Database = {
         | "delivered"
         | "completed"
         | "cancelled"
+      payment_method:
+        | "cash"
+        | "bank_transfer"
+        | "mobile_money"
+        | "credit_card"
+        | "cheque"
+        | "other"
       vehicle_status:
         | "available"
         | "assigned"
@@ -1541,6 +1954,26 @@ export const Constants = {
         "on_leave",
         "suspended",
       ],
+      expense_category: [
+        "fuel",
+        "maintenance",
+        "driver_allowance",
+        "tolls",
+        "accommodation",
+        "repairs",
+        "office",
+        "insurance",
+        "licences",
+        "other",
+      ],
+      invoice_status: [
+        "draft",
+        "sent",
+        "partially_paid",
+        "paid",
+        "overdue",
+        "cancelled",
+      ],
       order_status: [
         "pending",
         "confirmed",
@@ -1554,6 +1987,14 @@ export const Constants = {
         "delivered",
         "completed",
         "cancelled",
+      ],
+      payment_method: [
+        "cash",
+        "bank_transfer",
+        "mobile_money",
+        "credit_card",
+        "cheque",
+        "other",
       ],
       vehicle_status: [
         "available",
