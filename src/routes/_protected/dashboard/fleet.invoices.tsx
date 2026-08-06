@@ -130,8 +130,14 @@ function InvoicesList() {
               icon={Receipt}
               title="No invoices yet"
               description="Create an invoice from a completed order to start billing clients."
-              actionLabel="New invoice"
-              onAction={() => navigate({ to: "/dashboard/fleet/invoices/new" })}
+              action={
+                <button
+                  onClick={() => navigate({ to: "/dashboard/fleet/invoices/new" })}
+                  className="h-11 px-5 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold press"
+                >
+                  New invoice
+                </button>
+              }
             />
           ) : (
             list.map((i) => (
