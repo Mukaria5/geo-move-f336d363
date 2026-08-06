@@ -8,7 +8,7 @@ import { useAuth, type AppRole } from "@/lib/auth-context";
 import { AuthShell } from "@/components/auth/AuthShell";
 
 export const Route = createFileRoute("/_protected/onboarding/role")({
-  validateSearch: (s: Record<string, unknown>) => ({ preselect: (s.preselect as AppRole) || undefined }),
+  validateSearch: (s: Record<string, unknown>): { preselect?: AppRole } => ({ preselect: (s.preselect as AppRole) || undefined }),
   component: RolePicker,
 });
 
