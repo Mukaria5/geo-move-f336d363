@@ -22,7 +22,7 @@ const ROLES: { id: AppRole; title: string; desc: string; icon: any; tag: string 
 ];
 
 export const Route = createFileRoute("/auth/signup")({
-  validateSearch: (s) => ({ role: (s.role as AppRole) || undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ role: (s.role as AppRole) || undefined }),
   component: Signup,
 });
 

@@ -14,7 +14,7 @@ const loginSchema = z.object({
 });
 
 export const Route = createFileRoute("/auth/login")({
-  validateSearch: (s) => ({ redirect: (s.redirect as string) || undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ redirect: (s.redirect as string) || undefined }),
   component: Login,
 });
 
