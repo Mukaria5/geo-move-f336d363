@@ -109,7 +109,7 @@ function NewInvoiceWizard() {
   }
 
   const subtotal = items.reduce((s, i) => s + Number(i.quantity || 0) * Number(i.unit_price || 0), 0);
-  const totals = invoiceTotals({ subtotal, taxRate, discount, extraCharges: extra });
+  const totals = invoiceTotals({ subtotal, tax_rate: taxRate, discount, extra_charges: extra });
 
   async function submit() {
     if (!user) return;
@@ -132,7 +132,7 @@ function NewInvoiceWizard() {
           due_date: dueDate,
           subtotal,
           tax_rate: taxRate,
-          tax_amount: totals.taxAmount,
+          tax_amount: totals.tax_amount,
           discount,
           extra_charges: extra,
           total: totals.total,
@@ -314,7 +314,7 @@ function NewInvoiceWizard() {
               <div className="flex justify-between"><span className="text-muted-foreground">Order</span><span>{selectedOrder?.order_number ?? "None"}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Issued / due</span><span>{issueDate} → {dueDate}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span className="font-mono">{ksh(subtotal)}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">VAT {taxRate}%</span><span className="font-mono">{ksh(totals.taxAmount)}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">VAT {taxRate}%</span><span className="font-mono">{ksh(totals.tax_amount)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Discount</span><span className="font-mono">- {ksh(discount)}</span></div>
               <div className="flex justify-between text-sm pt-1 border-t border-border"><span className="font-semibold">Total</span><span className="font-mono font-bold text-primary">{ksh(totals.total)}</span></div>
             </div>
