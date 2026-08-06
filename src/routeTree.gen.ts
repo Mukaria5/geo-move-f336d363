@@ -32,6 +32,7 @@ import { Route as ProtectedDashboardFleetNewRouteImport } from './routes/_protec
 import { Route as ProtectedDashboardFleetMapRouteImport } from './routes/_protected/dashboard/fleet.map'
 import { Route as ProtectedDashboardFleetInvoicesRouteImport } from './routes/_protected/dashboard/fleet.invoices'
 import { Route as ProtectedDashboardFleetFinanceRouteImport } from './routes/_protected/dashboard/fleet.finance'
+import { Route as ProtectedDashboardFleetExpensesRouteImport } from './routes/_protected/dashboard/fleet.expenses'
 import { Route as ProtectedDashboardFleetEarningsRouteImport } from './routes/_protected/dashboard/fleet.earnings'
 import { Route as ProtectedDashboardFleetDriversRouteImport } from './routes/_protected/dashboard/fleet.drivers'
 import { Route as ProtectedDashboardFleetClientsRouteImport } from './routes/_protected/dashboard/fleet.clients'
@@ -170,6 +171,12 @@ const ProtectedDashboardFleetFinanceRoute =
     path: '/finance',
     getParentRoute: () => ProtectedDashboardFleetRoute,
   } as any)
+const ProtectedDashboardFleetExpensesRoute =
+  ProtectedDashboardFleetExpensesRouteImport.update({
+    id: '/expenses',
+    path: '/expenses',
+    getParentRoute: () => ProtectedDashboardFleetRoute,
+  } as any)
 const ProtectedDashboardFleetEarningsRoute =
   ProtectedDashboardFleetEarningsRouteImport.update({
     id: '/earnings',
@@ -263,6 +270,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/fleet/clients': typeof ProtectedDashboardFleetClientsRouteWithChildren
   '/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRouteWithChildren
   '/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
+  '/dashboard/fleet/expenses': typeof ProtectedDashboardFleetExpensesRoute
   '/dashboard/fleet/finance': typeof ProtectedDashboardFleetFinanceRoute
   '/dashboard/fleet/invoices': typeof ProtectedDashboardFleetInvoicesRouteWithChildren
   '/dashboard/fleet/map': typeof ProtectedDashboardFleetMapRoute
@@ -299,6 +307,7 @@ export interface FileRoutesByTo {
   '/dashboard/fleet/clients': typeof ProtectedDashboardFleetClientsRouteWithChildren
   '/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRouteWithChildren
   '/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
+  '/dashboard/fleet/expenses': typeof ProtectedDashboardFleetExpensesRoute
   '/dashboard/fleet/finance': typeof ProtectedDashboardFleetFinanceRoute
   '/dashboard/fleet/invoices': typeof ProtectedDashboardFleetInvoicesRouteWithChildren
   '/dashboard/fleet/map': typeof ProtectedDashboardFleetMapRoute
@@ -337,6 +346,7 @@ export interface FileRoutesById {
   '/_protected/dashboard/fleet/clients': typeof ProtectedDashboardFleetClientsRouteWithChildren
   '/_protected/dashboard/fleet/drivers': typeof ProtectedDashboardFleetDriversRouteWithChildren
   '/_protected/dashboard/fleet/earnings': typeof ProtectedDashboardFleetEarningsRoute
+  '/_protected/dashboard/fleet/expenses': typeof ProtectedDashboardFleetExpensesRoute
   '/_protected/dashboard/fleet/finance': typeof ProtectedDashboardFleetFinanceRoute
   '/_protected/dashboard/fleet/invoices': typeof ProtectedDashboardFleetInvoicesRouteWithChildren
   '/_protected/dashboard/fleet/map': typeof ProtectedDashboardFleetMapRoute
@@ -375,6 +385,7 @@ export interface FileRouteTypes {
     | '/dashboard/fleet/clients'
     | '/dashboard/fleet/drivers'
     | '/dashboard/fleet/earnings'
+    | '/dashboard/fleet/expenses'
     | '/dashboard/fleet/finance'
     | '/dashboard/fleet/invoices'
     | '/dashboard/fleet/map'
@@ -411,6 +422,7 @@ export interface FileRouteTypes {
     | '/dashboard/fleet/clients'
     | '/dashboard/fleet/drivers'
     | '/dashboard/fleet/earnings'
+    | '/dashboard/fleet/expenses'
     | '/dashboard/fleet/finance'
     | '/dashboard/fleet/invoices'
     | '/dashboard/fleet/map'
@@ -448,6 +460,7 @@ export interface FileRouteTypes {
     | '/_protected/dashboard/fleet/clients'
     | '/_protected/dashboard/fleet/drivers'
     | '/_protected/dashboard/fleet/earnings'
+    | '/_protected/dashboard/fleet/expenses'
     | '/_protected/dashboard/fleet/finance'
     | '/_protected/dashboard/fleet/invoices'
     | '/_protected/dashboard/fleet/map'
@@ -640,6 +653,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardFleetFinanceRouteImport
       parentRoute: typeof ProtectedDashboardFleetRoute
     }
+    '/_protected/dashboard/fleet/expenses': {
+      id: '/_protected/dashboard/fleet/expenses'
+      path: '/expenses'
+      fullPath: '/dashboard/fleet/expenses'
+      preLoaderRoute: typeof ProtectedDashboardFleetExpensesRouteImport
+      parentRoute: typeof ProtectedDashboardFleetRoute
+    }
     '/_protected/dashboard/fleet/earnings': {
       id: '/_protected/dashboard/fleet/earnings'
       path: '/earnings'
@@ -788,6 +808,7 @@ interface ProtectedDashboardFleetRouteChildren {
   ProtectedDashboardFleetClientsRoute: typeof ProtectedDashboardFleetClientsRouteWithChildren
   ProtectedDashboardFleetDriversRoute: typeof ProtectedDashboardFleetDriversRouteWithChildren
   ProtectedDashboardFleetEarningsRoute: typeof ProtectedDashboardFleetEarningsRoute
+  ProtectedDashboardFleetExpensesRoute: typeof ProtectedDashboardFleetExpensesRoute
   ProtectedDashboardFleetFinanceRoute: typeof ProtectedDashboardFleetFinanceRoute
   ProtectedDashboardFleetInvoicesRoute: typeof ProtectedDashboardFleetInvoicesRouteWithChildren
   ProtectedDashboardFleetMapRoute: typeof ProtectedDashboardFleetMapRoute
@@ -803,6 +824,7 @@ const ProtectedDashboardFleetRouteChildren: ProtectedDashboardFleetRouteChildren
     ProtectedDashboardFleetDriversRoute:
       ProtectedDashboardFleetDriversRouteWithChildren,
     ProtectedDashboardFleetEarningsRoute: ProtectedDashboardFleetEarningsRoute,
+    ProtectedDashboardFleetExpensesRoute: ProtectedDashboardFleetExpensesRoute,
     ProtectedDashboardFleetFinanceRoute: ProtectedDashboardFleetFinanceRoute,
     ProtectedDashboardFleetInvoicesRoute:
       ProtectedDashboardFleetInvoicesRouteWithChildren,
