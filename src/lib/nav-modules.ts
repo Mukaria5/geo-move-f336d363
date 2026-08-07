@@ -97,6 +97,7 @@ export function modulesFor(role: AppRole): ModuleGroup[] {
 export function primaryModulesFor(role: AppRole): ModuleLink[] {
   const groups = modulesFor(role);
   const flat = groups.flatMap((g) => g.items);
+  if (role === "client" || role === "driver") return flat.slice(0, 6);
   const wanted = [
     "/dashboard/orders",
     "/dashboard/fleet",
@@ -107,3 +108,4 @@ export function primaryModulesFor(role: AppRole): ModuleLink[] {
   ];
   return wanted.map((w) => flat.find((m) => m.to === w)).filter(Boolean) as ModuleLink[];
 }
+
