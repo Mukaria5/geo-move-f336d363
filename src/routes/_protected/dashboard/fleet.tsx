@@ -218,6 +218,11 @@ function FleetDashboard() {
           <StatCard label="Utilisation" value={`${utilization(vehicles)}%`} sub="fleet in use" tone="info" />
         </div>
 
+        {/* Every module, one tap away */}
+        <ModuleGrid title="Workspace" />
+
+
+
         <div className="grid gap-3 mb-4">
           <FleetChart vehicles={vehicles} />
 
