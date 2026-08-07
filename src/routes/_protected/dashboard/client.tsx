@@ -72,10 +72,13 @@ function ClientDashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-2 mb-4">
-        <StatCard label="Active" value="0" sub="trips" tone="info" />
+        <StatCard label="Active" value="0" sub="trips" tone="info" to="/dashboard/orders" />
         <StatCard label="Month" value="KSh 0" sub="spent" />
         <StatCard label="Saved" value="0" sub="operators" tone="success" />
       </div>
+
+      <ModuleGrid title="Explore" />
+
 
       {/* Recent trips */}
       <div className="card-elevated p-4">
