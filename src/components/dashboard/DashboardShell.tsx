@@ -115,7 +115,9 @@ export function DashboardShell({
       >
         <div className="pointer-events-auto max-w-md mx-auto glass-strong rounded-full grid grid-cols-5 p-1.5 shadow-float">
           {items.map((it, i) => {
-            const active = location.pathname === it.to;
+            const active =
+              location.pathname === it.to ||
+              (it.to !== "/" && location.pathname.startsWith(it.to + "/"));
             const Icon = it.icon;
             return (
               <Link
