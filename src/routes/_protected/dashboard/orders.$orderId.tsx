@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft, Loader2, MapPin, Package, Truck as TruckIcon, User as UserIcon,
   Phone, Mail, FileText, Upload, XCircle, Copy, Archive, Cloud, Fuel, Navigation, Receipt,
-  Camera, Check,
+  Camera, Check, ChevronRight, Receipt as ReceiptIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
