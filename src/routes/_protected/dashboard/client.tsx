@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  Plus, MapPin, Package, CreditCard, Headphones, ArrowRight, Truck, Sparkles,
+  Plus, MapPin, Package, ArrowRight, Truck, Sparkles, FileText, LayoutGrid,
 } from "lucide-react";
 import { DashboardShell, StatCard } from "@/components/dashboard/DashboardShell";
 import { useAuth } from "@/lib/auth-context";
