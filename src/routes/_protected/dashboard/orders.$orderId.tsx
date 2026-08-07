@@ -30,6 +30,7 @@ function OrderDetails() {
   const [docs, setDocs] = useState<DocRow[]>([]);
   const [truck, setTruck] = useState<any>(null);
   const [driverName, setDriverName] = useState<string | null>(null);
+  const [driverRowId, setDriverRowId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
@@ -47,10 +48,15 @@ function OrderDetails() {
         setTruck(t);
       } else setTruck(null);
       if (o.driver_id) {
-        const { data: p } = await supabase.from("profiles").select("full_name").eq("id", o.driver_id).maybeSingle();
+        const [{ data: p }, { data: dr }] = await Promise.all([
+          supabase.from("profiles").select("full_name").eq("id", o.driver_id).maybeSingle(),
+          supabase.from("drivers").select("id").eq("user_id", o.driver_id).maybeSingle(),
+        ]);
         setDriverName(p?.full_name ?? null);
+        setDriverRowId((dr as any)?.id ?? null);
       }
     }
+
     setLoading(false);
   };
 
