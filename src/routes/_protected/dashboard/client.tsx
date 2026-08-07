@@ -4,6 +4,7 @@ import {
   Plus, MapPin, Package, ArrowRight, Truck, Sparkles, FileText, LayoutGrid,
 } from "lucide-react";
 import { DashboardShell, StatCard } from "@/components/dashboard/DashboardShell";
+import { ModuleGrid } from "@/components/dashboard/ModuleGrid";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/_protected/dashboard/client")({ component: ClientDashboard });
