@@ -159,25 +159,31 @@ export function DashboardShell({
 }
 
 export function StatCard({
-  label, value, sub, tone = "default",
+  label, value, sub, tone = "default", to,
 }: {
   label: string;
   value: string;
   sub?: string;
   tone?: "default" | "success" | "warning" | "info" | "urgent";
+  /** Optional destination — makes the stat a tappable entry point into its module. */
+  to?: string;
 }) {
   const toneCls =
     tone === "success" ? "status-success" :
     tone === "warning" ? "status-warning" :
     tone === "info"    ? "status-info" :
     tone === "urgent"  ? "status-urgent" : "";
-  return (
-    <div className="card-elevated p-4">
+  const body = (
+    <>
       <div className={`inline-flex text-[10px] font-mono uppercase tracking-[0.14em] px-2 py-0.5 rounded-full ${toneCls || "text-muted-foreground"}`}>
         {label}
       </div>
       <div className="font-display text-2xl font-bold mt-2 leading-none tracking-tight">{value}</div>
       {sub && <div className="text-xs text-muted-foreground mt-1">{sub}</div>}
-    </div>
+    </>
   );
+  if (to) {
+    return <Link to={to} className="card-elevated p-4 block press">{body}</Link>;
+  }
+  return <div className="card-elevated p-4">{body}</div>;
 }
