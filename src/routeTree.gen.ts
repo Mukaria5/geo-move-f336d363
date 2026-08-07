@@ -22,6 +22,7 @@ import { Route as ProtectedOnboardingRoleRouteImport } from './routes/_protected
 import { Route as ProtectedOnboardingProfileRouteImport } from './routes/_protected/onboarding/profile'
 import { Route as ProtectedOnboardingDocumentsRouteImport } from './routes/_protected/onboarding/documents'
 import { Route as ProtectedDashboardOrdersRouteImport } from './routes/_protected/dashboard/orders'
+import { Route as ProtectedDashboardMoreRouteImport } from './routes/_protected/dashboard/more'
 import { Route as ProtectedDashboardFleetRouteImport } from './routes/_protected/dashboard/fleet'
 import { Route as ProtectedDashboardDriverRouteImport } from './routes/_protected/dashboard/driver'
 import { Route as ProtectedDashboardClientRouteImport } from './routes/_protected/dashboard/client'
@@ -113,6 +114,11 @@ const ProtectedDashboardOrdersRoute =
     path: '/dashboard/orders',
     getParentRoute: () => ProtectedRoute,
   } as any)
+const ProtectedDashboardMoreRoute = ProtectedDashboardMoreRouteImport.update({
+  id: '/dashboard/more',
+  path: '/dashboard/more',
+  getParentRoute: () => ProtectedRoute,
+} as any)
 const ProtectedDashboardFleetRoute = ProtectedDashboardFleetRouteImport.update({
   id: '/dashboard/fleet',
   path: '/dashboard/fleet',
@@ -263,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/client': typeof ProtectedDashboardClientRoute
   '/dashboard/driver': typeof ProtectedDashboardDriverRoute
   '/dashboard/fleet': typeof ProtectedDashboardFleetRouteWithChildren
+  '/dashboard/more': typeof ProtectedDashboardMoreRoute
   '/dashboard/orders': typeof ProtectedDashboardOrdersRouteWithChildren
   '/onboarding/documents': typeof ProtectedOnboardingDocumentsRoute
   '/onboarding/profile': typeof ProtectedOnboardingProfileRoute
@@ -300,6 +307,7 @@ export interface FileRoutesByTo {
   '/dashboard/client': typeof ProtectedDashboardClientRoute
   '/dashboard/driver': typeof ProtectedDashboardDriverRoute
   '/dashboard/fleet': typeof ProtectedDashboardFleetRouteWithChildren
+  '/dashboard/more': typeof ProtectedDashboardMoreRoute
   '/dashboard/orders': typeof ProtectedDashboardOrdersRouteWithChildren
   '/onboarding/documents': typeof ProtectedOnboardingDocumentsRoute
   '/onboarding/profile': typeof ProtectedOnboardingProfileRoute
@@ -339,6 +347,7 @@ export interface FileRoutesById {
   '/_protected/dashboard/client': typeof ProtectedDashboardClientRoute
   '/_protected/dashboard/driver': typeof ProtectedDashboardDriverRoute
   '/_protected/dashboard/fleet': typeof ProtectedDashboardFleetRouteWithChildren
+  '/_protected/dashboard/more': typeof ProtectedDashboardMoreRoute
   '/_protected/dashboard/orders': typeof ProtectedDashboardOrdersRouteWithChildren
   '/_protected/onboarding/documents': typeof ProtectedOnboardingDocumentsRoute
   '/_protected/onboarding/profile': typeof ProtectedOnboardingProfileRoute
@@ -378,6 +387,7 @@ export interface FileRouteTypes {
     | '/dashboard/client'
     | '/dashboard/driver'
     | '/dashboard/fleet'
+    | '/dashboard/more'
     | '/dashboard/orders'
     | '/onboarding/documents'
     | '/onboarding/profile'
@@ -415,6 +425,7 @@ export interface FileRouteTypes {
     | '/dashboard/client'
     | '/dashboard/driver'
     | '/dashboard/fleet'
+    | '/dashboard/more'
     | '/dashboard/orders'
     | '/onboarding/documents'
     | '/onboarding/profile'
@@ -453,6 +464,7 @@ export interface FileRouteTypes {
     | '/_protected/dashboard/client'
     | '/_protected/dashboard/driver'
     | '/_protected/dashboard/fleet'
+    | '/_protected/dashboard/more'
     | '/_protected/dashboard/orders'
     | '/_protected/onboarding/documents'
     | '/_protected/onboarding/profile'
@@ -581,6 +593,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard/orders'
       fullPath: '/dashboard/orders'
       preLoaderRoute: typeof ProtectedDashboardOrdersRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/dashboard/more': {
+      id: '/_protected/dashboard/more'
+      path: '/dashboard/more'
+      fullPath: '/dashboard/more'
+      preLoaderRoute: typeof ProtectedDashboardMoreRouteImport
       parentRoute: typeof ProtectedRoute
     }
     '/_protected/dashboard/fleet': {
@@ -862,6 +881,7 @@ interface ProtectedRouteChildren {
   ProtectedDashboardClientRoute: typeof ProtectedDashboardClientRoute
   ProtectedDashboardDriverRoute: typeof ProtectedDashboardDriverRoute
   ProtectedDashboardFleetRoute: typeof ProtectedDashboardFleetRouteWithChildren
+  ProtectedDashboardMoreRoute: typeof ProtectedDashboardMoreRoute
   ProtectedDashboardOrdersRoute: typeof ProtectedDashboardOrdersRouteWithChildren
   ProtectedOnboardingDocumentsRoute: typeof ProtectedOnboardingDocumentsRoute
   ProtectedOnboardingProfileRoute: typeof ProtectedOnboardingProfileRoute
@@ -873,6 +893,7 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedDashboardClientRoute: ProtectedDashboardClientRoute,
   ProtectedDashboardDriverRoute: ProtectedDashboardDriverRoute,
   ProtectedDashboardFleetRoute: ProtectedDashboardFleetRouteWithChildren,
+  ProtectedDashboardMoreRoute: ProtectedDashboardMoreRoute,
   ProtectedDashboardOrdersRoute: ProtectedDashboardOrdersRouteWithChildren,
   ProtectedOnboardingDocumentsRoute: ProtectedOnboardingDocumentsRoute,
   ProtectedOnboardingProfileRoute: ProtectedOnboardingProfileRoute,
