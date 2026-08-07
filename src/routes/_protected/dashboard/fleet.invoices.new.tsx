@@ -9,7 +9,7 @@ import { ksh } from "@/lib/orders-data";
 import { invoiceNumber, invoiceTotals } from "@/lib/finance-data";
 
 export const Route = createFileRoute("/_protected/dashboard/fleet/invoices/new")({
-  validateSearch: (s: Record<string, unknown>) => ({ order: (s.order as string) || undefined }),
+  validateSearch: (s: Record<string, unknown>): { order?: string } => ({ order: (s.order as string) || undefined }),
   component: NewInvoiceWizard,
 });
 
