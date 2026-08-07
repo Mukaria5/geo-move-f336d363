@@ -294,6 +294,10 @@ function DriverDashboard() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <div className="mt-4">
+        <ModuleGrid title="Quick access" />
+      </div>
     </DashboardShell>
   );
 }
