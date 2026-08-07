@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardShell, StatCard } from "@/components/dashboard/DashboardShell";
+import { ModuleGrid } from "@/components/dashboard/ModuleGrid";
 import { LeafletMap } from "@/components/LeafletMap";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
