@@ -22,8 +22,8 @@ function ClientDashboard() {
   const quickActions = [
     { to: "/book", label: "Book", icon: MapPin, primary: true },
     { to: "/dashboard/orders", label: "Track", icon: Truck },
-    { to: "/dashboard/client", label: "Payments", icon: CreditCard },
-    { to: "/dashboard/client", label: "Support", icon: Headphones },
+    { to: "/onboarding/documents", label: "Documents", icon: FileText },
+    { to: "/dashboard/more", label: "More", icon: LayoutGrid },
   ];
 
   return (
