@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  LogOut, Bell, Home, Package, MapPin, User, Truck,
+  LogOut, Bell, Home, Package, MapPin, Truck, Users, LayoutGrid, Wallet,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useAuth, type AppRole } from "@/lib/auth-context";
@@ -10,46 +10,58 @@ type NavItem = { to: string; label: string; icon: any };
 
 /**
  * Unified premium bottom navigation.
- * 5 tabs mapped role-aware, but each role sees the same visual shape.
- * Dashboard / Orders / Fleet / Tracking / Profile
+ * 5 role-aware tabs, with a "More" tab that opens the full module hub
+ * so no completed module is ever unreachable.
  */
 function navFor(role: AppRole): NavItem[] {
-  const home: Record<AppRole, string> = {
-    client: "/dashboard/client",
-    driver: "/dashboard/driver",
-    fleet: "/dashboard/fleet",
-    dispatcher: "/dashboard/orders",
-    admin: "/dashboard/admin",
-  };
-  const fleet: Record<AppRole, string> = {
-    client: "/book",
-    driver: "/dashboard/driver",
-    fleet: "/dashboard/fleet/drivers",
-    dispatcher: "/dashboard/fleet/drivers",
-    admin: "/dashboard/admin",
-  };
-  const tracking: Record<AppRole, string> = {
-    client: "/book",
-    driver: "/dashboard/driver",
-    fleet: "/dashboard/fleet",
-    dispatcher: "/dashboard/orders",
-    admin: "/dashboard/orders",
-  };
-  const profile: Record<AppRole, string> = {
-    client: "/dashboard/client",
-    driver: "/dashboard/driver",
-    fleet: "/dashboard/fleet",
-    dispatcher: "/dashboard/client",
-    admin: "/dashboard/admin",
-  };
+  const more: NavItem = { to: "/dashboard/more", label: "More", icon: LayoutGrid };
+
+  if (role === "client") {
+    return [
+      { to: "/dashboard/client", label: "Home", icon: Home },
+      { to: "/book", label: "Book", icon: MapPin },
+      { to: "/dashboard/orders", label: "Orders", icon: Package },
+      { to: "/onboarding/profile", label: "Profile", icon: Users },
+      more,
+    ];
+  }
+  if (role === "driver") {
+    return [
+      { to: "/dashboard/driver", label: "Home", icon: Home },
+      { to: "/dashboard/orders", label: "Trips", icon: Package },
+      { to: "/dashboard/fleet/drivers/map", label: "Map", icon: MapPin },
+      { to: "/onboarding/profile", label: "Profile", icon: Users },
+      more,
+    ];
+  }
+  if (role === "admin") {
+    return [
+      { to: "/dashboard/admin", label: "Home", icon: Home },
+      { to: "/dashboard/orders", label: "Orders", icon: Package },
+      { to: "/dashboard/fleet", label: "Fleet", icon: Truck },
+      { to: "/dashboard/fleet/finance", label: "Finance", icon: Wallet },
+      more,
+    ];
+  }
+  if (role === "dispatcher") {
+    return [
+      { to: "/dashboard/orders", label: "Orders", icon: Home },
+      { to: "/dashboard/fleet", label: "Fleet", icon: Truck },
+      { to: "/dashboard/fleet/drivers", label: "Drivers", icon: Users },
+      { to: "/dashboard/fleet/map", label: "Map", icon: MapPin },
+      more,
+    ];
+  }
+  // fleet owner / manager
   return [
-    { to: home[role],     label: "Home",     icon: Home },
+    { to: "/dashboard/fleet", label: "Home", icon: Home },
     { to: "/dashboard/orders", label: "Orders", icon: Package },
-    { to: fleet[role],    label: "Fleet",    icon: Truck },
-    { to: tracking[role], label: "Tracking", icon: MapPin },
-    { to: profile[role],  label: "Profile",  icon: User },
+    { to: "/dashboard/fleet/drivers", label: "Drivers", icon: Users },
+    { to: "/dashboard/fleet/finance", label: "Finance", icon: Wallet },
+    more,
   ];
 }
+
 
 export function DashboardShell({
   title, role, children, hero,
@@ -103,7 +115,9 @@ export function DashboardShell({
       >
         <div className="pointer-events-auto max-w-md mx-auto glass-strong rounded-full grid grid-cols-5 p-1.5 shadow-float">
           {items.map((it, i) => {
-            const active = location.pathname === it.to;
+            const active =
+              location.pathname === it.to ||
+              (it.to !== "/" && location.pathname.startsWith(it.to + "/"));
             const Icon = it.icon;
             return (
               <Link
@@ -145,25 +159,31 @@ export function DashboardShell({
 }
 
 export function StatCard({
-  label, value, sub, tone = "default",
+  label, value, sub, tone = "default", to,
 }: {
   label: string;
   value: string;
   sub?: string;
   tone?: "default" | "success" | "warning" | "info" | "urgent";
+  /** Optional destination — makes the stat a tappable entry point into its module. */
+  to?: string;
 }) {
   const toneCls =
     tone === "success" ? "status-success" :
     tone === "warning" ? "status-warning" :
     tone === "info"    ? "status-info" :
     tone === "urgent"  ? "status-urgent" : "";
-  return (
-    <div className="card-elevated p-4">
+  const body = (
+    <>
       <div className={`inline-flex text-[10px] font-mono uppercase tracking-[0.14em] px-2 py-0.5 rounded-full ${toneCls || "text-muted-foreground"}`}>
         {label}
       </div>
       <div className="font-display text-2xl font-bold mt-2 leading-none tracking-tight">{value}</div>
       {sub && <div className="text-xs text-muted-foreground mt-1">{sub}</div>}
-    </div>
+    </>
   );
+  if (to) {
+    return <Link to={to} className="card-elevated p-4 block press">{body}</Link>;
+  }
+  return <div className="card-elevated p-4">{body}</div>;
 }

@@ -7,6 +7,7 @@ import {
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import { DashboardShell, StatCard } from "@/components/dashboard/DashboardShell";
+import { ModuleGrid } from "@/components/dashboard/ModuleGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ListSkeleton } from "@/components/ui/SkeletonList";
 import { PullToRefresh } from "@/components/ui/PullToRefresh";
@@ -217,6 +218,11 @@ function FleetDashboard() {
           <StatCard label="Offline" value={String(kpi.offline)} sub="not reporting" tone="urgent" />
           <StatCard label="Utilisation" value={`${utilization(vehicles)}%`} sub="fleet in use" tone="info" />
         </div>
+
+        {/* Every module, one tap away */}
+        <ModuleGrid title="Workspace" />
+
+
 
         <div className="grid gap-3 mb-4">
           <FleetChart vehicles={vehicles} />

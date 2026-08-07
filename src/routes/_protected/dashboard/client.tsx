@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  Plus, MapPin, Package, CreditCard, Headphones, ArrowRight, Truck, Sparkles,
+  Plus, MapPin, Package, ArrowRight, Truck, Sparkles, FileText, LayoutGrid,
 } from "lucide-react";
 import { DashboardShell, StatCard } from "@/components/dashboard/DashboardShell";
+import { ModuleGrid } from "@/components/dashboard/ModuleGrid";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/_protected/dashboard/client")({ component: ClientDashboard });
@@ -22,8 +23,8 @@ function ClientDashboard() {
   const quickActions = [
     { to: "/book", label: "Book", icon: MapPin, primary: true },
     { to: "/dashboard/orders", label: "Track", icon: Truck },
-    { to: "/dashboard/client", label: "Payments", icon: CreditCard },
-    { to: "/dashboard/client", label: "Support", icon: Headphones },
+    { to: "/onboarding/documents", label: "Documents", icon: FileText },
+    { to: "/dashboard/more", label: "More", icon: LayoutGrid },
   ];
 
   return (
@@ -72,10 +73,13 @@ function ClientDashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-2 mb-4">
-        <StatCard label="Active" value="0" sub="trips" tone="info" />
+        <StatCard label="Active" value="0" sub="trips" tone="info" to="/dashboard/orders" />
         <StatCard label="Month" value="KSh 0" sub="spent" />
         <StatCard label="Saved" value="0" sub="operators" tone="success" />
       </div>
+
+      <ModuleGrid title="Explore" />
+
 
       {/* Recent trips */}
       <div className="card-elevated p-4">

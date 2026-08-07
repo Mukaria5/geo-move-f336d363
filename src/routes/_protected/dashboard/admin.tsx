@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Truck, Building2, FileText, CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardShell, StatCard } from "@/components/dashboard/DashboardShell";
+import { ModuleGrid } from "@/components/dashboard/ModuleGrid";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 
@@ -64,11 +65,16 @@ function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-        <StatCard label="Trucks" value={String(trucks.length)} sub={`${trucks.filter(t=>t.verified).length} verified`} tone="info" />
-        <StatCard label="Companies" value={String(companies.length)} sub={`${companies.filter(c=>c.verified).length} verified`} />
-        <StatCard label="Drivers" value={String(drivers.length)} sub={`${drivers.filter(d=>d.verified).length} verified`} tone="success" />
+        <StatCard label="Trucks" value={String(trucks.length)} sub={`${trucks.filter(t=>t.verified).length} verified`} tone="info" to="/dashboard/fleet" />
+        <StatCard label="Companies" value={String(companies.length)} sub={`${companies.filter(c=>c.verified).length} verified`} to="/dashboard/fleet/clients" />
+        <StatCard label="Drivers" value={String(drivers.length)} sub={`${drivers.filter(d=>d.verified).length} verified`} tone="success" to="/dashboard/fleet/drivers" />
         <StatCard label="Docs" value={String(docs.length)} sub={`${docs.filter(d=>d.status==='pending').length} pending`} tone="warning" />
       </div>
+
+      {/* Full platform navigation */}
+      <ModuleGrid title="Platform modules" />
+
+
 
       <div className="flex gap-1 mb-3 p-1 card-elevated rounded-2xl w-full sm:w-fit">
         {[

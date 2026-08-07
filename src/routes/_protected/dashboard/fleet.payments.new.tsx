@@ -13,7 +13,7 @@ import {
 } from "@/lib/finance-data";
 
 export const Route = createFileRoute("/_protected/dashboard/fleet/payments/new")({
-  validateSearch: (s: Record<string, unknown>) => ({ invoice: (s.invoice as string) || undefined }),
+  validateSearch: (s: Record<string, unknown>): { invoice?: string } => ({ invoice: (s.invoice as string) || undefined }),
   component: RecordPaymentWizard,
 });
 

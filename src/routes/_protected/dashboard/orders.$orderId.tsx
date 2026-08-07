@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft, Loader2, MapPin, Package, Truck as TruckIcon, User as UserIcon,
   Phone, Mail, FileText, Upload, XCircle, Copy, Archive, Cloud, Fuel, Navigation, Receipt,
-  Camera, Check,
+  Camera, Check, ChevronRight, Receipt as ReceiptIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
@@ -30,6 +30,7 @@ function OrderDetails() {
   const [docs, setDocs] = useState<DocRow[]>([]);
   const [truck, setTruck] = useState<any>(null);
   const [driverName, setDriverName] = useState<string | null>(null);
+  const [driverRowId, setDriverRowId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
@@ -47,10 +48,15 @@ function OrderDetails() {
         setTruck(t);
       } else setTruck(null);
       if (o.driver_id) {
-        const { data: p } = await supabase.from("profiles").select("full_name").eq("id", o.driver_id).maybeSingle();
+        const [{ data: p }, { data: dr }] = await Promise.all([
+          supabase.from("profiles").select("full_name").eq("id", o.driver_id).maybeSingle(),
+          supabase.from("drivers").select("id").eq("user_id", o.driver_id).maybeSingle(),
+        ]);
         setDriverName(p?.full_name ?? null);
+        setDriverRowId((dr as any)?.id ?? null);
       }
     }
+
     setLoading(false);
   };
 
@@ -279,18 +285,62 @@ function OrderDetails() {
           <div className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground mb-2 flex items-center gap-1">
             <TruckIcon className="h-3 w-3" /> Assignment
           </div>
-          <div className="text-sm">
+          <div className="text-sm flex items-center gap-1">
             <span className="text-muted-foreground">Vehicle: </span>
-            <span className="font-semibold">{truck ? `${truck.truck_model} · ${truck.plate}` : "Unassigned"}</span>
+            {truck ? (
+              <Link
+                to="/dashboard/fleet/vehicles/$vehicleId"
+                params={{ vehicleId: truck.id }}
+                className="font-semibold text-primary press inline-flex items-center gap-0.5"
+              >
+                {truck.truck_model} · {truck.plate} <ChevronRight className="h-3 w-3" />
+              </Link>
+            ) : (
+              <span className="font-semibold">Unassigned</span>
+            )}
           </div>
-          <div className="text-sm mt-1">
+          <div className="text-sm mt-1 flex items-center gap-1">
             <span className="text-muted-foreground">Driver: </span>
-            <span className="font-semibold">{driverName ?? (order.driver_id ? "Assigned" : "Unassigned")}</span>
+            {driverRowId ? (
+              <Link
+                to="/dashboard/fleet/drivers/$driverId"
+                params={{ driverId: driverRowId }}
+                className="font-semibold text-primary press inline-flex items-center gap-0.5"
+              >
+                {driverName ?? "Assigned"} <ChevronRight className="h-3 w-3" />
+              </Link>
+            ) : (
+              <span className="font-semibold">{driverName ?? (order.driver_id ? "Assigned" : "Unassigned")}</span>
+            )}
+          </div>
+          <div className="text-sm mt-1 flex items-center gap-1">
+            <span className="text-muted-foreground">Client: </span>
+            {order.client_id ? (
+              <Link
+                to="/dashboard/fleet/clients/$clientId"
+                params={{ clientId: order.client_id }}
+                className="font-semibold text-primary press inline-flex items-center gap-0.5"
+              >
+                {order.client_name} <ChevronRight className="h-3 w-3" />
+              </Link>
+            ) : (
+              <span className="font-semibold">{order.client_name || "—"}</span>
+            )}
           </div>
           <div className="text-[11px] text-muted-foreground font-mono mt-2">
             Distance {order.distance_km ? `${Number(order.distance_km).toFixed(1)} km` : "—"} · ETA {order.eta_minutes ?? "—"} min
           </div>
+          {canManage && (
+            <Link
+              to="/dashboard/fleet/invoices/new"
+              search={{ order: order.id }}
+              className="mt-3 h-10 w-full rounded-2xl bg-primary text-primary-foreground text-xs font-semibold inline-flex items-center justify-center gap-1.5 press"
+            >
+              <ReceiptIcon className="h-3.5 w-3.5" /> Create invoice for this order
+            </Link>
+          )}
         </div>
+
       </div>
 
       {/* Cost breakdown (managers only) */}
