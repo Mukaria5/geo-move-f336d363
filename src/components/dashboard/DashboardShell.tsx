@@ -83,7 +83,10 @@ export function DashboardShell({
   }
 
   return (
-    <main className="min-h-screen bg-background pb-28">
+    <main
+      className="min-h-screen bg-background"
+      style={{ paddingBottom: "calc(6.5rem + env(safe-area-inset-bottom))" }}
+    >
       {/* Header */}
       <header className="sticky top-0 z-40 px-4 pt-3 safe-top">
         <div className="glass-strong rounded-[22px] flex items-center gap-3 px-3 h-14">
@@ -110,10 +113,14 @@ export function DashboardShell({
 
       {/* Premium floating bottom nav */}
       <nav
-        className="fixed bottom-0 inset-x-0 z-40 px-4 pointer-events-none"
-        style={{ paddingBottom: "max(0.85rem, env(safe-area-inset-bottom))" }}
+        className="fixed bottom-0 inset-x-0 z-50 px-2 sm:px-4 pointer-events-none"
+        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+        aria-label="Primary"
       >
-        <div className="pointer-events-auto max-w-md mx-auto glass-strong rounded-full grid grid-cols-5 p-1.5 shadow-float">
+        <div
+          className="pointer-events-auto w-full max-w-md mx-auto glass-strong rounded-[28px] grid gap-0.5 p-1.5 shadow-float"
+          style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+        >
           {items.map((it, i) => {
             const active =
               location.pathname === it.to ||
@@ -123,29 +130,26 @@ export function DashboardShell({
               <Link
                 key={`${it.label}-${i}`}
                 to={it.to}
-                className={`relative flex flex-col items-center justify-center h-12 rounded-full transition-colors ${
-                  active ? "text-primary-foreground" : "text-muted-foreground"
+                className={`relative flex min-w-0 flex-col items-center justify-center h-14 rounded-[22px] px-0.5 transition-colors ${
+                  active ? "text-primary-foreground" : "text-foreground/70"
                 }`}
                 aria-label={it.label}
+                aria-current={active ? "page" : undefined}
               >
                 {active && (
                   <motion.div
                     layoutId="bottom-nav-active"
-                    className="absolute inset-0 bg-primary rounded-full shadow-soft"
+                    className="absolute inset-0 bg-primary rounded-[22px] shadow-soft"
                     transition={{ type: "spring", stiffness: 500, damping: 34 }}
                   />
                 )}
                 <motion.div
-                  animate={{ scale: active ? 1.05 : 1 }}
+                  animate={{ scale: active ? 1.04 : 1 }}
                   transition={{ type: "spring", stiffness: 420, damping: 24 }}
-                  className="relative z-10 flex flex-col items-center gap-0.5"
+                  className="relative z-10 flex min-w-0 w-full flex-col items-center gap-1"
                 >
-                  <Icon className="h-[19px] w-[19px]" strokeWidth={active ? 2.4 : 2} />
-                  <span
-                    className={`text-[9.5px] font-medium leading-none tracking-wide transition-opacity ${
-                      active ? "opacity-100" : "opacity-0 h-0"
-                    }`}
-                  >
+                  <Icon className="h-5 w-5 shrink-0" strokeWidth={active ? 2.4 : 2} />
+                  <span className="w-full truncate text-center text-[10px] font-semibold leading-none tracking-tight">
                     {it.label}
                   </span>
                 </motion.div>
