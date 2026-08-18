@@ -1,6 +1,6 @@
 import {
   Package, Truck, Users, Building2, Wallet, Receipt, Fuel, Map as MapIcon,
-  ShieldCheck, User, FileText, TrendingUp, Plus, Navigation, CreditCard,
+  ShieldCheck, User, FileText, TrendingUp, Plus, Navigation, CreditCard, Radar, LayoutList,
 } from "lucide-react";
 import type { AppRole } from "@/lib/auth-context";
 
@@ -14,6 +14,8 @@ export type ModuleLink = {
 export type ModuleGroup = { group: string; items: ModuleLink[] };
 
 const OPERATIONS: ModuleLink[] = [
+  { to: "/dashboard/tracking", label: "Dispatch center", desc: "Live map of every delivery", icon: Radar },
+  { to: "/dashboard/tracking/board", label: "Dispatch board", desc: "Assign drivers & vehicles", icon: LayoutList },
   { to: "/dashboard/orders", label: "Orders", desc: "Dispatch & track every job", icon: Package },
   { to: "/dashboard/orders/new", label: "New order", desc: "Create a transport order", icon: Plus },
   { to: "/dashboard/fleet", label: "Fleet", desc: "Vehicles, service & compliance", icon: Truck },
@@ -48,6 +50,7 @@ export function modulesFor(role: AppRole): ModuleGroup[] {
         items: [
           { to: "/book", label: "Book a truck", desc: "Instant quote & booking", icon: Plus },
           { to: "/dashboard/orders", label: "My orders", desc: "Track live and past jobs", icon: Package },
+          { to: "/dashboard/tracking", label: "Track shipment", desc: "Live map & delivery timeline", icon: Radar },
         ],
       },
       { group: "Account", items: ACCOUNT },
@@ -60,6 +63,7 @@ export function modulesFor(role: AppRole): ModuleGroup[] {
         items: [
           { to: "/dashboard/driver", label: "Home", desc: "Go online & accept jobs", icon: Truck },
           { to: "/dashboard/orders", label: "My trips", desc: "Assigned and past trips", icon: Package },
+          { to: "/dashboard/tracking", label: "Live trip", desc: "Navigation & status controls", icon: Radar },
           { to: "/dashboard/fleet/drivers/map", label: "Navigation", desc: "Live map view", icon: Navigation },
         ],
       },

@@ -3,6 +3,20 @@ import type { Truck } from "@/lib/booking-data";
 
 type LatLng = { lat: number; lng: number };
 
+/** Generic status-aware marker used by the Tracking & Dispatch Center. */
+export type MapMarker = {
+  id: string;
+  lat: number;
+  lng: number;
+  /** Marker fill colour (status colour from fleet/driver metadata). */
+  color: string;
+  /** Small glyph rendered inside the marker. */
+  glyph?: string;
+  tooltip?: string;
+  active?: boolean;
+  pulse?: boolean;
+};
+
 type Props = {
   center?: LatLng;
   zoom?: number;
@@ -15,6 +29,13 @@ type Props = {
   onMapClick?: (p: LatLng) => void;
   onTruckClick?: (id: string) => void;
   className?: string;
+  /** Generic markers (dispatch center). Rendered alongside `trucks`. */
+  markers?: MapMarker[];
+  onMarkerClick?: (id: string) => void;
+  /** Polyline points for a route overlay. */
+  routeLine?: LatLng[] | null;
+  /** Changing this value refits the map to markers + route. */
+  fitKey?: string | number | null;
 };
 
 const NAIROBI: LatLng = { lat: -1.2921, lng: 36.8219 };
@@ -23,13 +44,22 @@ const NAIROBI: LatLng = { lat: -1.2921, lng: 36.8219 };
 export function LeafletMap({
   center = NAIROBI, zoom = 12, trucks = [], pickup, dropoff, driverPos,
   selectedTruckId, showRoute, onMapClick, onTruckClick, className,
+  markers, onMarkerClick, routeLine, fitKey,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
-  const layersRef = useRef<{ trucks: Map<string, any>; pickup?: any; dropoff?: any; driver?: any; route?: any }>({
+  const layersRef = useRef<{
+    trucks: Map<string, any>;
+    generic: Map<string, any>;
+    pickup?: any; dropoff?: any; driver?: any; route?: any; line?: any;
+  }>({
     trucks: new Map(),
+    generic: new Map(),
   });
   const LRef = useRef<any>(null);
+  const markerClickRef = useRef(onMarkerClick);
+  markerClickRef.current = onMarkerClick;
+
 
   // Init once
   useEffect(() => {
@@ -178,6 +208,75 @@ export function LeafletMap({
       map.fitBounds(layersRef.current.route.getBounds(), { padding: [60, 60] });
     }
   }, [showRoute, pickup, dropoff]);
+
+  // Generic status-aware markers (dispatch center). Diffed, never re-created wholesale.
+  useEffect(() => {
+    const L = LRef.current;
+    const map = mapRef.current;
+    if (!L || !map || !markers) return;
+    const seen = new Set<string>();
+    markers.forEach((m) => {
+      seen.add(m.id);
+      const size = m.active ? 38 : 32;
+      const html = `<div style="
+        background:${m.color};color:#fff;width:${size}px;height:${size}px;border-radius:${m.active ? 14 : 11}px;
+        display:grid;place-items:center;font-size:${m.active ? 17 : 15}px;font-weight:700;
+        border:2.5px solid #fff;
+        box-shadow:0 4px 14px rgba(0,0,0,.28)${m.active ? `, 0 0 0 6px ${m.color}33` : ""};
+        ${m.pulse ? "animation:ll-pulse 1.8s ease-in-out infinite;" : ""}
+      ">${m.glyph ?? ""}</div>`;
+      const icon = L.divIcon({ html, className: "", iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
+      let marker = layersRef.current.generic.get(m.id);
+      if (marker) {
+        marker.setLatLng([m.lat, m.lng]);
+        marker.setIcon(icon);
+        if (m.tooltip) marker.setTooltipContent(m.tooltip);
+      } else {
+        marker = L.marker([m.lat, m.lng], { icon }).addTo(map);
+        marker.on("click", () => markerClickRef.current?.(m.id));
+        if (m.tooltip) marker.bindTooltip(m.tooltip, { direction: "top", offset: [0, -18] });
+        layersRef.current.generic.set(m.id, marker);
+      }
+    });
+    layersRef.current.generic.forEach((mk, id) => {
+      if (!seen.has(id)) {
+        map.removeLayer(mk);
+        layersRef.current.generic.delete(id);
+      }
+    });
+  }, [markers]);
+
+  // Explicit route polyline
+  useEffect(() => {
+    const L = LRef.current;
+    const map = mapRef.current;
+    if (!L || !map) return;
+    if (layersRef.current.line) {
+      map.removeLayer(layersRef.current.line);
+      layersRef.current.line = null;
+    }
+    if (routeLine && routeLine.length > 1) {
+      layersRef.current.line = L.polyline(
+        routeLine.map((p) => [p.lat, p.lng]),
+        { color: "#0d3a2c", weight: 4, opacity: 0.85, dashArray: "10 10", lineCap: "round" },
+      ).addTo(map);
+    }
+  }, [routeLine]);
+
+  // Fit to content when the caller asks for it
+  useEffect(() => {
+    const L = LRef.current;
+    const map = mapRef.current;
+    if (!L || !map || fitKey == null) return;
+    const pts: [number, number][] = [];
+    (markers ?? []).forEach((m) => pts.push([m.lat, m.lng]));
+    (routeLine ?? []).forEach((p) => pts.push([p.lat, p.lng]));
+    if (pts.length === 1) map.setView(pts[0]!, 13, { animate: true });
+    else if (pts.length > 1) map.fitBounds(L.latLngBounds(pts), { padding: [70, 70], animate: true, maxZoom: 14 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fitKey]);
+
+
 
   return <div ref={containerRef} className={className ?? "absolute inset-0"} style={{ background: "#0b1220" }} />;
 }

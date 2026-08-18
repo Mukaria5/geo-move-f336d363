@@ -215,3 +215,8 @@
   to   { transform: translateY(0); }
 }
 .sheet-in { animation: sheet-in 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
+
+@keyframes ll-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}

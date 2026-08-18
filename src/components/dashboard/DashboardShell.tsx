@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  LogOut, Bell, Home, Package, MapPin, Truck, Users, LayoutGrid, Wallet,
+  LogOut, Bell, Home, Package, MapPin, Truck, Users, LayoutGrid, Wallet, Radar,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useAuth, type AppRole } from "@/lib/auth-context";
@@ -21,7 +21,7 @@ function navFor(role: AppRole): NavItem[] {
       { to: "/dashboard/client", label: "Home", icon: Home },
       { to: "/book", label: "Book", icon: MapPin },
       { to: "/dashboard/orders", label: "Orders", icon: Package },
-      { to: "/onboarding/profile", label: "Profile", icon: Users },
+      { to: "/dashboard/tracking", label: "Track", icon: Radar },
       more,
     ];
   }
@@ -29,7 +29,7 @@ function navFor(role: AppRole): NavItem[] {
     return [
       { to: "/dashboard/driver", label: "Home", icon: Home },
       { to: "/dashboard/orders", label: "Trips", icon: Package },
-      { to: "/dashboard/fleet/drivers/map", label: "Map", icon: MapPin },
+      { to: "/dashboard/tracking", label: "Track", icon: Radar },
       { to: "/onboarding/profile", label: "Profile", icon: Users },
       more,
     ];
@@ -37,26 +37,26 @@ function navFor(role: AppRole): NavItem[] {
   if (role === "admin") {
     return [
       { to: "/dashboard/admin", label: "Home", icon: Home },
+      { to: "/dashboard/tracking", label: "Track", icon: Radar },
       { to: "/dashboard/orders", label: "Orders", icon: Package },
       { to: "/dashboard/fleet", label: "Fleet", icon: Truck },
-      { to: "/dashboard/fleet/finance", label: "Finance", icon: Wallet },
       more,
     ];
   }
   if (role === "dispatcher") {
     return [
-      { to: "/dashboard/orders", label: "Orders", icon: Home },
+      { to: "/dashboard/tracking", label: "Dispatch", icon: Radar },
+      { to: "/dashboard/orders", label: "Orders", icon: Package },
       { to: "/dashboard/fleet", label: "Fleet", icon: Truck },
       { to: "/dashboard/fleet/drivers", label: "Drivers", icon: Users },
-      { to: "/dashboard/fleet/map", label: "Map", icon: MapPin },
       more,
     ];
   }
   // fleet owner / manager
   return [
     { to: "/dashboard/fleet", label: "Home", icon: Home },
+    { to: "/dashboard/tracking", label: "Track", icon: Radar },
     { to: "/dashboard/orders", label: "Orders", icon: Package },
-    { to: "/dashboard/fleet/drivers", label: "Drivers", icon: Users },
     { to: "/dashboard/fleet/finance", label: "Finance", icon: Wallet },
     more,
   ];
