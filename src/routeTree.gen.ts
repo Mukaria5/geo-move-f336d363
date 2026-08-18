@@ -28,6 +28,8 @@ import { Route as ProtectedDashboardDriverRouteImport } from './routes/_protecte
 import { Route as ProtectedDashboardClientRouteImport } from './routes/_protected/dashboard/client'
 import { Route as ProtectedDashboardAdminRouteImport } from './routes/_protected/dashboard/admin'
 import { Route as ProtectedDashboardTrackingIndexRouteImport } from './routes/_protected/dashboard/tracking.index'
+import { Route as ProtectedDashboardTrackingBoardRouteImport } from './routes/_protected/dashboard/tracking.board'
+import { Route as ProtectedDashboardTrackingOrderIdRouteImport } from './routes/_protected/dashboard/tracking.$orderId'
 import { Route as ProtectedDashboardOrdersNewRouteImport } from './routes/_protected/dashboard/orders.new'
 import { Route as ProtectedDashboardOrdersOrderIdRouteImport } from './routes/_protected/dashboard/orders.$orderId'
 import { Route as ProtectedDashboardFleetNewRouteImport } from './routes/_protected/dashboard/fleet.new'
@@ -146,6 +148,18 @@ const ProtectedDashboardTrackingIndexRoute =
   ProtectedDashboardTrackingIndexRouteImport.update({
     id: '/dashboard/tracking/',
     path: '/dashboard/tracking/',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
+const ProtectedDashboardTrackingBoardRoute =
+  ProtectedDashboardTrackingBoardRouteImport.update({
+    id: '/dashboard/tracking/board',
+    path: '/dashboard/tracking/board',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
+const ProtectedDashboardTrackingOrderIdRoute =
+  ProtectedDashboardTrackingOrderIdRouteImport.update({
+    id: '/dashboard/tracking/$orderId',
+    path: '/dashboard/tracking/$orderId',
     getParentRoute: () => ProtectedRoute,
   } as any)
 const ProtectedDashboardOrdersNewRoute =
@@ -291,6 +305,8 @@ export interface FileRoutesByFullPath {
   '/dashboard/fleet/new': typeof ProtectedDashboardFleetNewRoute
   '/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
   '/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
+  '/dashboard/tracking/$orderId': typeof ProtectedDashboardTrackingOrderIdRoute
+  '/dashboard/tracking/board': typeof ProtectedDashboardTrackingBoardRoute
   '/dashboard/tracking/': typeof ProtectedDashboardTrackingIndexRoute
   '/dashboard/fleet/clients/$clientId': typeof ProtectedDashboardFleetClientsClientIdRoute
   '/dashboard/fleet/clients/new': typeof ProtectedDashboardFleetClientsNewRoute
@@ -330,6 +346,8 @@ export interface FileRoutesByTo {
   '/dashboard/fleet/new': typeof ProtectedDashboardFleetNewRoute
   '/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
   '/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
+  '/dashboard/tracking/$orderId': typeof ProtectedDashboardTrackingOrderIdRoute
+  '/dashboard/tracking/board': typeof ProtectedDashboardTrackingBoardRoute
   '/dashboard/tracking': typeof ProtectedDashboardTrackingIndexRoute
   '/dashboard/fleet/clients/$clientId': typeof ProtectedDashboardFleetClientsClientIdRoute
   '/dashboard/fleet/clients/new': typeof ProtectedDashboardFleetClientsNewRoute
@@ -371,6 +389,8 @@ export interface FileRoutesById {
   '/_protected/dashboard/fleet/new': typeof ProtectedDashboardFleetNewRoute
   '/_protected/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
   '/_protected/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
+  '/_protected/dashboard/tracking/$orderId': typeof ProtectedDashboardTrackingOrderIdRoute
+  '/_protected/dashboard/tracking/board': typeof ProtectedDashboardTrackingBoardRoute
   '/_protected/dashboard/tracking/': typeof ProtectedDashboardTrackingIndexRoute
   '/_protected/dashboard/fleet/clients/$clientId': typeof ProtectedDashboardFleetClientsClientIdRoute
   '/_protected/dashboard/fleet/clients/new': typeof ProtectedDashboardFleetClientsNewRoute
@@ -412,6 +432,8 @@ export interface FileRouteTypes {
     | '/dashboard/fleet/new'
     | '/dashboard/orders/$orderId'
     | '/dashboard/orders/new'
+    | '/dashboard/tracking/$orderId'
+    | '/dashboard/tracking/board'
     | '/dashboard/tracking/'
     | '/dashboard/fleet/clients/$clientId'
     | '/dashboard/fleet/clients/new'
@@ -451,6 +473,8 @@ export interface FileRouteTypes {
     | '/dashboard/fleet/new'
     | '/dashboard/orders/$orderId'
     | '/dashboard/orders/new'
+    | '/dashboard/tracking/$orderId'
+    | '/dashboard/tracking/board'
     | '/dashboard/tracking'
     | '/dashboard/fleet/clients/$clientId'
     | '/dashboard/fleet/clients/new'
@@ -491,6 +515,8 @@ export interface FileRouteTypes {
     | '/_protected/dashboard/fleet/new'
     | '/_protected/dashboard/orders/$orderId'
     | '/_protected/dashboard/orders/new'
+    | '/_protected/dashboard/tracking/$orderId'
+    | '/_protected/dashboard/tracking/board'
     | '/_protected/dashboard/tracking/'
     | '/_protected/dashboard/fleet/clients/$clientId'
     | '/_protected/dashboard/fleet/clients/new'
@@ -648,6 +674,20 @@ declare module '@tanstack/react-router' {
       path: '/dashboard/tracking'
       fullPath: '/dashboard/tracking/'
       preLoaderRoute: typeof ProtectedDashboardTrackingIndexRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/dashboard/tracking/board': {
+      id: '/_protected/dashboard/tracking/board'
+      path: '/dashboard/tracking/board'
+      fullPath: '/dashboard/tracking/board'
+      preLoaderRoute: typeof ProtectedDashboardTrackingBoardRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/dashboard/tracking/$orderId': {
+      id: '/_protected/dashboard/tracking/$orderId'
+      path: '/dashboard/tracking/$orderId'
+      fullPath: '/dashboard/tracking/$orderId'
+      preLoaderRoute: typeof ProtectedDashboardTrackingOrderIdRouteImport
       parentRoute: typeof ProtectedRoute
     }
     '/_protected/dashboard/orders/new': {
@@ -906,6 +946,8 @@ interface ProtectedRouteChildren {
   ProtectedOnboardingDocumentsRoute: typeof ProtectedOnboardingDocumentsRoute
   ProtectedOnboardingProfileRoute: typeof ProtectedOnboardingProfileRoute
   ProtectedOnboardingRoleRoute: typeof ProtectedOnboardingRoleRoute
+  ProtectedDashboardTrackingOrderIdRoute: typeof ProtectedDashboardTrackingOrderIdRoute
+  ProtectedDashboardTrackingBoardRoute: typeof ProtectedDashboardTrackingBoardRoute
   ProtectedDashboardTrackingIndexRoute: typeof ProtectedDashboardTrackingIndexRoute
 }
 
@@ -919,6 +961,9 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedOnboardingDocumentsRoute: ProtectedOnboardingDocumentsRoute,
   ProtectedOnboardingProfileRoute: ProtectedOnboardingProfileRoute,
   ProtectedOnboardingRoleRoute: ProtectedOnboardingRoleRoute,
+  ProtectedDashboardTrackingOrderIdRoute:
+    ProtectedDashboardTrackingOrderIdRoute,
+  ProtectedDashboardTrackingBoardRoute: ProtectedDashboardTrackingBoardRoute,
   ProtectedDashboardTrackingIndexRoute: ProtectedDashboardTrackingIndexRoute,
 }
 
