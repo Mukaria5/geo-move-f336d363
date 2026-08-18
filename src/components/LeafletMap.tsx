@@ -3,6 +3,20 @@ import type { Truck } from "@/lib/booking-data";
 
 type LatLng = { lat: number; lng: number };
 
+/** Generic status-aware marker used by the Tracking & Dispatch Center. */
+export type MapMarker = {
+  id: string;
+  lat: number;
+  lng: number;
+  /** Marker fill colour (status colour from fleet/driver metadata). */
+  color: string;
+  /** Small glyph rendered inside the marker. */
+  glyph?: string;
+  tooltip?: string;
+  active?: boolean;
+  pulse?: boolean;
+};
+
 type Props = {
   center?: LatLng;
   zoom?: number;
@@ -15,6 +29,13 @@ type Props = {
   onMapClick?: (p: LatLng) => void;
   onTruckClick?: (id: string) => void;
   className?: string;
+  /** Generic markers (dispatch center). Rendered alongside `trucks`. */
+  markers?: MapMarker[];
+  onMarkerClick?: (id: string) => void;
+  /** Polyline points for a route overlay. */
+  routeLine?: LatLng[] | null;
+  /** Changing this value refits the map to markers + route. */
+  fitKey?: string | number | null;
 };
 
 const NAIROBI: LatLng = { lat: -1.2921, lng: 36.8219 };
@@ -23,13 +44,22 @@ const NAIROBI: LatLng = { lat: -1.2921, lng: 36.8219 };
 export function LeafletMap({
   center = NAIROBI, zoom = 12, trucks = [], pickup, dropoff, driverPos,
   selectedTruckId, showRoute, onMapClick, onTruckClick, className,
+  markers, onMarkerClick, routeLine, fitKey,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
-  const layersRef = useRef<{ trucks: Map<string, any>; pickup?: any; dropoff?: any; driver?: any; route?: any }>({
+  const layersRef = useRef<{
+    trucks: Map<string, any>;
+    generic: Map<string, any>;
+    pickup?: any; dropoff?: any; driver?: any; route?: any; line?: any;
+  }>({
     trucks: new Map(),
+    generic: new Map(),
   });
   const LRef = useRef<any>(null);
+  const markerClickRef = useRef(onMarkerClick);
+  markerClickRef.current = onMarkerClick;
+
 
   // Init once
   useEffect(() => {
