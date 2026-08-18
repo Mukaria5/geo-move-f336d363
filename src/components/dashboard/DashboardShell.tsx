@@ -83,7 +83,10 @@ export function DashboardShell({
   }
 
   return (
-    <main className="min-h-screen bg-background pb-28">
+    <main
+      className="min-h-screen bg-background"
+      style={{ paddingBottom: "calc(6.5rem + env(safe-area-inset-bottom))" }}
+    >
       {/* Header */}
       <header className="sticky top-0 z-40 px-4 pt-3 safe-top">
         <div className="glass-strong rounded-[22px] flex items-center gap-3 px-3 h-14">
