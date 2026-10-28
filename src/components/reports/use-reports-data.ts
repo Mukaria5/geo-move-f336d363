@@ -22,16 +22,16 @@ import { EMPTY_DATASET, type FuelLogRow, type ReportDataset } from "@/lib/report
 const STALE = 30_000;
 const LIMIT = 500;
 
-type Select<T> = PromiseLike<{ data: T[] | null; error: { message: string } | null }>;
+type AnySelect = PromiseLike<{ data: unknown; error: { message: string } | null }>;
 
 /** A read that never breaks the whole report: an error (e.g. RLS) yields []. */
-async function safe<T>(p: Select<T>): Promise<T[]> {
+async function safe<T>(p: AnySelect): Promise<T[]> {
   const { data, error } = await p;
   if (error) {
     console.warn("[reports] read skipped:", error.message);
     return [];
   }
-  return data ?? [];
+  return (data as T[]) ?? [];
 }
 
 const isStaffRole = (r: AppRole | null) => r === "admin" || r === "fleet" || r === "dispatcher";
