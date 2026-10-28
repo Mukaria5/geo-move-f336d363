@@ -34,6 +34,7 @@ export type OrderRow = {
   created_by: string;
   fleet_owner_user_id: string | null;
   client_id: string | null;
+  crm_client_id: string | null;
   client_name: string;
   client_phone: string | null;
   client_email: string | null;
