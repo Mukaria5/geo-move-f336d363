@@ -128,13 +128,13 @@ export function filtersToSearch(f: ReportFilters): ReportsSearchParams {
 /** Hook used by every Reports page: filters live in the URL, so they persist across sections. */
 export function useReportFilters() {
   const search = useSearch({ strict: false }) as ReportsSearchParams;
-  const navigate = useNavigate();
+  // Loose typing: filters are written from shared components across sections.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const navigate = useNavigate() as (opts: any) => Promise<void>;
   const filters = useMemo(() => filtersFromSearch(search), [search]);
   const setFilters = (patch: Partial<ReportFilters>) => {
-    navigate({
-      search: (prev: ReportsSearchParams) => ({ ...prev, ...filtersToSearch({ ...filters, ...patch }) }),
-      replace: true,
-    });
+    const next = filtersToSearch({ ...filters, ...patch });
+    navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, ...next }), replace: true });
   };
   const resetFilters = () => {
     navigate({ search: { period: DEFAULT_FILTERS.period }, replace: true });
