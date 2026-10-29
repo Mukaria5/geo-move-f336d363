@@ -28,8 +28,10 @@ import { Route as ProtectedDashboardDriverRouteImport } from './routes/_protecte
 import { Route as ProtectedDashboardClientRouteImport } from './routes/_protected/dashboard/client'
 import { Route as ProtectedDashboardAdminRouteImport } from './routes/_protected/dashboard/admin'
 import { Route as ProtectedDashboardTrackingIndexRouteImport } from './routes/_protected/dashboard/tracking.index'
+import { Route as ProtectedDashboardReportsIndexRouteImport } from './routes/_protected/dashboard/reports.index'
 import { Route as ProtectedDashboardTrackingBoardRouteImport } from './routes/_protected/dashboard/tracking.board'
 import { Route as ProtectedDashboardTrackingOrderIdRouteImport } from './routes/_protected/dashboard/tracking.$orderId'
+import { Route as ProtectedDashboardReportsSectionRouteImport } from './routes/_protected/dashboard/reports.$section'
 import { Route as ProtectedDashboardOrdersNewRouteImport } from './routes/_protected/dashboard/orders.new'
 import { Route as ProtectedDashboardOrdersOrderIdRouteImport } from './routes/_protected/dashboard/orders.$orderId'
 import { Route as ProtectedDashboardFleetNewRouteImport } from './routes/_protected/dashboard/fleet.new'
@@ -150,6 +152,12 @@ const ProtectedDashboardTrackingIndexRoute =
     path: '/dashboard/tracking/',
     getParentRoute: () => ProtectedRoute,
   } as any)
+const ProtectedDashboardReportsIndexRoute =
+  ProtectedDashboardReportsIndexRouteImport.update({
+    id: '/dashboard/reports/',
+    path: '/dashboard/reports/',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
 const ProtectedDashboardTrackingBoardRoute =
   ProtectedDashboardTrackingBoardRouteImport.update({
     id: '/dashboard/tracking/board',
@@ -160,6 +168,12 @@ const ProtectedDashboardTrackingOrderIdRoute =
   ProtectedDashboardTrackingOrderIdRouteImport.update({
     id: '/dashboard/tracking/$orderId',
     path: '/dashboard/tracking/$orderId',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
+const ProtectedDashboardReportsSectionRoute =
+  ProtectedDashboardReportsSectionRouteImport.update({
+    id: '/dashboard/reports/$section',
+    path: '/dashboard/reports/$section',
     getParentRoute: () => ProtectedRoute,
   } as any)
 const ProtectedDashboardOrdersNewRoute =
@@ -305,8 +319,10 @@ export interface FileRoutesByFullPath {
   '/dashboard/fleet/new': typeof ProtectedDashboardFleetNewRoute
   '/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
   '/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
+  '/dashboard/reports/$section': typeof ProtectedDashboardReportsSectionRoute
   '/dashboard/tracking/$orderId': typeof ProtectedDashboardTrackingOrderIdRoute
   '/dashboard/tracking/board': typeof ProtectedDashboardTrackingBoardRoute
+  '/dashboard/reports/': typeof ProtectedDashboardReportsIndexRoute
   '/dashboard/tracking/': typeof ProtectedDashboardTrackingIndexRoute
   '/dashboard/fleet/clients/$clientId': typeof ProtectedDashboardFleetClientsClientIdRoute
   '/dashboard/fleet/clients/new': typeof ProtectedDashboardFleetClientsNewRoute
@@ -346,8 +362,10 @@ export interface FileRoutesByTo {
   '/dashboard/fleet/new': typeof ProtectedDashboardFleetNewRoute
   '/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
   '/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
+  '/dashboard/reports/$section': typeof ProtectedDashboardReportsSectionRoute
   '/dashboard/tracking/$orderId': typeof ProtectedDashboardTrackingOrderIdRoute
   '/dashboard/tracking/board': typeof ProtectedDashboardTrackingBoardRoute
+  '/dashboard/reports': typeof ProtectedDashboardReportsIndexRoute
   '/dashboard/tracking': typeof ProtectedDashboardTrackingIndexRoute
   '/dashboard/fleet/clients/$clientId': typeof ProtectedDashboardFleetClientsClientIdRoute
   '/dashboard/fleet/clients/new': typeof ProtectedDashboardFleetClientsNewRoute
@@ -389,8 +407,10 @@ export interface FileRoutesById {
   '/_protected/dashboard/fleet/new': typeof ProtectedDashboardFleetNewRoute
   '/_protected/dashboard/orders/$orderId': typeof ProtectedDashboardOrdersOrderIdRoute
   '/_protected/dashboard/orders/new': typeof ProtectedDashboardOrdersNewRoute
+  '/_protected/dashboard/reports/$section': typeof ProtectedDashboardReportsSectionRoute
   '/_protected/dashboard/tracking/$orderId': typeof ProtectedDashboardTrackingOrderIdRoute
   '/_protected/dashboard/tracking/board': typeof ProtectedDashboardTrackingBoardRoute
+  '/_protected/dashboard/reports/': typeof ProtectedDashboardReportsIndexRoute
   '/_protected/dashboard/tracking/': typeof ProtectedDashboardTrackingIndexRoute
   '/_protected/dashboard/fleet/clients/$clientId': typeof ProtectedDashboardFleetClientsClientIdRoute
   '/_protected/dashboard/fleet/clients/new': typeof ProtectedDashboardFleetClientsNewRoute
@@ -432,8 +452,10 @@ export interface FileRouteTypes {
     | '/dashboard/fleet/new'
     | '/dashboard/orders/$orderId'
     | '/dashboard/orders/new'
+    | '/dashboard/reports/$section'
     | '/dashboard/tracking/$orderId'
     | '/dashboard/tracking/board'
+    | '/dashboard/reports/'
     | '/dashboard/tracking/'
     | '/dashboard/fleet/clients/$clientId'
     | '/dashboard/fleet/clients/new'
@@ -473,8 +495,10 @@ export interface FileRouteTypes {
     | '/dashboard/fleet/new'
     | '/dashboard/orders/$orderId'
     | '/dashboard/orders/new'
+    | '/dashboard/reports/$section'
     | '/dashboard/tracking/$orderId'
     | '/dashboard/tracking/board'
+    | '/dashboard/reports'
     | '/dashboard/tracking'
     | '/dashboard/fleet/clients/$clientId'
     | '/dashboard/fleet/clients/new'
@@ -515,8 +539,10 @@ export interface FileRouteTypes {
     | '/_protected/dashboard/fleet/new'
     | '/_protected/dashboard/orders/$orderId'
     | '/_protected/dashboard/orders/new'
+    | '/_protected/dashboard/reports/$section'
     | '/_protected/dashboard/tracking/$orderId'
     | '/_protected/dashboard/tracking/board'
+    | '/_protected/dashboard/reports/'
     | '/_protected/dashboard/tracking/'
     | '/_protected/dashboard/fleet/clients/$clientId'
     | '/_protected/dashboard/fleet/clients/new'
@@ -676,6 +702,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardTrackingIndexRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_protected/dashboard/reports/': {
+      id: '/_protected/dashboard/reports/'
+      path: '/dashboard/reports'
+      fullPath: '/dashboard/reports/'
+      preLoaderRoute: typeof ProtectedDashboardReportsIndexRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_protected/dashboard/tracking/board': {
       id: '/_protected/dashboard/tracking/board'
       path: '/dashboard/tracking/board'
@@ -688,6 +721,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard/tracking/$orderId'
       fullPath: '/dashboard/tracking/$orderId'
       preLoaderRoute: typeof ProtectedDashboardTrackingOrderIdRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/dashboard/reports/$section': {
+      id: '/_protected/dashboard/reports/$section'
+      path: '/dashboard/reports/$section'
+      fullPath: '/dashboard/reports/$section'
+      preLoaderRoute: typeof ProtectedDashboardReportsSectionRouteImport
       parentRoute: typeof ProtectedRoute
     }
     '/_protected/dashboard/orders/new': {
@@ -946,8 +986,10 @@ interface ProtectedRouteChildren {
   ProtectedOnboardingDocumentsRoute: typeof ProtectedOnboardingDocumentsRoute
   ProtectedOnboardingProfileRoute: typeof ProtectedOnboardingProfileRoute
   ProtectedOnboardingRoleRoute: typeof ProtectedOnboardingRoleRoute
+  ProtectedDashboardReportsSectionRoute: typeof ProtectedDashboardReportsSectionRoute
   ProtectedDashboardTrackingOrderIdRoute: typeof ProtectedDashboardTrackingOrderIdRoute
   ProtectedDashboardTrackingBoardRoute: typeof ProtectedDashboardTrackingBoardRoute
+  ProtectedDashboardReportsIndexRoute: typeof ProtectedDashboardReportsIndexRoute
   ProtectedDashboardTrackingIndexRoute: typeof ProtectedDashboardTrackingIndexRoute
 }
 
@@ -961,9 +1003,11 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedOnboardingDocumentsRoute: ProtectedOnboardingDocumentsRoute,
   ProtectedOnboardingProfileRoute: ProtectedOnboardingProfileRoute,
   ProtectedOnboardingRoleRoute: ProtectedOnboardingRoleRoute,
+  ProtectedDashboardReportsSectionRoute: ProtectedDashboardReportsSectionRoute,
   ProtectedDashboardTrackingOrderIdRoute:
     ProtectedDashboardTrackingOrderIdRoute,
   ProtectedDashboardTrackingBoardRoute: ProtectedDashboardTrackingBoardRoute,
+  ProtectedDashboardReportsIndexRoute: ProtectedDashboardReportsIndexRoute,
   ProtectedDashboardTrackingIndexRoute: ProtectedDashboardTrackingIndexRoute,
 }
 
