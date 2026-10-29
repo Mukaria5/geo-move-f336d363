@@ -41,7 +41,7 @@ type BodyProps = { d: ReportDataset; range: DateRange; role: string };
 function ReportsSection() {
   const { section } = Route.useParams() as { section: string };
   const { role } = useAuth();
-  const allowed = (ROLE_SECTIONS[role] ?? []) as SectionKey[];
+  const allowed = (ROLE_SECTIONS[role ?? ""] ?? []) as SectionKey[];
   const meta = REPORT_SECTIONS.find((s) => s.key === section);
 
   if (!meta || !ALL_SECTIONS.includes(section as SectionKey)) throw notFound();
@@ -81,7 +81,7 @@ function SectionFrame({ section, label, allowed }: { section: SectionKey; label:
         {loading ? (
           <SkeletonGrid rows={5} />
         ) : (
-          <SectionBody section={section} d={scoped} range={range} role={role} />
+          <SectionBody section={section} d={scoped} range={range} role={role ?? ""} />
         )}
       </div>
     </DashboardShell>

@@ -4,7 +4,7 @@ import { ShieldOff } from "lucide-react";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { useAuth } from "@/lib/auth-context";
 import {
-  SectionTabs, FilterBar, FilterSheet, KpiGrid, MetricTileM, ChartCard, RankRows,
+  SectionTabs, FilterBar, FilterSheet, KpiGrid, MetricTile, MetricTileM, ChartCard, RankRows,
   ExportButtons, DataNote, SkeletonGrid, fmtKSh, fmtNum, fmtPct, fmtKm, ROLE_SECTIONS,
   type SectionKey,
 } from "@/components/reports/ReportsUI";
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_protected/dashboard/reports/")({
 
 function ReportsOverview() {
   const { role } = useAuth();
-  const allowed = ROLE_SECTIONS[role] ?? [];
+  const allowed = (ROLE_SECTIONS[role ?? ""] ?? []) as SectionKey[];
 
   if (!allowed.includes("overview")) {
     return (
@@ -50,10 +50,10 @@ function ReportsOverview() {
     );
   }
 
-  return <OverviewBody role={role} />;
+  return <OverviewBody role={role ?? ""} allowed={allowed} />;
 }
 
-function OverviewBody({ role }: { role: string }) {
+function OverviewBody({ role, allowed }: { role: string; allowed: SectionKey[] }) {
   const { dataset, scoped, loading, filters, setFilters, resetFilters, range } = useReportsScope();
   const [sheetOpen, setSheetOpen] = useState(false);
   const k = useMemo(() => overviewKpis(scoped), [scoped]);
