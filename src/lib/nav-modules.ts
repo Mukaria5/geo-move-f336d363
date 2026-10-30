@@ -63,7 +63,7 @@ const REPORT_ACCESS: Record<string, string[]> = {
 const reportsFor = (role: AppRole): ModuleLink[] => {
   const allowed = REPORT_ACCESS[role] ?? REPORT_ACCESS.fleet;
   return REPORT_SECTIONS.filter((s) => allowed.includes(s.key)).map((s) => ({
-    to: `/dashboard/reports/${s.key}`,
+    to: s.key === "overview" ? "/dashboard/reports" : `/dashboard/reports/${s.key}`,
     label: s.label,
     desc: s.desc,
     icon: BarChart3,
