@@ -375,6 +375,141 @@ export type Database = {
         }
         Relationships: []
       }
+      company_audit_logs: {
+        Row: {
+          actor_id: string | null
+          company_user_id: string
+          created_at: string
+          description: string
+          event_type: string
+          id: string
+          metadata: Json
+          module: string
+          record_id: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          company_user_id: string
+          created_at?: string
+          description: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          module: string
+          record_id?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          company_user_id?: string
+          created_at?: string
+          description?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          module?: string
+          record_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_audit_logs_company_user_id_fkey"
+            columns: ["company_user_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_companies"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      company_members: {
+        Row: {
+          company_user_id: string
+          department: string | null
+          email: string
+          full_name: string
+          id: string
+          invited_at: string
+          invited_by: string
+          joined_at: string | null
+          phone: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          company_user_id: string
+          department?: string | null
+          email: string
+          full_name: string
+          id?: string
+          invited_at?: string
+          invited_by: string
+          joined_at?: string | null
+          phone?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          company_user_id?: string
+          department?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          invited_at?: string
+          invited_by?: string
+          joined_at?: string | null
+          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_members_company_user_id_fkey"
+            columns: ["company_user_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_companies"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      company_settings: {
+        Row: {
+          company_user_id: string
+          created_at: string
+          finance_settings: Json
+          notification_settings: Json
+          operational_settings: Json
+          updated_at: string
+        }
+        Insert: {
+          company_user_id: string
+          created_at?: string
+          finance_settings?: Json
+          notification_settings?: Json
+          operational_settings?: Json
+          updated_at?: string
+        }
+        Update: {
+          company_user_id?: string
+          created_at?: string
+          finance_settings?: Json
+          notification_settings?: Json
+          operational_settings?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_settings_company_user_id_fkey"
+            columns: ["company_user_id"]
+            isOneToOne: true
+            referencedRelation: "fleet_companies"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           doc_type: Database["public"]["Enums"]["doc_type"]
@@ -818,40 +953,91 @@ export type Database = {
       }
       fleet_companies: {
         Row: {
+          alternative_phone: string | null
+          bank_details: string | null
+          business_description: string | null
+          city: string | null
           company_name: string
           contact_email: string | null
           contact_phone: string | null
+          country: string
+          county: string | null
           created_at: string
+          currency: string
+          date_format: string
+          display_name: string | null
           fleet_size: number | null
+          invoice_footer: string | null
           kra_pin: string | null
+          logo_path: string | null
+          mpesa_details: string | null
+          physical_address: string | null
+          postal_address: string | null
+          preferred_language: string
           registration_no: string | null
+          timezone: string
           updated_at: string
           user_id: string
           verified: boolean
+          website: string | null
         }
         Insert: {
+          alternative_phone?: string | null
+          bank_details?: string | null
+          business_description?: string | null
+          city?: string | null
           company_name: string
           contact_email?: string | null
           contact_phone?: string | null
+          country?: string
+          county?: string | null
           created_at?: string
+          currency?: string
+          date_format?: string
+          display_name?: string | null
           fleet_size?: number | null
+          invoice_footer?: string | null
           kra_pin?: string | null
+          logo_path?: string | null
+          mpesa_details?: string | null
+          physical_address?: string | null
+          postal_address?: string | null
+          preferred_language?: string
           registration_no?: string | null
+          timezone?: string
           updated_at?: string
           user_id: string
           verified?: boolean
+          website?: string | null
         }
         Update: {
+          alternative_phone?: string | null
+          bank_details?: string | null
+          business_description?: string | null
+          city?: string | null
           company_name?: string
           contact_email?: string | null
           contact_phone?: string | null
+          country?: string
+          county?: string | null
           created_at?: string
+          currency?: string
+          date_format?: string
+          display_name?: string | null
           fleet_size?: number | null
+          invoice_footer?: string | null
           kra_pin?: string | null
+          logo_path?: string | null
+          mpesa_details?: string | null
+          physical_address?: string | null
+          postal_address?: string | null
+          preferred_language?: string
           registration_no?: string | null
+          timezone?: string
           updated_at?: string
           user_id?: string
           verified?: boolean
+          website?: string | null
         }
         Relationships: []
       }
@@ -1726,6 +1912,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      company_owner_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1735,7 +1922,13 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "client" | "driver" | "fleet" | "admin" | "dispatcher"
+      app_role:
+        | "client"
+        | "driver"
+        | "fleet"
+        | "admin"
+        | "dispatcher"
+        | "manager"
       client_status: "active" | "preferred" | "inactive" | "suspended"
       client_type: "business" | "individual"
       doc_status: "pending" | "approved" | "rejected"
@@ -1931,7 +2124,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["client", "driver", "fleet", "admin", "dispatcher"],
+      app_role: ["client", "driver", "fleet", "admin", "dispatcher", "manager"],
       client_status: ["active", "preferred", "inactive", "suspended"],
       client_type: ["business", "individual"],
       doc_status: ["pending", "approved", "rejected"],
