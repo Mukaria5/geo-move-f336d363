@@ -430,6 +430,7 @@ export type Database = {
           invited_by: string
           joined_at: string | null
           phone: string | null
+          responsibilities: Json
           role: Database["public"]["Enums"]["app_role"]
           status: string
           updated_at: string
@@ -445,6 +446,7 @@ export type Database = {
           invited_by: string
           joined_at?: string | null
           phone?: string | null
+          responsibilities?: Json
           role: Database["public"]["Enums"]["app_role"]
           status?: string
           updated_at?: string
@@ -460,6 +462,7 @@ export type Database = {
           invited_by?: string
           joined_at?: string | null
           phone?: string | null
+          responsibilities?: Json
           role?: Database["public"]["Enums"]["app_role"]
           status?: string
           updated_at?: string

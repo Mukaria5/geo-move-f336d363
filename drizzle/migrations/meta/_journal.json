@@ -22,6 +22,27 @@
       "when": 1795080578386,
       "tag": "0002_company_team_tenant_access",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795153592049,
+      "tag": "0003_company_invitations_and_dispatch_scope",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795153755821,
+      "tag": "0004_restrict_self_assigned_roles",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795154046562,
+      "tag": "0005_company_audit_events_and_safe_invites",
+      "breakpoints": true
     }
   ]
 }
