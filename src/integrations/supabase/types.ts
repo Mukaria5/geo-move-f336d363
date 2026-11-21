@@ -424,8 +424,10 @@ export type Database = {
           company_user_id: string
           department: string | null
           email: string
+          expires_at: string
           full_name: string
           id: string
+          invitation_token: string
           invited_at: string
           invited_by: string
           joined_at: string | null
@@ -440,8 +442,10 @@ export type Database = {
           company_user_id: string
           department?: string | null
           email: string
+          expires_at?: string
           full_name: string
           id?: string
+          invitation_token?: string
           invited_at?: string
           invited_by: string
           joined_at?: string | null
@@ -456,8 +460,10 @@ export type Database = {
           company_user_id?: string
           department?: string | null
           email?: string
+          expires_at?: string
           full_name?: string
           id?: string
+          invitation_token?: string
           invited_at?: string
           invited_by?: string
           joined_at?: string | null
@@ -480,6 +486,7 @@ export type Database = {
       }
       company_settings: {
         Row: {
+          administration_settings: Json
           company_user_id: string
           created_at: string
           finance_settings: Json
@@ -488,6 +495,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          administration_settings?: Json
           company_user_id: string
           created_at?: string
           finance_settings?: Json
@@ -496,6 +504,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          administration_settings?: Json
           company_user_id?: string
           created_at?: string
           finance_settings?: Json
@@ -1915,11 +1924,48 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_company_invitation: { Args: { _token: string }; Returns: string }
+      company_invite_details: {
+        Args: { _token: string }
+        Returns: {
+          company_name: string
+          email: string
+          expires_at: string
+          full_name: string
+          role: Database["public"]["Enums"]["app_role"]
+        }[]
+      }
       company_owner_id: { Args: { _user_id: string }; Returns: string }
+      create_company_invitation: {
+        Args: {
+          _department?: string
+          _email: string
+          _full_name: string
+          _phone?: string
+          _responsibilities?: Json
+          _role?: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: {
+          expires_at: string
+          id: string
+          invitation_token: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
+        }
+        Returns: boolean
+      }
+      manage_company_member: {
+        Args: {
+          _action: string
+          _department?: string
+          _member_id: string
+          _responsibilities?: Json
+          _role?: Database["public"]["Enums"]["app_role"]
+          _status?: string
         }
         Returns: boolean
       }
